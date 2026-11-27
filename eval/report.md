@@ -4,30 +4,34 @@
 > Số lấy từ `python run.py score eval/run-1.csv` (và `run-2.csv`) sau khi điền cột `pass`. **Kết quả thấp ghi thật vẫn đủ điểm.**
 > Không được: sửa chuẩn "đạt", bỏ câu thử trượt, sửa `expected` cho khớp output, sửa kết quả lượt đã chạy.
 
-## 1. Kết quả
+## Trạng thái CP3
 
-| Lượt | Run ID | Đạt / tổng | % | thuong | kho | tu_choi | So với chuẩn "đạt" |
-|---|---|---|---|---|---|---|---|
-| 1 | | __/__ | | __/__ | __/__ | __/__ | đạt / chưa |
-| 2 | | __/__ | | __/__ | __/__ | __/__ | đạt / chưa |
+Bộ thử 20 câu đã qua `python run.py check`. Nhóm chốt [ba lỗi của mỗi lab](key_mistakes.md) trước khi xem output. Cả 3 câu đầu đã sinh trang bằng Gemini 4 Hydrogen với token đo được.
 
-Kết quả từng câu: `eval/run-1.csv`, `eval/run-2.csv`. Trace: `traces/run-1.jsonl`, `traces/run-2.jsonl`.
+## Lượt 1
 
-## 2. Lỗi lượt 1 — gom thành nhóm có tên
+Run ID `run-1@20261127-222935` · Gemini 4 Hydrogen · đủ 20 câu. Nhóm đã chốt danh sách lỗi trước khi chạy. Điểm Codex đề xuất, chờ nhóm duyệt theo metric có người chấm.
 
-| Nhóm lỗi | Số câu | Câu |
+| Nhóm | Đạt / tổng | Câu đạt |
+|---|---:|---|
+| Thường | 1/9 | B04 |
+| Khó | 5/5 | B05–B09 |
+| Từ chối | 3/6 | B13, B19, B20 |
+| **Tổng** | **9/20 (45%)** | Chuẩn CP2 yêu cầu tổng ≥70% và nhóm từ chối đạt 100% |
+
+Đã đối chiếu 543/543 trích dẫn trong 10 bài sinh được với file và dòng nguồn. Ba đầu vào ngoài phạm vi dừng trước bước gọi model. Bảy đầu vào còn lại gặp lỗi API. Đối chiếu kết quả với [CSV gốc](run-1.csv), [trace](../traces/run-1.jsonl) và [danh sách lỗi đã khóa](key_mistakes.md).
+
+## Vì sao 11 câu trượt
+
+| Câu | Kết quả quan sát được | Lý do đề xuất trượt |
 |---|---|---|
-| vd: bịa nguồn *(ví dụ)* | | |
-| vd: đoán khi thiếu thông tin *(ví dụ)* | | |
-| | | |
+| B01 | Cảnh báo crash khi JSON/tool lỗi và ghi trace sai định dạng | Chỉ khớp rõ lỗi xử lý tool. Không cảnh báo bỏ giới hạn vòng lặp hoặc sửa agent thiếu đối chiếu trace |
+| B02 | Cảnh báo biện minh mức tự chủ bằng “vì tiện” | Thiếu hai lỗi đã chốt về thiết kế khi AI sai và cách người dùng phục hồi trong prototype |
+| B03 | Cảnh báo hoàn tiền hai lần nếu crash giữa lúc ghi và lưu checkpoint | Thiếu cảnh báo giao model quyết định số tiền và so kiến trúc trên các tập claim khác nhau |
+| B17 | Cảnh báo nhiễm tập test và thay nhiều biến cùng lúc | Chưa nêu đủ hai trong ba lỗi về cùng bộ câu hỏi, tối thiểu 3 cấu hình và tối thiểu 20 câu |
+| B10–B12, B14–B16, B18 | Gemini trả HTTP 402. Cả bảy câu đều có cột error và output trống | Tính trượt và giữ toàn bộ trong mẫu số. Lượt chạy không xác định được nguyên nhân chi tiết phía tài khoản |
 
-**≥3 lỗi cụ thể:**
-
-| Câu | Input | Output | Vì sao sai |
-|---|---|---|---|
-| | | | |
-| | | | |
-| | | | |
+Trong ba câu từ chối gặp lỗi API (B10–B12), không có trang cuối để kiểm chứng hành vi chống lệnh chèn và lọc dữ liệu. B08 có hai vòng sửa trong trace, cả 61 ý cuối có trích dẫn khớp. Chưa có lượt 2.
 
 ## 3. Một lần cải tiến
 

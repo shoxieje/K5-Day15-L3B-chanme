@@ -9,7 +9,9 @@
 
 **Cho vào gì, nhận lại gì:** cho vào thư mục một bài lab → hệ thống chạy theo các bước cố định, tạo **một trang web đóng vai** bằng tiếng Việt: với mỗi nhiệm vụ của bài, học viên đứng ở vị trí agent (mục tiêu, thứ agent đang thấy, công cụ có), tự chọn bước tiếp theo, rồi xem bước đúng và lỗi dễ mắc, mỗi ý có nguồn `file:dòng` trong bài. Trợ giảng duyệt trang trước khi gửi lớp.
 
-Chạy thử (model giả): `LABS_DIR=<thư mục chứa các bài lab> python run.py` rồi gõ tên thư mục lab. Trang sinh ra ở `output/`.
+Chạy Gemini: chép `.env.example` thành `.env`, điền `GEMINI_API_KEY` trên máy rồi chạy `python run.py eval --try`. Đường dẫn `labs/` phải có các đề lab gốc theo [data card](data/DATA_CARD.md).
+
+Chạy thử (đặt `MODEL_PROVIDER=fake` để dùng model giả): `LABS_DIR=<thư mục chứa các bài lab> python run.py` rồi gõ tên thư mục lab. Trang sinh ra ở `output/`.
 
 **Sau hackathon có thể làm thêm:** bộ slide PDF và bản tóm tắt dựng từ cùng danh sách tình huống · thêm phần kiểm tra cuối để xem học viên đã hiểu bài chưa sau khi làm xong.
 
@@ -90,11 +92,13 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 - **Trước CP3:** nối model thật theo [docs/connect-model.md](docs/connect-model.md), `eval --try` thấy token > 0 rồi mới `eval`.
 - Bộ chạy gửi **nguyên ô `input`** của câu thử vào `answer(text)`. Dữ liệu nền (bài học, thông báo, lịch…) để trong `data/`, đọc qua công cụ.
 
+Video CP3 (30 giây) mở bằng [file MP4 trong repo](demo-cp3.mp4). Video dùng trang HTML của câu B02 và số token thật của lượt thử. Nhóm tự đăng bản chia sẻ.
+
 ## Phần nào thật, phần nào giả
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Giả** ở CP2 (`MODEL_PROVIDER=fake`), **thật** từ CP3 | Model: chưa chọn (chốt khi nối model trước CP3) |
+| Lời gọi AI ở quyết định trung tâm | **Giả** ở CP2 (`MODEL_PROVIDER=fake`), **thật** từ CP3 | Gemini 4 Hydrogen, token lấy từ usageMetadata. Kết quả thực nghiệm xem eval/report.md |
 | `read_lab`, `check_sources`, `render` | **Thật** | Code, không gọi model |
 | Tình huống đóng vai ở CP2 | **Giả** | `fake_lesson()` trong `codebase/agent.py`, dựng từ dòng thật của lab, cài 1 nguồn sai để thấy vòng kiểm |
 

@@ -28,7 +28,15 @@
 
 ## 4. ≥5 ví dụ cụ thể
 
-Còn thiếu: cần chọn 5 dòng mã đã ẩn danh (mã `L…`, `A…`) làm ví dụ trước CP3.
+Năm bản ghi đầu tiên thuộc năm bài khác nhau có `type=lab_completed` và `skipped=true`. Chỉ trích trường `data`. Số thứ tự tính cả tiêu đề CSV ở dòng 1.
+
+| Dòng events.csv | Trường data nguyên văn |
+|---|---|
+| 1066 | `{"lab_key": "d01-lab-ban-la-llm", "skipped": true, "steps": 2, "steps_done": 1}` |
+| 1869 | `{"lab_key": "d02-lab-cham-gate", "skipped": true, "steps": 3, "steps_done": 2}` |
+| 4079 | `{"lab_key": "d04-lab-soi-system-prompt", "skipped": true, "steps": 3, "steps_done": 2}` |
+| 22282 | `{"lab_key": "d03-lab-can-agentic-fit", "skipped": true, "steps": 1, "steps_done": 0}` |
+| 34194 | `{"lab_key": "d05-lab-eval-spec", "skipped": true, "steps": 1, "steps_done": 0}` |
 
 ## 5. Giới hạn của data
 

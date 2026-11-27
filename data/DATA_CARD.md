@@ -1,6 +1,6 @@
 # Data card — dữ liệu bản chạy thử dùng
 
-> Bản đầu CP2 (27/11). Đủ ở CP3. Chấm ở rubric R4.
+> Bản chuẩn bị CP3, cập nhật ngày 27/11.
 > Không commit nguyên tài liệu khoá, dữ liệu cá nhân thật hay file `.env`: bài lab gốc chỉ đọc từ máy, không đưa vào repo.
 
 ## Dataset 1 · Bài lab thật của khoá AI20K K5 (Day02–Day14)
@@ -40,3 +40,11 @@
 | Giới hạn | Mini lab trên trang pre-class, không phải bài lab chính; chỉ có hành vi, không có lý do và không có câu chữ học viên |
 
 `data/training-ops/` của repo đề (lịch, phòng, phân công, giả lập) không dùng: không liên quan lát cắt và không phải bằng chứng pain.
+
+## Đầu vào bổ sung cho CP3
+
+B14–B18 dùng đề gốc Day01 AI Foundation, Day03 Research Agent Tool Eval, Day04 ChatbotVsAgent, Day06 Data Ingestion Engineering và Day12 AI SDLC. B19 tự dựng một thư mục chỉ có ghi chú README. B20 là đường dẫn không tồn tại. Cả hai kiểm việc dừng trước khi gọi model.
+
+Trên máy chạy, đặt đề gốc ở các đường dẫn trong cột input (có thể dùng liên kết thư mục). Các đường dẫn B03, B04 và B12 ở lượt chuẩn bị này lấy từ bản starter trong lịch sử Git của các lab tương ứng, lần lượt ở 034c6c4, 2e3930f và 83e677f. B12 có thêm file bài làm thật nằm trong danh sách loại. Các biến thể B07–B11 lấy từ bản sao cục bộ như mô tả trên. B08 chỉ bảo đảm có lỗi cố ý khi chạy chế độ giả, khi dùng Gemini chấm theo trace thật.
+
+Day02, Day05 và Day12 là lab tài liệu. Bộ đọc nhận README kèm hướng dẫn, rubric hoặc checkpoints kể cả khi đề không có Python. Bộ đọc bỏ symlink file, hướng dẫn giảng viên và dòng có chuỗi dạng khóa nhận diện được. Các ví dụ pre-class đưa vào bằng chứng chỉ giữ trường data và số dòng.

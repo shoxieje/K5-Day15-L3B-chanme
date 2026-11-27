@@ -124,7 +124,11 @@ def call_ollama(system, user):
 - Không cần key.
 - **Rất chậm trên laptop:** ví dụ `gemma4:12b` mất 43–165 giây mỗi câu trên máy Mac. Chỉ hợp để thử luồng, không đủ nhanh để chạy hết bộ câu thử và 50 phiên mô phỏng.
 
-### 2.4 Nhà cung cấp khác (Gemini…)
+### 2.4 Gemini của nhóm
+
+Repo đã cài nhánh Gemini bằng thư viện chuẩn. Dùng `MODEL_PROVIDER=gemini`, `MODEL_NAME=gemini-4-hydrogen` và `GEMINI_API_KEY` trong file .env cục bộ. Khóa đi qua header x-goog-api-key. Token vào lấy từ promptTokenCount, token ra cộng candidatesTokenCount và thoughtsTokenCount nếu có. [Tài liệu Google](https://ai.google.dev/api/generate-content)
+
+### Nhà cung cấp khác
 
 1. Mở trang quickstart chính thức của hãng, chép ví dụ Python **ngắn nhất** gọi được 1 câu, dán vào hàm dưới.
 2. Bật `SHOW_RAW = True`, hỏi thử 1 câu, rồi xem câu trả lời và số token nằm ở trường nào trong phản hồi.

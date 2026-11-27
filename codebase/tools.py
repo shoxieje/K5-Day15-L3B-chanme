@@ -15,7 +15,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LABS_DIR = os.environ.get("LABS_DIR") or ROOT          # input "labs/<tên>" tính từ đây
 TEXT_EXT = (".md", ".py", ".json", ".yaml", ".yml", ".txt", ".ipynb")
 SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", ".pytest_cache", "solution", "solutions", "answers"}
-SKIP_FILES = {"MISSION_ANSWERS.md"}                     # file bài làm của học viên
+SKIP_FILES = {"MISSION_ANSWERS.MD", "INSTRUCTOR_GUIDE.MD"}                     # file bài làm của học viên
 MAX_CHARS = 120_000                                     # giới hạn đọc một lượt; vượt thì ghi lại phần chưa đọc
 KEY_RE = re.compile(r"(sk-[A-Za-z0-9_\-]{8,}|AIza[0-9A-Za-z_\-]{20,}|ghp_[A-Za-z0-9]{20,}|gsk_[A-Za-z0-9]{20,})")
 SECTIONS = ("muc_tieu", "agent_thay", "cong_cu", "lua_chon", "buoc_dung", "loi_de_mac")
@@ -36,10 +36,10 @@ def read_lab(path: str) -> dict:
         return out
     found = []
     for d, dirs, files in os.walk(base):
-        dirs[:] = [x for x in dirs if x not in SKIP_DIRS and not x.startswith(".")]
+        dirs[:] = [x for x in dirs if x.lower() not in SKIP_DIRS and not x.startswith(".")]
         for f in files:
             p = os.path.join(d, f); rel = os.path.relpath(p, base).replace(os.sep, "/")
-            if f.startswith(".env") or f in SKIP_FILES or not f.endswith(TEXT_EXT):
+            if os.path.islink(p) or f.startswith(".env") or f.upper() in SKIP_FILES or not f.endswith(TEXT_EXT):
                 out["skipped"].append(rel)
                 continue
             found.append(p)
@@ -53,10 +53,13 @@ def read_lab(path: str) -> dict:
         if used + len(text) > MAX_CHARS:
             out["truncated"].append(rel)
             continue
+        if KEY_RE.search(text):
+            # Giữ số dòng nguồn và loại toàn bộ dòng có bí mật trước khi gọi API.
+            text = "\n".join("" if KEY_RE.search(line) else line for line in text.splitlines())
         used += len(text)
         out["files"][rel] = text.splitlines()
     names = [k.lower() for k in out["files"]]
-    out["is_lab"] = any(n.startswith("readme") for n in names) and any(n.endswith(".py") for n in names)
+    out["is_lab"] = any(n.startswith("readme") for n in names) and any(n.endswith(".py") or re.fullmatch(r"(?:\d+-)?(?:guide|rubric|checkpoints)\.md", n) for n in names)
     return out
 
 
@@ -93,7 +96,7 @@ def check_sources(lesson: dict, lab: dict) -> dict:
                 lines = lab["files"][m.group(1)]; a, b = int(m.group(2)), int(m.group(3))
                 if not (1 <= a <= b <= len(lines)):
                     reason = "dòng %d-%d không có (file có %d dòng)" % (a, b, len(lines))
-                elif _norm(it.get("quote")) not in _norm(" ".join(lines[a - 1:b])):
+                elif not _norm(it.get("quote")) or _norm(it.get("quote")) not in _norm(" ".join(lines[a - 1:b])):
                     reason = "trích dẫn không khớp dòng %d-%d" % (a, b)
             (failed.append({"item": it, "reason": reason}) if reason else ok.append(it))
     return {"ok": ok, "failed": failed}
@@ -114,7 +117,7 @@ def render(lesson: dict, lab_name: str) -> str:
             by.setdefault(it["part"], []).append(it)
         src = lambda it: '<span class="src" title="%s">[%s]</span>' % (e(it.get("quote", "")), e(it["source"]))
         sec = lambda part: "".join("<p>%s %s</p>" % (e(it["text"]), src(it)) for it in by.get(part, []))
-        choices = "".join('<li><button onclick="this.closest(\'section\').classList.add(\'shown\')">%s</button></li>' % e(it["text"]) for it in by.get("lua_chon", []))
+        choices = "".join('<li><button onclick="this.closest(\'section\').classList.add(\'shown\')">%s</button> %s</li>' % (e(it["text"]), src(it)) for it in by.get("lua_chon", []))
         body.append('<section><h2>%s</h2><h3>Mục tiêu</h3>%s<h3>Bạn là agent. Bạn đang thấy</h3>%s<h3>Công cụ bạn có</h3>%s'
                     '<h3>Bước tiếp theo bạn chọn?</h3><ul>%s</ul><div class="reveal"><h3>Bước đúng</h3>%s<h3>Lỗi dễ mắc</h3>%s</div></section>'
                     % (e(t.get("name", "")), sec("muc_tieu"), sec("agent_thay"), sec("cong_cu"), choices, sec("buoc_dung"), sec("loi_de_mac")))

@@ -17,7 +17,11 @@ Chế độ giả (mặc định khi .env chưa có MODEL_PROVIDER, hoặc MODEL
 Nối model thật: điền .env (chép từ .env.example), rồi viết nhánh gọi API ở dưới theo docs/connect-model.md
 (có ví dụ OpenAI, Claude, model chạy trên máy, và cách nối nhà cung cấp khác). Không dán API key vào file này.
 """
+import json
 import os
+import re
+import urllib.error
+import urllib.request
 
 from tracing import model_call
 
@@ -49,8 +53,33 @@ def call_model(system: str, user: str) -> dict:
         last = (user.strip().splitlines() or [""])[-1]
         return {"text": "[câu trả lời giả — chưa nối model] " + last[:60], "model": "fake", "tokens_in": 0, "tokens_out": 0}
 
-    # NHÓM VIẾT: gọi model thật ở đây (theo MODEL_PROVIDER, MODEL_NAME, API_KEY) rồi trả đúng 4 khoá.
-    # Ví dụ chép được cho từng nhà cung cấp: docs/connect-model.md mục 2.
-    raise NotImplementedError(
-        "chưa viết phần gọi model thật cho MODEL_PROVIDER=%s trong codebase/ai.py — xem docs/connect-model.md"
-        % MODEL_PROVIDER)
+    if MODEL_PROVIDER != "gemini":
+        raise ValueError("MODEL_PROVIDER chưa được hỗ trợ: " + MODEL_PROVIDER)
+    key = os.getenv("GEMINI_API_KEY") or API_KEY
+    if not key:
+        raise ValueError("Thiếu GEMINI_API_KEY trong môi trường hoặc .env")
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", MODEL_NAME):
+        raise ValueError("Cần MODEL_NAME hợp lệ cho Gemini")
+    body = {
+        "systemInstruction": {"parts": [{"text": system}]},
+        "contents": [{"role": "user", "parts": [{"text": user}]}],
+        "generationConfig": {"responseMimeType": "application/json"},
+    }
+    req = urllib.request.Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent",
+        data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as response:
+            data = json.load(response)
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"Gemini trả HTTP {exc.code}") from exc
+    candidates = data.get("candidates") or []
+    if not candidates or candidates[0].get("finishReason") != "STOP":
+        raise RuntimeError("Gemini chưa trả bài hoàn chỉnh")
+    parts = candidates[0]["content"]["parts"]
+    text = "".join(part.get("text", "") for part in parts if not part.get("thought"))
+    if not text.strip():
+        raise ValueError("Gemini trả nội dung rỗng")
+    usage = data["usageMetadata"]
+    return {"text": text, "model": MODEL_NAME, "tokens_in": usage["promptTokenCount"],
+            "tokens_out": usage["candidatesTokenCount"] + usage.get("thoughtsTokenCount", 0)}

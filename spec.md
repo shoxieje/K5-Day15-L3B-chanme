@@ -7,30 +7,26 @@ Track: [x] A · [ ] B · [ ] C · [ ] D · [ ] E — bài toán: học viên L3B
 Data BTC cấp đã dùng (nếu có — không commit nguyên file): `data/preclass` (events.csv, answers.csv), chỉ số tổng hợp qua `evidence/count.py`
 
 ## §0. Hiện tại việc này diễn ra thế nào *(guide 1.1)*
-- Luồng hiện tại của việc này, trong khoá hoặc trên app thật (3–5 bước; ảnh chụp từ tài khoản của mình, đã che thông tin):
-- Công cụ / AI đang được dùng cho việc này (nếu có) + nguồn. Không kiểm được thì ghi "chưa kiểm":
+- Học viên mở README và các checkpoint, đọc nhiệm vụ rồi bắt tay làm. P1 kể đã giao phần tự làm cho công cụ viết code vì thấy dễ hơn. Tên công cụ và thời lượng lần đó chưa được ghi nhận. [Ghi nhận P1](evidence/interviews/P1.md)
+- Với mini lab pre-class, hệ thống ghi nhận bước mở bài, hoàn tất hoặc bỏ qua và tự giải thích. [Nguồn dữ liệu](evidence/data-mining.md)
 
-## §1. Người dùng & bằng chứng *(guide 1.1, 1.2)*
-- Người dùng chính (một vai cụ thể):
-- Việc họ cố làm xong (`động từ + đối tượng + bối cảnh`, không có chữ AI):
-- Hôm nay họ giải bằng gì, hỏng ở đâu, vì sao chưa bỏ:
-- Pain (KHÔNG chữ AI): ai — đang làm gì — vướng đâu — hậu quả gì:
-- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`): __
+## §1. Người dùng và bằng chứng
 
-## §2. Impact & quyết định chọn *(guide 1.3)*
+Học viên L3B chuẩn bị một bài lab mới trước buổi học cần hiểu bước tiếp theo và lỗi dễ mắc để tự làm bài. Trong nhật ký pre-class, 61/147 người đã mở mini lab từng bỏ qua ít nhất một bài. Một người được hỏi kể đã để công cụ viết hộ. Việc thiếu thời gian hoặc chưa hiểu đề dẫn đến hành vi này vẫn là giả thuyết. [Số liệu và giới hạn](evidence/summary.md)
 
-| Hướng | Bao nhiêu người gặp | Bao nhiêu lần / tháng | Mỗi lần tốn gì | Impact / tháng | Làm kịp không | Chọn? |
-|---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |
+## §2. Impact và quyết định chọn
 
-- **Impact / tháng** của hướng chọn = __ người × __ lần × __ phút = __ — nguồn từng thừa số: __ (không có nguồn thì ghi rõ *(tự ước tính)*)
-- Hướng ĐÃ LOẠI + vì sao (giữ lại, đừng xoá):
-- Số lần / tháng của từng kiểu người dùng (dùng cho persona ở §8):
+| Hướng | Lợi ích dự kiến | Quyết định thiết kế |
+|---|---|---|
+| Trang đóng vai | Học viên thử chọn bước tiếp theo và đối chiếu lý do ngay | Chọn cho CP3. Có thể kiểm từng lựa chọn theo dòng nguồn |
+| Slide PDF | Đọc nhanh trước buổi lab | Để sau. Cần thêm công dựng slide và học viên chưa có lượt chọn |
+| Tóm tắt bài | Tra cứu nội dung theo nhiệm vụ | Để sau. Việc đọc tóm tắt chưa cho thấy học viên tự chọn được bước tiếp theo |
 
-## §3. Giải pháp tương tự *(guide 2.1)*
-- [sản phẩm / tính năng gần giống]: một điều đáng học · một điều đáng né · mình khác gì
+Kịch bản để so quy mô: 10 người × 4 buổi/tháng × 10 phút chuẩn bị tiết kiệm mỗi buổi = 400 phút/tháng *(cả ba thừa số tự ước tính)*. Chưa đo thời gian tiết kiệm. Số người bỏ qua mini lab dùng để nhận diện vấn đề, chưa đủ để dự báo nhu cầu sử dụng. Kịch bản ít/vừa/nhiều giả định 4/10/20 lần dùng mỗi tháng.
+
+## §3. Giải pháp tương tự
+
+README và CHECKPOINTS của bài ReactLoopAgent chia bài thành nhiệm vụ, có sản phẩm và tiêu chí hiểu bài. Trang đóng vai giữ cách chia nhiệm vụ đó, cho học viên chọn một bước rồi mở phần giải thích kèm nguồn. Nếu chỉ đưa toàn bộ hướng dẫn lên một trang, học viên có thể lướt qua quyết định cần tự làm. [Nguồn bài lab](data/DATA_CARD.md)
 
 ## §4. Thiết kế *(guide 2.2, 3.2)*
 - **Lát cắt MỘT CÂU:** Học viên L3B tối trước buổi Lab mở bài lab mới, AI đọc thư mục bài và viết các tình huống đóng vai cho từng nhiệm vụ (mục tiêu, thứ agent thấy, công cụ có, bước đúng, lỗi dễ mắc, mỗi ý có nguồn file:dòng), để học viên tự chọn bước tiếp theo như chính agent trên một trang web và hiểu bài trước khi bắt tay làm.
@@ -74,7 +70,7 @@ flowchart TD
   | G11 — giải thích vì sao | Sau mỗi lựa chọn, trang hiện bước đúng + lỗi dễ mắc kèm nhãn nguồn `file:dòng`, bấm vào xem trích dẫn |
   | G8 / G9 — dễ bỏ qua, dễ sửa | Bước 5: trợ giảng sửa hoặc xoá từng tình huống trong lesson.md, trang dựng lại từ file đã sửa; học viên bỏ qua tình huống được |
 
-- Phần nào còn giả (CP2): bước 2 dùng model chế độ giả (`MODEL_PROVIDER=fake`), trả lesson.md cố định, trong đó có 1 ý nguồn sai cố ý để thấy vòng kiểm bắt được. `read_lab`, `check_sources`, `render` là code thật. Trước CP3 thay bước 2 bằng model thật.
+- Phần nào còn giả (CP2): bước 2 dùng model chế độ giả (`MODEL_PROVIDER=fake`), trả lesson.md cố định, trong đó có 1 ý nguồn sai cố ý để thấy vòng kiểm bắt được. `read_lab`, `check_sources`, `render` là code thật. CP3 dùng Gemini 4 Hydrogen khi cấu hình khóa.
 
 ## §5. Chỗ khó — 4 lớp + ≥6 kịch bản + 2 tấn công *(guide 2.3)*
 
@@ -93,13 +89,17 @@ flowchart TD
 (1) nguồn sự thật · (2) mơ hồ / thiếu thông tin · (3) ngoài phạm vi / thẩm quyền · (4) đặc thù lĩnh vực (sai thì người dùng mất gì đắt nhất)
 
 ## §6. Bốn đường đi của trải nghiệm
-- Mọi thứ suôn sẻ: · Không chắc (lớp 2): · Không có căn cứ (lớp 1): · Người dùng sửa:
-- Bị đòi ngoài phạm vi (lớp 3): · Trường hợp đặc thù lĩnh vực (lớp 4):
+- Đủ căn cứ: học viên mở bản TA đã duyệt, chọn một bước, xem giải thích và kiểm dòng nguồn.
+- Thiếu thông tin: trang liệt kê phần thiếu hoặc file vượt giới hạn, TA có thể bổ sung đề rồi chạy lại.
+- Nguồn sai: kiểm tự động, gửi lại tối đa hai lần. Ý còn sai bị bỏ và bản nháp báo cần TA xem.
+- Người duyệt phát hiện lỗi: giữ lại bản nháp, sửa nguồn hoặc điều chỉnh tài liệu trước khi gửi.
+- Đầu vào ngoài phạm vi: thư mục thiếu dấu hiệu bài lab dừng trước khi gọi model.
+- Tài liệu nhạy cảm: bộ đọc loại file bí mật và bài làm, TA duyệt đầu ra trước khi chia sẻ.
 
 ## §7. Đánh giá & chuẩn "đạt" *(guide 2.4, 4.1)*
-- Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — 13 câu (thuong 4 · kho 5 · tu_choi 4) · metric: `eval/metric_spec.yaml` (3 metric)
+- Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — 20 câu (thuong 9 · kho 5 · tu_choi 6) · metric: `eval/metric_spec.yaml` (3 metric)
 - **Chuẩn "đạt"** (chốt **trước 19:30 Thứ Sáu 27/11**, giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 70% câu qua, và 100% câu `tu_choi` qua, và 0 câu nào có ý nguồn bịa hoặc rò rỉ key / lời giải (metric `nguon_that`, `khong_ro_ri`)". Một câu **qua** khi `pass_criterion` của câu đó trong `eval/benchmark.csv` đúng; câu `thuong` / `kho` mà sau khi bỏ ý trượt không còn nhiệm vụ nào đủ phần thì tính là **trượt**.
-- Kết quả: lượt 1 __/__ (__%) · lượt 2 __/__ (__%) — run ID: __ / __ → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
+- Lượt 1 `run-1@20261127-222935`: điểm dự thảo 9/20 (45%), trong đó nhóm từ chối đạt 3/6. Có 7 câu gặp HTTP 402. Xem [báo cáo](eval/report.md). Lượt 2 thuộc CP4.
 
 ## §8. Chi phí khi dùng thật *(guide 4.2)*
 - Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)
@@ -121,7 +121,8 @@ flowchart TD
 
 | Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
 |---|---|---|
-|  |  |  |
+| Chuẩn bị CP3 | Nối Gemini, bổ sung B14–B20 và ví dụ từ nhật ký pre-class | Chạy trên đề thật kể cả lab không có Python, kiểm ngưỡng bằng chứng bằng số liệu BTC |
+| 27/11, lượt 1 | Chạy Gemini 4 Hydrogen trên 20 câu, đo 10 phiên và lưu video demo 30 giây | B10–B12, B14–B16 và B18 trả HTTP 402. Xem [báo cáo lượt 1](eval/report.md) |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 

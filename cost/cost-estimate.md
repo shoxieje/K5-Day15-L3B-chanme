@@ -4,6 +4,10 @@
 > Số **không điền tay**: điền `cost/personas.yaml` → `python run.py simulate` → chép bảng trong `cost/simulate-N-summary.md` vào đây.
 > Lúc build dùng gói miễn phí vẫn tính theo **giá gói trả phí** — đây là chi phí cho lúc đưa vào dùng thật.
 
+## Lượt thử CP3
+
+Mười phiên hoàn tất, seed 42, mỗi phiên chuẩn bị một bài lab. Cả 10 phiên đều gọi Gemini 4 Hydrogen thành công. Tính theo giá Hydrogen trong bảng của BTC, trung bình **0,2238 USD/phiên**. Đây là chi phí mô phỏng theo bảng giá, chưa đối chiếu hóa đơn. [CSV lượt thử](simulate-try.csv) · [Bảng tính của bộ chạy](simulate-try-summary.md). Lượt chính thức từ 50 phiên thuộc CP4.
+
 ## 1. Đầu vào
 
 - **Persona** (`cost/personas.yaml`): ≥3 kiểu — tỉ lệ, số phiên / người / tháng, số lượt hỏi / phiên. Nguồn: __

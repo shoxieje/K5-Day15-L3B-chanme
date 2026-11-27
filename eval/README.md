@@ -5,26 +5,15 @@
 
 ## 1. Dataset → xử lý
 
-Dataset nào, xử lý gì: tóm 2–3 dòng từ `data/DATA_CARD.md`.
+Dùng đề gốc trong thư mục labs/ và các biến thể được mô tả ở [data card](../data/DATA_CARD.md). Bộ đọc bỏ file bị loại trước khi gửi nội dung cho Gemini.
 
-## 2. Bộ câu thử dựng ra sao
+## 2. Bộ câu thử
 
-- `eval/benchmark.csv`: __ câu (thuong __ · kho __ · tu_choi __, trong đó __ câu tấn công)
-- Nguồn (`python run.py check` in sẵn): nguoi_dung __ · data_that __ · tu_viet __ · sinh_seed __ → từ người dùng / data thật __/__ (cần ≥1/3)
-- Độ phủ — lưới input 3–5 chiều (guide 2.4 bước 5): __
-- Câu `kho` trỏ về 4 lớp chỗ khó (`spec.md` §5): lớp 1: __ · lớp 2: __ · lớp 3: __ · lớp 4: __
+20 câu gồm 9 thường, 5 khó, 6 từ chối. Có 12 câu từ dữ liệu thật và 8 câu tự viết. B10–B11 kiểm lệnh chèn và bí mật trong .env. B05–B09 kiểm giới hạn đọc, căn cứ thiếu và vòng sửa. B13, B19 và B20 kiểm các dạng đầu vào ngoài phạm vi.
 
 ## 3. Metric và cách chấm
 
-| Metric (`eval/metric_spec.yaml`) | Cách chấm | Ngưỡng |
-|---|---|---|
-| | code / llm / nguoi | |
-| | | |
-| | | |
-
-- **Người thứ hai chấm thử:** __ (không phải người viết spec) chấm độc lập 5 output → khớp __/5 *(cần ≥4/5; lệch thì viết lại định nghĩa)*
-- LLM chấm (nếu có): đã kiểm tay __ câu, khớp __/__
-- **Chuẩn "đạt"** (chép nguyên từ `spec.md` §7, chốt trước 19:30 Thứ Sáu 27/11): "__"
+Kiểm mọi nguồn và trích dẫn trên dòng gốc. Thành viên nhóm duyệt ba lỗi chính của mỗi lab trước khi xem output, sau đó so độ phủ theo danh sách đã chốt. Kiểm rò rỉ trên cả output chữ và HTML. Chuẩn đạt và ngưỡng từng metric ở [spec §7](../spec.md) và [metric spec](metric_spec.yaml). Chưa có kết quả chấm độc lập 5 output bởi người thứ hai.
 
 ## 4. Lệnh
 
@@ -34,11 +23,11 @@ Dataset nào, xử lý gì: tóm 2–3 dòng từ `data/DATA_CARD.md`.
 
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
-| 1 | | | | __/__ | | |
+| 1 | run-1@20261127-222935 | gemini-4-hydrogen | Đề lab có số dòng, kiểm nguồn, tối đa 2 vòng sửa | 9/20 (dự thảo) | 45% | Chưa đạt |
 | 2 | | | | __/__ | | |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
 ## 6. Lỗi chính
 
-Tóm 2–3 dòng từ `eval/report.md`: nhóm lỗi lớn nhất · đã sửa gì · còn lại gì.
+7/20 câu gặp HTTP 402. Bốn bài sinh được có trích dẫn khớp nhưng chưa đạt độ phủ lỗi chính. [Phân tích theo từng câu](report.md)
