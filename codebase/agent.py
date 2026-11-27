@@ -24,9 +24,44 @@ Với bài an ninh, chỉ soạn tình huống phòng thủ và xét quyền. Kh
 Không chép code lời giải, không chép nội dung .env, key hay bài làm. Trả về đúng JSON: {"tasks":[{"name","items":[{"part","text","source","quote"}]}],"not_in_lab":[...]}"""
 
 
-def _numbered(lab):
+def _numbered(lab, only=None):
+    files = lab["files"]
+    if only is not None:
+        only = set(only) & set(files)               # bỏ tên file bịa, giữ file có thật
+        if not only:
+            only = None                             # không còn file nào thì gửi cả bài
+        else:
+            only |= {f for f in files if f.lower().startswith("readme")}  # luôn kèm README làm khung
     return "\n\n".join("### %s\n%s" % (f, "\n".join("%d: %s" % (i, l) for i, l in enumerate(lines, 1)))
-                       for f, lines in lab["files"].items())
+                       for f, lines in files.items() if only is None or f in only)
+
+
+def _source_file(item):
+    src = item.get("source") if isinstance(item, dict) else None
+    if not isinstance(src, str) or not src.strip():
+        return ""
+    m = re.fullmatch(r"(.+):(\d+)-(\d+)", src.strip())
+    return m.group(1) if m else src.strip().rsplit(":", 1)[0]
+
+
+def _repair_files(lesson, failed):
+    files, missing_tasks = set(), set()
+    for entry in failed:
+        item = entry.get("item") if isinstance(entry, dict) else None
+        reason = (entry.get("reason") or "") if isinstance(entry, dict) else ""
+        if reason.startswith("thiếu phần"):
+            if isinstance(item, dict) and item.get("task") is not None:
+                missing_tasks.add(item.get("task"))
+        else:
+            files.add(_source_file(item))
+    if missing_tasks:
+        for task in lesson.get("tasks", []):
+            if task.get("name") in missing_tasks:
+                for it in task.get("items", []):
+                    f = _source_file(it)
+                    if f:
+                        files.add(f)
+    return files
 
 
 def fake_lesson(lab, broken=True):
@@ -78,8 +113,15 @@ def answer(text: str) -> dict:
         if not res["failed"]:
             break
         note("vòng sửa %d: %d ý trượt" % (rnd, len(res["failed"])))
-        fix = call_model(SYSTEM, _numbered(lab) + "\n\nCác ý sau bị trượt kiểm nguồn, sửa hoặc bỏ, trả lại toàn bộ JSON:\n"
-                         + json.dumps(res["failed"], ensure_ascii=False))
+        repair_prompt = (
+            "Chỉ sửa hoặc bỏ các ý bị trượt kiểm nguồn dưới đây, giữ nguyên các ý đã đạt, "
+            "và trả về TOÀN BỘ JSON theo đúng cấu trúc ban đầu.\n\n"
+            "Bản JSON hiện tại:\n" + json.dumps(lesson, ensure_ascii=False)
+            + "\n\nCác ý bị trượt kiểm nguồn và lý do:\n" + json.dumps(res["failed"], ensure_ascii=False)
+            + "\n\nNội dung các file liên quan (có số dòng):\n"
+            + _numbered(lab, only=_repair_files(lesson, res["failed"]))
+        )
+        fix = call_model(SYSTEM, repair_prompt)
         try:
             lesson = _parse(fix, lab, rnd)
         except ValueError as exc:  # JSONDecodeError là ValueError: giữ bản nháp trước
