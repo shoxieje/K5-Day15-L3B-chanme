@@ -126,7 +126,7 @@ def call_ollama(system, user):
 
 ### 2.4 Gemini của nhóm
 
-Repo đã cài nhánh Gemini bằng thư viện chuẩn. Dùng `MODEL_PROVIDER=gemini`, `MODEL_NAME=gemini-4-hydrogen` và `GEMINI_API_KEY` trong file .env cục bộ. Khóa đi qua header x-goog-api-key. Token vào lấy từ promptTokenCount, token ra cộng candidatesTokenCount và thoughtsTokenCount nếu có. [Tài liệu Google](https://ai.google.dev/api/generate-content)
+Repo đã cài nhánh Gemini bằng thư viện chuẩn. Dùng `MODEL_PROVIDER=gemini`, `MODEL_NAME=gemini-3.8-flash` (lượt 1 dùng `gemini-4-hydrogen`) và `GEMINI_API_KEY` trong file .env cục bộ. Khóa đi qua header x-goog-api-key. Token vào lấy từ promptTokenCount, token ra cộng candidatesTokenCount và thoughtsTokenCount nếu có. [Tài liệu Google](https://ai.google.dev/api/generate-content)
 
 ### Nhà cung cấp khác
 

@@ -98,7 +98,7 @@ Video CP3 (30 giây) mở bằng [file MP4 trong repo](demo-cp3.mp4). Video dùn
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Giả** ở CP2 (`MODEL_PROVIDER=fake`), **thật** từ CP3 | Gemini 4 Hydrogen, token lấy từ usageMetadata. Kết quả thực nghiệm xem eval/report.md |
+| Lời gọi AI ở quyết định trung tâm | **Giả** ở CP2 (`MODEL_PROVIDER=fake`), **thật** từ CP3 | Gemini 3.8 Flash từ 28/11 (lượt 1 dùng Gemini 4 Hydrogen), token lấy từ usageMetadata. Kết quả thực nghiệm xem eval/report.md |
 | `read_lab`, `check_sources`, `render` | **Thật** | Code, không gọi model |
 | Tình huống đóng vai ở CP2 | **Giả** | `fake_lesson()` trong `codebase/agent.py`, dựng từ dòng thật của lab, cài 1 nguồn sai để thấy vòng kiểm |
 

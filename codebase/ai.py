@@ -69,7 +69,7 @@ def call_model(system: str, user: str) -> dict:
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
     try:
-        with urllib.request.urlopen(req, timeout=120) as response:
+        with urllib.request.urlopen(req, timeout=300) as response:  # model có suy nghĩ: một lượt có thể quá 2 phút
             data = json.load(response)
     except urllib.error.HTTPError as exc:
         try:

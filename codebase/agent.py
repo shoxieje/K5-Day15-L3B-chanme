@@ -17,6 +17,7 @@ from tracing import note
 
 MAX_FIX = 2
 SYSTEM = """Bạn soạn tình huống đóng vai cho học viên AI20K từ MỘT bài lab. Chỉ dùng nội dung các file được đưa (có số dòng).
+Nhiệm vụ chính = mỗi bài tập / checkpoint có đánh số trong đề (vd "Bài 1", "CP2", "Phần 3"): soạn MỘT task cho MỖI mục, không gộp nhiều mục vào một task, không bỏ mục nào; bỏ qua mục chỉ là cài đặt hoặc nộp bài.
 Với mỗi nhiệm vụ chính của bài: muc_tieu · agent_thay · cong_cu · lua_chon (3–4) · buoc_dung · loi_de_mac.
 Mỗi ý có "source": "file:dòng-dòng" và "quote": trích nguyên văn ngắn từ đúng các dòng đó.
 "quote" phải CHÉP Y NGUYÊN 5–20 từ liên tiếp từ MỘT dòng duy nhất (không dịch, không viết lại, không gộp nhiều dòng, không thêm "..."), và "source" là "file:n-n" với n đúng số dòng đó. Phần "part" chỉ nhận: muc_tieu, agent_thay, cong_cu, lua_chon, buoc_dung, loi_de_mac. Không có căn cứ thì đưa vào "not_in_lab", không đoán.

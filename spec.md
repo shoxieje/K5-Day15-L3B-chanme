@@ -123,6 +123,7 @@ flowchart TD
 |---|---|---|
 | Chuẩn bị CP3 | Nối Gemini, bổ sung B14–B20 và ví dụ từ nhật ký pre-class | Chạy trên đề thật kể cả lab không có Python, kiểm ngưỡng bằng chứng bằng số liệu BTC |
 | 27/11, lượt 1 | Chạy Gemini 4 Hydrogen trên 20 câu, đo 10 phiên và lưu video demo 30 giây | B10–B12, B14–B16 và B18 trả HTTP 402. Xem [báo cáo lượt 1](eval/report.md) |
+| 28/11, sau lượt 1 | Đổi model sang Gemini 3.8 Flash. Vòng sửa chỉ gửi bản nháp, ý trượt và file được trích. Yêu cầu trích nguyên văn một dòng, mỗi bài/checkpoint một task. Không làm sập khi model trả JSON sai | Lượt 1 hết tiền (HTTP 402) và vòng sửa gửi lại cả bài. Lượt thử 20 câu với 3.8 Flash: 20/20 chạy xong, 0 ý bị bỏ vì sai nguồn, khoảng 1,17 USD. Lượt thử không thay kết quả lượt 1 |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
