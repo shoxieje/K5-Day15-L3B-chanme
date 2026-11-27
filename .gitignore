@@ -35,3 +35,9 @@ evidence/**/raw-*
 # Nguyên file data BTC cấp (data/preclass, data/training-ops… của repo đề): để ở đây, không commit
 data-btc
 data-btc/
+# Trang đóng vai sinh ra khi chạy thử
+output/
+# Data BTC và bài lab gốc: không commit
+data/preclass/
+data/training-ops/
+labs/

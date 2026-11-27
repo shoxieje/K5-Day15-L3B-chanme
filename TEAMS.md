@@ -13,7 +13,7 @@
 |---|---|---|---|---|
 | 1 | Nguyễn Ngọc Quang | 2A202603773 | Đội trưởng | Viết spec, canvas, nộp bài, ghép các bước chạy |
 | 2 | Nguyễn Minh Quân | 2A202603794 | Thành viên | Phần đọc bài lab và gọi AI |
-| 3 | Chu Quang Linh | 2A202603809 | Thành viên | Tạo slide PDF và trang web tương tác |
+| 3 | Chu Quang Linh | 2A202603809 | Thành viên | Slide demo (PDF) và trang web đóng vai |
 | 4 | Trương Thu Hà | 2A202603780 | Thành viên | Tìm bằng chứng từ học viên, viết bộ câu thử |
 
 **Quy tắc điền**

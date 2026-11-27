@@ -5,14 +5,13 @@
 
 **Be The Agent** là trang web giúp học viên hiểu bài trước giờ Lab. Thay vì nhờ AI làm hộ rồi không hiểu bài, học viên **tự đóng vai AI**: trước khi bắt tay làm bài thật, học viên tự xử lý lần lượt từng yêu cầu của bài lab, để nắm chắc kiến thức, hiểu cách mọi thứ chạy và biết trước những lỗi dễ mắc.
 
-**Vấn đề:** các bài lab trong khoá (từ AI nền tảng, tìm hiểu người dùng, đến xây trợ lý AI, xử lý dữ liệu, quy trình làm sản phẩm AI) có nhiều việc phải làm trong thời gian ngắn. Học viên hay nhờ công cụ AI viết code làm hộ cho nhanh và bỏ qua phần cần hiểu. Kết quả: không nhận ra mình làm sai cách (ví dụ lấy luôn câu hỏi kiểm tra để luyện, tự bịa số liệu, để AI làm việc vượt quyền), và không giải thích được bài của mình khi được hỏi.
+**Vấn đề:** học viên lớp L3B có nhiều việc phải làm trong mỗi bài lab mà thời gian ngắn, nên hay nhờ công cụ viết code làm hộ cho nhanh và bỏ qua phần cần hiểu. Kết quả: không nhận ra mình làm sai cách và không giải thích được bài của mình khi trợ giảng hỏi lại.
 
-**Cho vào gì, nhận lại gì:** cho vào một bài lab → hệ thống chạy theo các bước cố định, tạo ra 3 bản, tất cả bằng tiếng Việt, dễ đọc:
-1. Bộ slide (file PDF)
-2. Trang web tương tác: học viên đóng vai AI, giải từng phần của bài (dạng trò chơi hoặc tình huống)
-3. Bản tóm tắt ngắn, dễ đọc
+**Cho vào gì, nhận lại gì:** cho vào thư mục một bài lab → hệ thống chạy theo các bước cố định, tạo **một trang web đóng vai** bằng tiếng Việt: với mỗi nhiệm vụ của bài, học viên đứng ở vị trí agent (mục tiêu, thứ agent đang thấy, công cụ có), tự chọn bước tiếp theo, rồi xem bước đúng và lỗi dễ mắc, mỗi ý có nguồn `file:dòng` trong bài. Trợ giảng duyệt trang trước khi gửi lớp.
 
-**Sau hackathon có thể làm thêm:** áp dụng cho các bài lab khác · thêm phần kiểm tra cuối để xem học viên đã hiểu bài chưa sau khi làm xong.
+Chạy thử (model giả): `LABS_DIR=<thư mục chứa các bài lab> python run.py` rồi gõ tên thư mục lab. Trang sinh ra ở `output/`.
+
+**Sau hackathon có thể làm thêm:** bộ slide PDF và bản tóm tắt dựng từ cùng danh sách tình huống · thêm phần kiểm tra cuối để xem học viên đã hiểu bài chưa sau khi làm xong.
 
 **Thành viên, lớp, track:** xem [TEAMS.md](TEAMS.md). **Điền TEAMS.md đúng format**: khi chấm và đánh giá, BTC quét file này để ghép điểm cho từng người.
 
@@ -95,14 +94,15 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model: ____ |
-|  |  |  |
+| Lời gọi AI ở quyết định trung tâm | **Giả** ở CP2 (`MODEL_PROVIDER=fake`), **thật** từ CP3 | Model: chưa chọn (chốt khi nối model trước CP3) |
+| `read_lab`, `check_sources`, `render` | **Thật** | Code, không gọi model |
+| Tình huống đóng vai ở CP2 | **Giả** | `fake_lesson()` trong `codebase/agent.py`, dựng từ dòng thật của lab, cài 1 nguồn sai để thấy vòng kiểm |
 
 ## Dùng AI vào việc gì
 
 2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
-____
+Nhóm dùng Claude (trợ lý lập trình) để soạn bản nháp spec §4, metric spec, bộ câu thử, data card, script đếm `evidence/count.py` và khung code chạy model giả; dùng Gemini (qua Antigravity CLI) và Claude để rà lại bản CP1. Cả nhóm đọc, sửa và duyệt từng phần trước khi commit; số bằng chứng lấy từ data thật BTC cấp và lời học viên thật, không do AI tạo.
 
 ## File mẫu — điền ở bước nào
 
