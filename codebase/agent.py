@@ -56,11 +56,11 @@ def fake_lesson(lab, broken=True):
 def _parse(reply, lab, rnd):
     if reply["model"] == "fake":
         return fake_lesson(lab, broken=(rnd == 0))
-    m = re.search(r"\{.*\}", reply["text"], re.S)
-    if not m:
+    start = reply["text"].find("{")
+    if start < 0:
         raise ValueError("Model chưa trả JSON cho bài lab")
-    lesson = json.loads(m.group(0))
-    if not isinstance(lesson.get("tasks"), list) or not lesson["tasks"]:
+    lesson, _ = json.JSONDecoder().raw_decode(reply["text"], start)  # chỉ lấy object JSON đầu tiên
+    if not isinstance(lesson, dict) or not isinstance(lesson.get("tasks"), list) or not lesson["tasks"]:
         raise ValueError("Model chưa trả nhiệm vụ nào cho bài lab")
     return lesson
 
@@ -80,7 +80,11 @@ def answer(text: str) -> dict:
         note("vòng sửa %d: %d ý trượt" % (rnd, len(res["failed"])))
         fix = call_model(SYSTEM, _numbered(lab) + "\n\nCác ý sau bị trượt kiểm nguồn, sửa hoặc bỏ, trả lại toàn bộ JSON:\n"
                          + json.dumps(res["failed"], ensure_ascii=False))
-        lesson = _parse(fix, lab, rnd)
+        try:
+            lesson = _parse(fix, lab, rnd)
+        except ValueError as exc:  # JSONDecodeError là ValueError: giữ bản nháp trước
+            note("vòng sửa %d lỗi (%s): giữ bản trước" % (rnd, exc))
+            break
     res = check_sources(lesson, lab)
     if res["failed"]:
         note("hết vòng sửa: bỏ %d ý trượt, gắn 'cần trợ giảng xem'" % len(res["failed"]))
