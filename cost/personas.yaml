@@ -41,6 +41,10 @@ prices:             # USD / 1 triệu token — chép từ further-reading/model
     input: 0.25
     output: 1.50
     source: "Bảng giá BTC further-reading/model-prices.md ngày 25/11/2026, đối chiếu https://ai.google.dev/gemini-api/docs/pricing"
+  - model: gemini-3.8-flash
+    input: 1.50
+    output: 7.50
+    source: "Bảng giá BTC further-reading/model-prices.md ngày 25/11/2026: dùng giá sau khi tăng (từ 01/01/2027) vì chi phí là cho các tháng tới; giá đến 31/12/2026 là 0.75 / 3.75"
   - model: gemini-4-hydrogen
     input: 1.50
     output: 7.50

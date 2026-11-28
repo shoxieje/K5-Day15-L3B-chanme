@@ -73,7 +73,13 @@ def check_sources(lesson: dict, lab: dict) -> dict:
     output: {"ok": [ý đạt], "failed": [{"item", "reason"}]}. Mỗi ý = {"task", "part", "text", "source": "file:a-b", "quote"}.
     Ý đạt khi: file có trong lab · khoảng dòng tồn tại · trích dẫn có nguyên văn trong khoảng dòng · không có chuỗi dạng key. Không tác động ra ngoài."""
     ok, failed = [], []
-    for task in lesson.get("tasks", []):
+    tasks = lesson.get("tasks") if isinstance(lesson.get("tasks"), list) else []
+    for task in tasks:
+        if not isinstance(task, dict):
+            failed.append({"item": {"raw": str(task)[:200]}, "reason": "sai cấu trúc: task phải là object"})
+            continue
+        if not isinstance(task.get("items"), list):
+            task["items"] = []
         parts = {it.get("part") for it in task.get("items", []) if isinstance(it, dict)}
         missing = [s for s in SECTIONS if s not in parts]
         n_choice = sum(1 for it in task.get("items", []) if isinstance(it, dict) and it.get("part") == "lua_chon")

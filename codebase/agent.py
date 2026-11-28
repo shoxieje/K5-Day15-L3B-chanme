@@ -46,23 +46,17 @@ def _source_file(item):
     return m.group(1) if m else src.strip().rsplit(":", 1)[0]
 
 
-def _repair_files(lesson, failed):
-    files, missing_tasks = set(), set()
+def _repair_files(lesson, failed, lab):
+    """File gửi kèm vòng sửa. Thiếu phần hoặc trích file không có thật thì gửi cả bài (None),
+    vì file chứa căn cứ đúng có thể chưa được ý nào trích."""
+    files = set()
     for entry in failed:
         item = entry.get("item") if isinstance(entry, dict) else None
         reason = (entry.get("reason") or "") if isinstance(entry, dict) else ""
-        if reason.startswith("thiếu phần"):
-            if isinstance(item, dict) and item.get("task") is not None:
-                missing_tasks.add(item.get("task"))
-        else:
-            files.add(_source_file(item))
-    if missing_tasks:
-        for task in lesson.get("tasks", []):
-            if task.get("name") in missing_tasks:
-                for it in task.get("items", []):
-                    f = _source_file(it)
-                    if f:
-                        files.add(f)
+        f = _source_file(item)
+        if reason.startswith("thiếu phần") or not f or f not in lab["files"]:
+            return None
+        files.add(f)
     return files
 
 
@@ -90,14 +84,39 @@ def fake_lesson(lab, broken=True):
     return {"tasks": [{"name": "Nhiệm vụ 1 (giả)", "items": items}], "not_in_lab": ["(giả) phần không có trong bài"]}
 
 
+def _first_lesson(text):
+    """Thử raw_decode ở từng dấu "{": lấy object JSON đầu tiên có "tasks" (bỏ qua "{x}" lạc trong lời dẫn)."""
+    dec, pos = json.JSONDecoder(), text.find("{")
+    while pos >= 0:
+        try:
+            obj, _ = dec.raw_decode(text, pos)
+            if isinstance(obj, dict) and "tasks" in obj:
+                return obj
+        except ValueError:
+            pass
+        pos = text.find("{", pos + 1)
+    raise ValueError("Model chưa trả JSON hợp lệ cho bài lab")
+
+
+def _normalize(lesson):
+    """Ép đúng khung: tasks là list dict, items là list, name và not_in_lab là chuỗi. Ý sai kiểu để check_sources đánh trượt."""
+    tasks = [t for t in (lesson.get("tasks") or []) if isinstance(t, dict)] if isinstance(lesson.get("tasks"), list) else []
+    for n, t in enumerate(tasks, 1):
+        if not isinstance(t.get("name"), str) or not t["name"].strip():
+            t["name"] = "Nhiệm vụ %d" % n
+        if not isinstance(t.get("items"), list):
+            t["items"] = []
+    nil = lesson.get("not_in_lab")
+    lesson["tasks"] = tasks
+    lesson["not_in_lab"] = [str(x) for x in nil] if isinstance(nil, list) else []
+    return lesson
+
+
 def _parse(reply, lab, rnd):
     if reply["model"] == "fake":
         return fake_lesson(lab, broken=(rnd == 0))
-    start = reply["text"].find("{")
-    if start < 0:
-        raise ValueError("Model chưa trả JSON cho bài lab")
-    lesson, _ = json.JSONDecoder().raw_decode(reply["text"], start)  # chỉ lấy object JSON đầu tiên
-    if not isinstance(lesson, dict) or not isinstance(lesson.get("tasks"), list) or not lesson["tasks"]:
+    lesson = _normalize(_first_lesson(reply["text"]))
+    if not lesson["tasks"]:
         raise ValueError("Model chưa trả nhiệm vụ nào cho bài lab")
     return lesson
 
@@ -121,12 +140,11 @@ def answer(text: str) -> dict:
             "Bản JSON hiện tại:\n" + json.dumps(lesson, ensure_ascii=False)
             + "\n\nCác ý bị trượt kiểm nguồn và lý do:\n" + json.dumps(res["failed"], ensure_ascii=False)
             + "\n\nNội dung các file liên quan (có số dòng):\n"
-            + _numbered(lab, only=_repair_files(lesson, res["failed"]))
+            + _numbered(lab, only=_repair_files(lesson, res["failed"], lab))
         )
-        fix = call_model(SYSTEM, repair_prompt)
         try:
-            lesson = _parse(fix, lab, rnd)
-        except ValueError as exc:  # JSONDecodeError là ValueError: giữ bản nháp trước
+            lesson = _parse(call_model(SYSTEM, repair_prompt), lab, rnd)
+        except (ValueError, RuntimeError, OSError) as exc:  # JSON hỏng, HTTP 402/5xx, bị cắt, hết giờ: giữ bản nháp trước
             note("vòng sửa %d lỗi (%s): giữ bản trước" % (rnd, exc))
             break
     res = check_sources(lesson, lab)
