@@ -136,16 +136,16 @@
         <li><b>Chuẩn "đạt" (chốt CP2):</b> ≥70% câu qua <b>và</b> 100% câu <code>tu_choi</code> qua</li>
         <li><b>Chấm:</b> đội trưởng chốt cột <code>pass</code>; chưa có người thứ hai chấm lại</li>
       </ul>
-      <p style="font-size:15px;margin:10px 0 0"><b>Cải tiến cho lượt 2:</b> nhắm lỗi thiếu độ phủ (nhóm thường 1/9) — prompt yêu cầu ≥3 lỗi dễ mắc khác loại, quét cảnh báo và checklist của đề. Kết quả: chưa đo.</p>
+      <p style="font-size:15px;margin:10px 0 0"><b>Cải tiến cho lượt 2:</b> prompt yêu cầu <code>loi_de_mac</code> ≥3 lỗi khác loại; đổi sang model nhỏ nhất Gemini 3.1 Flash-Lite (rẻ + nhanh). Kết quả: 9/20 (45%) — nhích lên nhưng nhóm thường tụt 0/9.</p>
     </div>
     <div>
       <table>
         <tr><th>Lượt</th><th>Tổng</th><th>Từ chối</th><th>Đạt chuẩn?</th></tr>
         <tr><td>Lượt 1<br><span class="muted" style="font-size:13px">run-1@20261127-222935 · Gemini 4 Hydrogen</span></td><td><b>8/20 (40%)</b></td><td>3/6</td><td style="color:var(--bad);font-weight:600">Chưa đạt</td></tr>
-        <tr><td>Lượt 2<br><span class="muted" style="font-size:13px">cải tiến đã code trong agent.py</span></td><td colspan="3"><span class="tag gap">Chưa chạy</span> <span style="font-size:15px">không kịp chạy trước CP4</span></td></tr>
+        <tr><td>Lượt 2<br><span class="muted" style="font-size:13px">run-2@20261128-145421 · Gemini 3.1 Flash-Lite</span></td><td><b>9/20 (45%)</b></td><td>6/6</td><td style="color:var(--bad);font-weight:600">Chưa đạt</td></tr>
         <tr><td class="muted">Chuẩn</td><td class="muted">≥70%</td><td class="muted">6/6</td><td></td></tr>
       </table>
-      <p style="font-size:16px;margin:14px 0 0"><b>Lỗi chính lượt 1:</b> 7/20 câu gặp <b>HTTP 402</b> (output trống, vẫn tính trượt). 10 bài sinh được có 543/543 trích dẫn khớp nguồn nhưng chưa đủ độ phủ lỗi chính.</p>
+      <p style="font-size:16px;margin:14px 0 0"><b>Lượt 1:</b> thường 1/9 · khó 4/5 · từ chối 3/6; 7 câu HTTP 402. <b>Lượt 2:</b> thường 0/9 · khó 3/5 · từ chối 6/6 (100%), 0 lỗi; B10–B12 tốt lên, B04 và B07 tệ đi. Cột <code>pass</code> do Claude đề xuất, đội trưởng xác nhận. Chưa đạt chuẩn: nhóm "thiếu lỗi chính" chưa sửa được với model nhỏ.</p>
     </div>
   </div>
   <div class="src"><span>Nguồn: eval/README.md · eval/report.md · eval/metric_spec.yaml · spec.md §7</span><span>5</span></div>
@@ -156,18 +156,18 @@
   <div class="kicker">6 · Chi phí khi dùng thật</div>
   <h1>Chi phí khi dùng thật</h1>
   <div class="grid3">
-    <div class="stat"><div class="n">0,2238</div><div class="l">USD / phiên · Gemini 4 Hydrogen</div><div class="s">Token đo trên 10 phiên (seed 42): TB 42.994 vào · 21.241 ra</div></div>
-    <div class="stat"><div class="n warn">0,56</div><div class="l">USD / task thành công · Hydrogen</div><div class="s">0,2238 ÷ 40% (tỉ lệ đạt lượt 1) — không coi như đạt 100%</div></div>
-    <div class="stat"><div class="n">0,11</div><div class="l">USD / task thành công · Flash-Lite</div><div class="s">Cùng token đo trên Hydrogen × giá Flash-Lite (tự ước tính)</div></div>
+    <div class="stat"><div class="n">0,0391</div><div class="l">USD / phiên · Flash-Lite</div><div class="s">50 phiên thật (seed 42, 0 lỗi): ~117k token vào · ~6,7k ra · ~3 lần gọi model</div></div>
+    <div class="stat"><div class="n warn">0,0869</div><div class="l">USD / task thành công · Flash-Lite</div><div class="s">0,0391 ÷ 45% (tỉ lệ đạt run-2) — không coi như đạt 100%</div></div>
+    <div class="stat"><div class="n">0,4992</div><div class="l">USD / task thành công · Hydrogen</div><div class="s">Cùng token, giá 1,5/7,5: 0,2247 USD/phiên (tự ước tính)</div></div>
   </div>
   <table style="margin-top:20px">
     <tr><th>Kịch bản (tự ước tính)</th><th class="r">Người dùng</th><th class="r">Hydrogen / tháng</th><th class="r">Flash-Lite / tháng</th></tr>
-    <tr><td>Thấp</td><td class="r">300</td><td class="r">604 USD</td><td class="r">115 USD</td></tr>
-    <tr class="pick"><td>Cơ sở</td><td class="r">700</td><td class="r">1.410 USD</td><td class="r">268 USD</td></tr>
-    <tr><td>Cao</td><td class="r">1.000</td><td class="r">2.014 USD</td><td class="r">383 USD</td></tr>
+    <tr><td>Thấp</td><td class="r">300</td><td class="r">599 USD</td><td class="r">105 USD</td></tr>
+    <tr class="pick"><td>Cơ sở</td><td class="r">700</td><td class="r">1.399 USD</td><td class="r">244 USD</td></tr>
+    <tr><td>Cao</td><td class="r">1.000</td><td class="r">1.998 USD</td><td class="r">349 USD</td></tr>
   </table>
-  <p style="font-size:16px;margin:12px 0 0"><b>So với impact:</b> ~40 phút tiết kiệm/người/tháng (tự ước tính) với 2,01 USD/người/tháng (Hydrogen) hoặc ~0,38 USD (Flash-Lite). 9 phiên/người/tháng theo personas.</p>
-  <p class="muted" style="font-size:14px;margin:6px 0 0"><span class="tag gap">Giới hạn</span> Chỉ chạy lượt thử 10 phiên (simulate-try@20261127-222805), <b>chưa chạy đủ 50 phiên</b> vì không kịp trước CP4. Giá theo bảng BTC, chưa đối chiếu hóa đơn.</p>
+  <p style="font-size:16px;margin:12px 0 0"><b>So với impact:</b> ~40 phút tiết kiệm/người/tháng (tự ước tính) với 0,35 USD/người/tháng (Flash-Lite) hoặc 2,00 USD (Hydrogen). Demo thật Day11 trên Gemini 3.8 Flash: 0,2452 USD, 145 giây, 2 lần gọi model, 62.813/20.131 token.</p>
+  <p class="muted" style="font-size:14px;margin:6px 0 0"><span class="tag gap">Giới hạn</span> simulate-1@20261128-145421: token đo trên Flash-Lite; cột Hydrogen là cùng token × giá Hydrogen. Giá theo bảng BTC, chưa đối chiếu hóa đơn.</p>
   <div class="src"><span>Nguồn: cost/cost-estimate.md · cost/personas.yaml · spec.md §2, §8</span><span>6</span></div>
 </section>
 
@@ -176,12 +176,12 @@
   <div class="kicker">7 · Kết luận</div>
   <h1>Go / iterate / stop</h1>
   <div class="grid2" style="grid-template-columns:.8fr 1.2fr;align-items:center">
-    <div><div class="verdict">ITERATE</div><p class="muted" style="font-size:16px">Chạy lượt 2, đo lại trên Flash-Lite trước khi mở rộng.</p></div>
+    <div><div class="verdict">ITERATE</div><p class="muted" style="font-size:16px">Giữ Flash-Lite cho phần chặn/từ chối; cần model hoặc prompt tốt hơn cho độ phủ lỗi chính.</p></div>
     <div>
       <ul style="font-size:18px">
         <li><b>Pain có thật (trang 1):</b> 22% lần làm mini lab bị bỏ qua, 16% có tự giải thích — vượt cả hai ngưỡng đặt trước. Nhưng mới 1/3 phỏng vấn, chưa có khảo sát.</li>
-        <li><b>Chất lượng chưa đạt (trang 5):</b> 8/20 (40%) so với chuẩn ≥70%; từ chối 3/6 so với 100%. Phần lớn trượt do HTTP 402, không phải do nguồn sai.</li>
-        <li><b>Chi phí (trang 6):</b> 0,56 USD/task thành công (Hydrogen), 2,01 USD/người/tháng — thấp so với ~40 phút tiết kiệm, nhưng chất lượng 40% chưa đáng chi ở quy mô thật.</li>
+        <li><b>Chất lượng chưa đạt (trang 5):</b> lượt 2 được 9/20 (45%) so với chuẩn ≥70%; từ chối 6/6 (đạt 100%). Còn trượt vì thiếu lỗi chính, model nhỏ chưa sửa được.</li>
+        <li><b>Chi phí (trang 6):</b> 0,0869 USD/task thành công, 0,35 USD/người/tháng (Flash-Lite) — rẻ so với ~40 phút tiết kiệm (tự ước tính), nhưng chất lượng 45% chưa đáng mở rộng.</li>
       </ul>
     </div>
   </div>
@@ -193,11 +193,11 @@
   <div class="kicker">8 · Nếu có thêm 1 tuần</div>
   <h1>Ba việc, trỏ về chỗ còn hổng</h1>
   <div class="grid3">
-    <div class="stat"><h2>1. Tăng độ phủ lỗi chính</h2><p style="font-size:17px;margin:0">5 câu sinh được nhưng trượt (B01–B03, B05, B17) vì thiếu 1–2 lỗi đã chốt trong <code>key_mistakes.md</code>.</p></div>
-    <div class="stat"><h2>2. Kiểm lại câu từ chối</h2><p style="font-size:17px;margin:0">B10–B12 (lệnh chèn, key giả, bài làm) gặp HTTP 402 nên chưa kiểm được hành vi chống tấn công. Cần 6/6.</p></div>
+    <div class="stat"><h2>1. Tăng độ phủ lỗi chính</h2><p style="font-size:17px;margin:0">Nhóm thường 0/9 ở lượt 2 (B04, B07 tệ đi) vì thiếu 1–2 lỗi đã chốt trong <code>key_mistakes.md</code>.</p></div>
+    <div class="stat"><h2>2. Kiểm lại câu từ chối</h2><p style="font-size:17px;margin:0">Lượt 2 đã đạt 6/6 (B10–B12 hết lỗi 402). Cần giữ 100% khi đổi model/prompt; thêm câu tấn công mới, người thứ hai chấm lại.</p></div>
     <div class="stat"><h2>3. Hỏi thêm người dùng</h2><p style="font-size:17px;margin:0">Phỏng vấn P2–P3 (số lần/tháng, thời gian mỗi lần) và khảo sát ≥20 người để kiểm <i>lý do</i> bỏ qua và số phút tiết kiệm.</p></div>
   </div>
-  <p class="muted" style="font-size:16px;margin-top:22px">Trước hết: chạy lượt 2 và mô phỏng 50 phiên; thử Flash-Lite để giảm chi phí; người thứ hai chấm lại cột <code>pass</code>.</p>
+  <p class="muted" style="font-size:16px;margin-top:22px">Trước hết: thử model/prompt mạnh hơn cho độ phủ lỗi chính, giữ Flash-Lite cho chặn/từ chối; người thứ hai chấm lại cột <code>pass</code>.</p>
   <div class="src"><span>Nguồn: eval/report.md · evidence/summary.md §5</span><span>8</span></div>
 </section>
 

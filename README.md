@@ -143,6 +143,5 @@ Nhóm dùng Claude (trợ lý lập trình) để soạn bản nháp spec §4, m
 
 ## Phần chưa xong (khai thật cho CP4)
 
-- **Lượt 2 chưa chạy:** cải tiến prompt đã code (`codebase/agent.py`, xem `eval/report.md` §3) nhưng chưa chạy vì không kịp giờ trước CP4.
-- **Mô phỏng chi phí mới 10 phiên** (chưa đủ 50): `cost/cost-estimate.md` tính từ token đo được của lượt thử.
+- **Lượt 2 đã chạy** (9/20, gemini-3.1-flash-lite) nhưng cột `pass` là bản Claude đề xuất, chờ đội trưởng xác nhận; chưa đạt chuẩn §7.
 - Phỏng vấn 1/3 người, chưa có khảo sát, chưa có `validation/log.md`.

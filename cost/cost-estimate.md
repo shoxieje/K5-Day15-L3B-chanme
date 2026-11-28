@@ -28,25 +28,28 @@ Kết quả từ lượt `simulate-try@20261127-222805`, đo trên Gemini 4 Hydr
 - **Persona** (`cost/personas.yaml`): dung_it 50% × 4 phiên/tháng · dung_vua 30% × 10 · dung_nhieu 20% × 20 → trung bình **9 phiên/người/tháng**. Nguồn: *(tự ước tính)*
 - **Số người dùng thật** 3 kịch bản: thấp 300 · cơ sở 700 · cao 1.000. Nguồn: *(tự ước tính)*
 - **Giá** (further-reading/model-prices.md, xem 25/11/2026, USD/1M token): gemini-4-hydrogen 1,50 / 7,50 · gemini-3.1-flash-lite 0,25 / 1,50
-- **Tỉ lệ đạt** dùng để tính: 8/20 (40%) — lượt `run-1` (**lượt 2 chưa chạy**, không kịp giờ)
-- Đo token trên model gemini-4-hydrogen (10 phiên lượt thử), tính giá gemini-4-hydrogen và gemini-3.1-flash-lite
+- **Tỉ lệ đạt** dùng để tính: 9/20 (45%) — lượt `run-2@20261128-145421` (lượt 2)
+- Đo token trên model gemini-3.1-flash-lite (50 phiên), tính giá gemini-3.1-flash-lite, gemini-3.8-flash và gemini-4-hydrogen
 
 ## 2. Kết quả mô phỏng
 
-Lượt dùng: `simulate-try@20261127-222805` · **10 phiên** · seed 42. **Chưa đủ ≥50 phiên** theo yêu cầu: không kịp giờ trước CP4. Token trung bình mỗi phiên: 42.994 vào · 21.241 ra. Bảng dưới tính tay từ token đo được × giá ở trên, không phải từ `simulate-N-summary.md`.
+Lượt mô phỏng: `cost/simulate-1.csv` · run ID `simulate-1@20261128-145421` · **50 phiên** · seed 42 · 0 phiên lỗi. Đo token trên **gemini-3.1-flash-lite**, tính giá cả ba model (bảng chép từ `cost/simulate-1-summary.md`).
 
 | Model | Chi phí / phiên | Chi phí / task thành công | / tháng — thấp | / tháng — cơ sở | / tháng — cao | / người / tháng (cơ sở) |
 |---|---|---|---|---|---|---|
-| gemini-4-hydrogen | 0,2238 USD | 0,56 USD | 604 USD | 1.410 USD | 2.014 USD | 2,01 USD |
-| gemini-3.1-flash-lite *(token đo trên Hydrogen, tự ước tính)* | 0,0426 USD | 0,11 USD | 115 USD | 268 USD | 383 USD | 0,38 USD |
+| **gemini-3.1-flash-lite** (0,25 / 1,50) | 0,0391 USD | **0,0869 USD** | 104,67 USD | 244,23 USD | 348,90 USD | 0,35 USD |
+| gemini-3.8-flash (1,50 / 7,50, giá từ 01/01/2027) | 0,2247 USD | 0,4992 USD | 599,46 USD | 1.398,74 USD | 1.998,21 USD | 2,00 USD |
+| gemini-4-hydrogen (1,50 / 7,50) | 0,2247 USD | 0,4992 USD | 599,46 USD | 1.398,74 USD | 1.998,21 USD | 2,00 USD |
+
+Token trung bình mỗi phiên (theo persona): ~104–121 nghìn vào, ~5,8–7,6 nghìn ra, ~3 lần gọi model, ~4 lần gọi công cụ. Dòng 3.8 Flash và Hydrogen dùng token đo trên Flash-Lite (đo trên model X, tính giá model Y). Đối chiếu: một lần chạy thật Day11 trên gemini-3.8-flash tốn 0,2452 USD, 145 giây, 62.813 / 20.131 token.
 
 Chi phí / task thành công = chi phí trung bình mỗi phiên ÷ tỉ lệ đạt — **không coi như đạt 100%**.
 
 ## 3. So với impact
 
 - Impact / người / tháng (`spec.md` §2): ~40 phút tiết kiệm (4 buổi × 10 phút, *tự ước tính*)
-- Chi phí / người / tháng (cơ sở, model gemini-4-hydrogen): 2,01 USD · Flash-Lite ~0,38 USD
-- **Kết luận một dòng — đáng làm không:** chi phí thấp so với 40 phút/tháng, nhưng tỉ lệ đạt mới 40% nên **iterate**: chạy lượt 2, đo lại trên Flash-Lite trước khi mở rộng.
+- Chi phí / người / tháng (cơ sở, model gemini-3.1-flash-lite): 0,35 USD · gemini-3.8-flash / Hydrogen: 2,00 USD
+- **Kết luận một dòng — đáng làm không:** chi phí rất thấp (0,35 USD/người/tháng với Flash-Lite) so với ~40 phút tiết kiệm/tháng, nhưng tỉ lệ đạt mới 45% (thường 0/9) nên **iterate**: giữ Flash-Lite cho phần chặn/từ chối, cần prompt hoặc model mạnh hơn cho độ phủ lỗi chính.
 
 ## 4. *(Muốn sâu hơn, không bắt buộc)*
 

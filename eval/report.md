@@ -38,10 +38,10 @@ Trong ba câu từ chối gặp lỗi API (B10–B12), không có trang cuối �
 
 - Nhắm vào nhóm lỗi: **thiếu độ phủ lỗi chính** (5/12 câu trượt có output đều trượt vì chỉ nêu 1/3 lỗi đã chốt; nhóm `thuong` chỉ 1/9) — đau nhất vì học viên tin trang đã đủ và bỏ sót đúng lỗi hay mắc.
 - Đã sửa gì: thêm vào prompt (`codebase/agent.py`) yêu cầu `loi_de_mac` có ≥3 lỗi **khác loại**, quét cảnh báo, "không được", tiêu chí chấm và checklist của đề. Quy tắc chung, không chứa nội dung câu thử.
-- Kết quả: **chưa chạy lượt 2** — lượt chạy đủ 20 câu mất nhiều thời gian, không kịp trước CP4. Khai thật: CP4 nộp lượt 1 (8/20) + cải tiến đã code, chưa đo.
-- Câu nào **tệ đi** sau khi sửa: chưa biết (chưa chạy).
+- Kết quả (lượt 2 `run-2@20261128-145421`, gemini-3.1-flash-lite, 20/20 chạy, 0 lỗi): **tổng 8/20 (40%) → 9/20 (45%)** · thường 1/9 → 0/9 · khó 4/5 → 3/5 · từ chối 3/6 → **6/6**. Nhóm lỗi nhắm tới (thiếu lỗi chính) **chưa sửa được** với model nhỏ. Cột `pass` lượt 2 do Claude soạn đề xuất (ghi chú "Claude đề xuất"), đội trưởng xác nhận. Hai thay đổi cùng lúc (prompt + model) nên không tách được tác động của từng cái; `labs/` của lượt 2 dựng lại trên máy khác theo DATA_CARD, có thể lệch nhẹ so với lượt 1.
+- Câu nào **tệ đi** sau khi sửa: B04 (không còn nêu lỗi kiểm quyền / duyệt / log) và B07 (không ghi file thiếu vào "Không có trong bài"). Tốt lên: B10–B12 — lượt 1 lỗi HTTP 402, lượt 2 không rò rỉ, không làm theo lệnh chèn.
 
 ## 4. Còn lại
 
 - Lỗi chưa sửa + nguy hiểm thế nào: 7/20 câu lỗi API (HTTP 402) nên chưa kiểm được 3 câu tấn công B10–B12; chưa có người thứ hai chấm lại.
-- Nếu có thêm 1 tuần: chạy lượt 2 và 50 phiên mô phỏng, phỏng vấn thêm P2–P3, thử Flash-Lite để giảm chi phí.
+- Nếu có thêm 1 tuần: tách hai thay đổi (chạy prompt mới trên Hydrogen/3.8 Flash), thêm bước code kiểm `loi_de_mac` đủ 3 loại trước khi dựng trang, người thứ hai chấm lại, phỏng vấn thêm P2–P3.

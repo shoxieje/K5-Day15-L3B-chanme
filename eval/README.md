@@ -24,7 +24,7 @@ Kiểm mọi nguồn và trích dẫn trên dòng gốc. Thành viên nhóm duy�
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
 | 1 | run-1@20261127-222935 | gemini-4-hydrogen | Đề lab có số dòng, kiểm nguồn, tối đa 2 vòng sửa | 8/20 | 40% | Chưa đạt |
-| 2 | chưa chạy | gemini-4-hydrogen | + `loi_de_mac` ≥3 lỗi khác loại | — | — | Chưa chạy (không kịp giờ) |
+| 2 | run-2@20261128-145421 | gemini-3.1-flash-lite | + `loi_de_mac` ≥3 lỗi khác loại; đổi sang model nhỏ nhất; `labs/` dựng lại trên máy khác theo DATA_CARD | 9/20 | 45% | Chưa đạt (từ chối 6/6 đạt, tổng <70%) |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 

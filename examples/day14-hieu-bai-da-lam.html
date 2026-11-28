@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; script-src &#x27;unsafe-inline&#x27;; img-src data:; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light">
+<title>Day 14 — Deployment, Benchmark &amp; Observability · Học lại bài lab</title>
+<style>
+
+:root{--bg:#f6f6f3;--surface:#fff;--ink:#1b1b1b;--muted:#4a5160;--line:#cfd4dc;--accent:#1d4ed8;--focus:#b45309}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+a{color:var(--accent)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:#eef0f3;padding:0 4px;border-radius:4px;overflow-wrap:anywhere}
+.skip{position:absolute;left:-9999px;top:0}
+.skip:focus{left:16px;top:8px;background:#fff;padding:8px 12px;z-index:2000}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--muted)}
+header.top{background:var(--surface);border-bottom:1px solid var(--line);padding:16px 24px}
+header.top h1{margin:.1em 0 .4em;font-size:1.7rem;line-height:1.25}
+.eyebrow{margin:0;color:var(--muted);font-size:.9rem}
+.banner{border:1px solid var(--line);border-left:6px solid var(--muted);border-radius:8px;padding:10px 14px;margin:10px 0;background:#fff}
+.banner p{margin:.3em 0}
+.banner-title{font-size:1.1rem}
+.banner-incomplete{border-left-color:#b45309;background:#fff8eb}
+.banner-ready{border-left-color:#1d4ed8;background:#eef4ff}
+.banner-blocked{border-left-color:#991b1b;background:#fff1f1}
+.banner-fake{background:#7f1d1d;color:#fff;border:4px dashed #fff;outline:4px solid #7f1d1d;font-size:1.35rem;text-align:center;padding:16px}
+.review{margin:8px 0}
+dl.meta{display:flex;flex-wrap:wrap;gap:4px 20px;margin:8px 0 0;font-size:.9rem}
+dl.meta div{display:flex;gap:6px}
+dl.meta dt{color:var(--muted)}
+dl.meta dd{margin:0}
+ul.issues{padding-left:1.2em}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.toolbar fieldset{border:1px solid var(--line);border-radius:8px;padding:6px 10px 8px;margin:0;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.toolbar legend{font-weight:600;font-size:.9rem;padding:0 4px}
+.store-msg{flex-basis:100%;margin:0;font-size:.9rem}
+.pending-import{flex-basis:100%;background:#fff8eb;border:1px solid #b45309;border-radius:6px;padding:8px}
+button{font:inherit;font-size:.95rem;padding:5px 12px;border-radius:6px;border:1px solid #3b4252;background:#fff;color:#111;cursor:pointer}
+button:hover:not([disabled]){background:#eef2f7}
+button[disabled]{color:#5b6270;border-color:#9aa1ad;background:#f1f2f4;cursor:not-allowed}
+button.primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+button.primary:hover:not([disabled]){background:#1e40af}
+input[type=file]{font-size:.9rem;max-width:100%}
+label.inline{display:inline-flex;gap:6px;align-items:center}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px;max-width:1320px;margin:0 auto;padding:16px 24px}
+nav.toc{position:sticky;top:12px;align-self:start;max-height:calc(100vh - 24px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.toc-title{margin:0 0 6px;font-weight:700}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc li a{display:flex;justify-content:space-between;gap:6px;padding:5px 6px;border-radius:6px;text-decoration:none;color:var(--ink)}
+nav.toc li a:hover{background:#eef2f7}
+nav.toc li a[aria-current]{background:#e3ebff;font-weight:700}
+.toc-mark{color:#14532d;font-weight:700}
+.toc-progress{font-size:.85rem;color:var(--muted);margin:10px 0 0}
+.toc-progress progress{width:100%}
+main{min-width:0}
+main:focus{outline:none}
+section.lesson,.lesson-blocked{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:24px;scroll-margin-top:12px}
+section.lesson>h2{margin:0 0 10px;font-size:1.4rem}
+section.lesson>h2:focus{outline:none}
+h3{font-size:1.15rem;margin:1.2em 0 .5em}
+h4{font-size:1.02rem;margin:.2em 0 .4em}
+.blocked-page{max-width:1000px;margin:16px auto;padding:0 16px}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0;background:#fcfcfb}
+.item{margin:6px 0;padding:6px 0;border-bottom:1px dashed #e1e4e8}
+.item:last-child{border-bottom:none}
+.item p{margin:.2em 0}
+.item-text{font-weight:500}
+ul.plain{list-style:none;padding-left:0;margin:.3em 0}
+.chip{display:inline-block;padding:0 8px;border-radius:999px;font-size:.78rem;font-weight:700;border:1px solid #6b7280;margin:0 4px 2px 0;line-height:1.6;background:#f3f4f6;color:#1f2937;vertical-align:baseline;white-space:nowrap}
+.ful-not_reported{background:#f3f4f6;color:#374151;border-style:dashed}
+.ful-reported_complete{background:#dcfce7;color:#14532d;border-color:#15803d}
+.ful-reported_partial{background:#fef3c7;color:#713f12;border-color:#a16207}
+.ful-reported_not_done{background:#fee2e2;color:#7f1d1d;border-color:#b91c1c}
+.ful-conflicting,.evs-conflicting{background:#f3e8ff;color:#581c87;border-color:#7e22ce}
+.kind-required{background:#dbeafe;color:#1e3a8a;border-color:#1d4ed8}
+.kind-reported{background:#ccfbf1;color:#134e4a;border-color:#0f766e}
+.kind-document_observation{background:#f4f4f5;color:#3f3f46}
+.kind-inference{background:#ede9fe;color:#4c1d95;border-color:#6d28d9;border-style:dotted}
+.kind-hypothetical{background:#ffedd5;color:#7c2d12;border-color:#c2410c;border-style:dashed}
+.evs-reported_in_markdown{background:#e0f2fe;color:#0c4a6e;border-color:#0369a1}
+.evs-embedded_record_unverified{background:#fef9c3;color:#713f12;border-color:#a16207}
+.evs-referenced_unread{background:#f1f5f9;color:#334155;border-style:dashed}
+.evs-missing{background:#fee2e2;color:#7f1d1d;border-color:#b91c1c}
+.chip-sim{background:#9a3412;color:#fff;border:2px solid #431407}
+.chip-gap{background:#fff1f1;color:#991b1b;border-color:#b91c1c}
+.chip-infer{background:#ede9fe;color:#4c1d95;border-style:dotted}
+.nk-required_step{background:#dbeafe;color:#1e3a8a}
+.nk-reported_step{background:#ccfbf1;color:#134e4a}
+.nk-inferred_step{background:#ede9fe;color:#4c1d95;border-style:dotted}
+.sev-error{background:#fee2e2;color:#7f1d1d}
+.sev-warning{background:#fef3c7;color:#713f12}
+.sev-info{background:#e0f2fe;color:#0c4a6e}
+.chip-accept{background:#dcfce7;color:#14532d;border-color:#15803d}
+.refs{margin:.25em 0}
+.ref-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.ref-lead{font-size:.8rem;color:var(--muted)}
+.refs-none{font-size:.8rem;color:var(--muted);font-style:italic}
+button.ref-btn{font-family:ui-monospace,Consolas,monospace;font-size:.76rem;padding:0 6px;border-radius:4px;border:1px solid #64748b;background:#f8fafc;color:#1e293b;line-height:1.6}
+button.ref-btn[aria-expanded=true]{background:#1e293b;color:#fff}
+.ref-panel{border-left:4px solid #64748b;background:#f8fafc;margin:4px 0;padding:6px 10px;font-size:.92rem}
+.ref-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ref-loc{font-family:ui-monospace,Consolas,monospace;font-size:.85rem}
+.ref-quote{margin:4px 0 0;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.missing{border:1px dashed #b45309;background:#fffaf0;border-radius:8px;padding:8px 12px;margin:8px 0}
+.missing p{margin:.2em 0}
+.gap{color:#7f1d1d}
+.sec-error{border:2px solid #991b1b;background:#fff1f1;padding:8px 12px;border-radius:8px}
+.tbl-wrap{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:#fff}
+caption{text-align:left;font-weight:700;padding:4px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}
+th{background:#f1f3f6}
+td .chip{white-space:normal}
+.tbl-wrap table{min-width:820px}
+td label.inline{align-items:flex-start;font-size:.88rem}
+.svg-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff;margin:8px 0}
+.wf-svg{display:block;width:100%;height:auto}
+.wf-node rect{fill:#eff6ff;stroke:#1e3a8a;stroke-width:1.5}
+.wf-node.kind-reported_step rect{fill:#f0fdfa;stroke:#115e59}
+.wf-node.kind-inferred_step rect{fill:#faf5ff;stroke:#6b21a8;stroke-dasharray:5 3}
+.wf-node.has-gap rect{stroke:#b91c1c;stroke-width:2}
+.wf-node.is-current rect{stroke:#b45309;stroke-width:4;fill:#fff7ed}
+.wf-badge{font-size:11.5px;font-weight:700;fill:#1f2937;letter-spacing:.03em}
+.wf-label{font-size:14.5px;fill:#111}
+.wf-gap{font-size:11.5px;fill:#991b1b;font-weight:700}
+.wf-edge{fill:none;stroke:#374151;stroke-width:1.6}
+.wf-edge.inferred{stroke-dasharray:2 4;stroke-width:2}
+.wf-fb{fill:none;stroke:#9a3412;stroke-width:1.6;stroke-dasharray:7 4}
+.wf-arrow{fill:#374151}
+.wf-arrow-fb{fill:#9a3412}
+.wf-elabel{font-size:11px;fill:#4c1d95;font-style:italic}
+.wf-fblabel{font-size:11px;fill:#9a3412;font-weight:600}
+.token-g{transition:transform .45s ease}
+.token-g rect{fill:#b45309}
+.token-g text{fill:#fff;font-size:11px;font-weight:700}
+.legend{font-size:.85rem;color:var(--muted);margin:.2em 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.step-counter{font-weight:700;margin:0}
+.state-change{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.state{border:1px solid var(--line);border-radius:6px;padding:2px 8px;background:#fff}
+.token-chip{background:#b45309;color:#fff;border-color:#7c2d12}
+.field{margin:8px 0}
+.field label{display:block;font-weight:600;margin-bottom:3px}
+textarea{width:100%;font:inherit;padding:6px 8px;border:1px solid #6b7280;border-radius:6px;background:#fff;color:#111}
+fieldset.choices{border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+fieldset.choices legend{font-weight:600}
+fieldset.choices label{display:block;padding:3px 0}
+.answer{border-left:4px solid #15803d;background:#f3fbf5;padding:8px 12px;margin:8px 0;border-radius:0 8px 8px 0}
+.hint{border-left-color:#a16207;background:#fffbeb}
+.checklist li{margin:4px 0}
+.tried{color:#14532d;font-weight:600;margin:4px 0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cols>div{border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:#fff}
+.slides{position:fixed;inset:0;background:#fff;z-index:1000;display:flex;flex-direction:column}
+.slides-top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:#f8fafc}
+.slides-top h2{font-size:1.1rem;margin:0}
+.slides-toc{display:flex;flex-wrap:wrap;gap:4px;list-style:none;margin:0;padding:0}
+.slides-toc button[aria-current]{background:#1e293b;color:#fff}
+.slides-stage{flex:1;overflow:auto;padding:24px 5vw;font-size:1.12rem}
+.slides-stage h2{font-size:1.8rem;margin-top:0}
+.slides-stage h2:focus{outline:none}
+.slides-bottom{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.slides .private-note-wrap.slide-notes-off{display:none}
+body.no-motion *,body.no-motion *::before{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+@media (max-width:759px){
+ .layout{grid-template-columns:1fr;padding:12px 16px;gap:12px}
+ nav.toc{position:static;max-height:none}
+ header.top{padding:12px 16px}
+ header.top h1{font-size:1.35rem}
+ section.lesson{padding:12px}
+ .cols{grid-template-columns:1fr}
+ .slides-stage{padding:16px}
+}
+@media print{
+ .no-print,.toolbar,nav.toc,.skip,.controls-print,.slides{display:none!important}
+ body{background:#fff;font-size:11pt}
+ .layout{display:block;padding:0}
+ header.top{border:none;padding:0 0 8pt}
+ body.js section.lesson{display:none}
+ body.js section.lesson.is-current,body.js.print-all section.lesson{display:block}
+ section.lesson{border:none;padding:0;break-inside:auto}
+ body:not(.print-answers) .answer{display:none!important}
+ body:not(.print-notes) .private-note-wrap{display:none!important}
+ .svg-wrap,.tbl-wrap{overflow:visible;border:none}
+ .chip{border:1px solid #000}
+ .banner-fake{border:4pt solid #000}
+}
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua tới nội dung</a>
+<header class="top" role="banner"><p class="eyebrow">Trang học lại sau bài lab · learning-v1</p><h1>Day 14 — Deployment, Benchmark &amp; Observability</h1>
+<div class="banner banner-ready" role="status"><p class="banner-title"><strong>Sẵn sàng để người duyệt xem — không có nghĩa bài đã hoàn thành hay bạn đã hiểu</strong></p><p>Khoảng trống nhỏ vẫn được hiện ở từng mục.</p></div>
+<p class="review"><strong>Trạng thái duyệt: Chưa được người duyệt xem.</strong> Trang này không có nút đánh dấu đã duyệt. Nhận xét/ghi chú do agent tạo là bản nháp, không phải điểm chính thức.</p>
+<dl class="meta"><div><dt>Độ phủ nguồn</dt><dd>Đã xử lý 15/15 file · 6032/6032 dòng · 47 dòng đã che</dd></div><div><dt>Snapshot</dt><dd><code>28b407a659f0</code></dd></div><div><dt>Sinh lúc</dt><dd>2026-11-28T07:46:51</dd></div><div><dt>Model</dt><dd>gemini-3.8-flash</dd></div><div><dt>Prompt</dt><dd>learning-v1-p1</dd></div><div><dt>Template</dt><dd>learning-html-1</dd></div><div><dt>Mã lần sinh</dt><dd><code>ab2b8815</code></dd></div></dl>
+<noscript><p class="banner banner-incomplete">JavaScript đang tắt: bạn chỉ xem được bản tóm tắt tĩnh. Trích dẫn nguồn, sơ đồ, câu hỏi tương tác và chế độ trình bày cần JavaScript (không cần mạng).</p></noscript><div id="toolbar-slot" class="no-print"></div>
+</header>
+<div class="layout"><nav class="toc" aria-label="Mục lục"><p class="toc-title">Mục lục</p><ol><li><a href="#overview" data-target="overview"><span class="toc-text">1. Bài của tôi giải quyết gì?</span><span class="toc-mark"></span></a></li><li><a href="#workflow" data-target="workflow"><span class="toc-text">2. Toàn cảnh workflow</span><span class="toc-mark"></span></a></li><li><a href="#walkthrough" data-target="walkthrough"><span class="toc-text">3. Hiểu từng bước</span><span class="toc-mark"></span></a></li><li><a href="#decisions" data-target="decisions"><span class="toc-text">4. Quyết định quan trọng</span><span class="toc-mark"></span></a></li><li><a href="#evidence" data-target="evidence"><span class="toc-text">5. Kết quả, bằng chứng và rubric</span><span class="toc-mark"></span></a></li><li><a href="#teachback" data-target="teachback"><span class="toc-text">6. Thử giải thích lại</span><span class="toc-mark"></span></a></li><li><a href="#presentation" data-target="presentation"><span class="toc-text">7. Luyện thuyết trình</span><span class="toc-mark"></span></a></li></ol><p class="toc-progress"><progress id="toc-bar" max="7" value="0"></progress> <span id="toc-count">Đã xem 0/7 mục (chỉ trong phiên này)</span></p></nav>
+<main id="main" tabindex="-1">
+<section id="overview" class="lesson" data-section="overview" aria-labelledby="h-overview" data-empty-what="Chưa có yêu cầu hay mục tiêu học nào được trích từ Markdown." data-empty-action="Thêm đề bài/rubric dạng Markdown ở thư mục gốc của repo rồi sinh lại trang."><h2 id="h-overview" tabindex="-1">1. Bài của tôi giải quyết gì?</h2><div class="sec-body"><ul><li>[Mục tiêu học] Hiểu bản chất phân vị thay vì trung bình để tránh che giấu tail latency và thiết kế metric tránh Cardinality Explosion.</li><li>[Mục tiêu học] Chuyển đổi agent từ môi trường localhost thành dịch vụ cloud sẵn sàng phục vụ người dùng thật.</li><li>[Mục tiêu học] Phân tích và hiểu phương thức phát hiện suy giảm chất lượng agent khi không có alert hạ tầng nào kích hoạt.</li><li>[Sản phẩm cần nộp] Xác định ít nhất 5 anti-patterns trong app.py develop và so sánh với production trong MISSION_ANSWERS.md.</li><li>[Sản phẩm cần nộp] Đóng gói Docker đa tầng, đo kích thước image thực tế bằng docker images và tính tỷ lệ % giảm dung lượng.</li><li>[Sản phẩm cần nộp] Deploy agent Part 6 lên Railway hoặc Render, cấu hình biến môi trường trên nền tảng và viết DEPLOYMENT.md.</li><li>[Sản phẩm cần nộp] Đọc cấu hình Cloud Run (cloudbuild.yaml, service.yaml) và viết 3–5 dòng mô tả pipeline CI/CD trong MISSION_ANSWERS.md.</li><li>[Sản phẩm cần nộp] Bảo mật API: nộp output curl các mã 401, 200, 429 và giải thích cơ chế Cost Guard trong MISSION_ANSWERS.md.</li><li>[Sản phẩm cần nộp] Chạy Docker Compose scale agent=3, chạy test_stateless.py và giải thích cơ chế stateless qua Redis.</li><li>[Tiêu chí đánh giá] Hoàn thành Part 6 trong thư mục 06-lab-complete/ đạt PASS 12/12 tiêu chí từ check_production_ready.py.</li><li>[Ràng buộc] Dockerfile multi-stage tối ưu với kích thước image nhỏ hơn 500 MB.</li><li>[Ràng buộc] Xử lý graceful shutdown khi nhận SIGTERM, docker stop thoát với mã 0 trong thời gian dưới 10s.</li><li>[Ràng buộc] Cài đặt endpoint /health và /ready (trả 503 khi Redis mất kết nối).</li><li>[Ràng buộc] Kiểm soát xác thực (thiếu/sai X-API-Key trả 401), rate limiting (429) và cost guard (402).</li><li>[Sản phẩm cần nộp] Load test 4 mức concurrency (1, 10, 50, 100), đối chiếu SLO p95 &lt; 500 ms và so sánh MOCK_SLOW_RATE.</li><li>[Sản phẩm cần nộp] Đánh giá eval v1 vs v2, sửa KNOWLEDGE_BASE trong mock_llm.py để đạt accuracy 100% không regression.</li><li>[Sản phẩm cần nộp] Quan sát Observability stack: chụp Grafana có tải, Jaeger trace chậm và trace lỗi kèm log JSON trùng trace_id.</li><li>[Sản phẩm cần nộp] Kích hoạt ít nhất 2 alerts firing trong Prometheus, ghi nhận thời gian phát hiện và ảnh chụp minh chứng.</li><li>[Sản phẩm cần nộp] Benchmark scale với Locust headless xuất 2 file CSV scale_1_stats.csv và scale_3_stats.csv.</li><li>[Sản phẩm cần nộp] Điền đầy đủ nội dung theo mẫu BENCHMARK_REPORT.md và nộp kèm các artifact báo cáo liên quan.</li><li>[Ràng buộc] Nộp bài cá nhân: tạo repo public đúng mẫu tên repo, nộp link repo trên LMS trước 23h59.</li><li>[Ràng buộc] Tuyệt đối không commit file .env, API key thật hoặc token triển khai vào repo hay lịch sử git.</li></ul></div></section>
+<section id="workflow" class="lesson" data-section="workflow" aria-labelledby="h-workflow" data-empty-what="Chưa có sơ đồ workflow có nguồn." data-empty-action="Bổ sung mô tả các bước/thứ tự làm bài trong Markdown cấp gốc rồi sinh lại."><h2 id="h-workflow" tabindex="-1">2. Toàn cảnh workflow</h2><div class="sec-body"><p><strong>Lộ trình thực hành và hoàn thiện bài lab theo Checkpoints</strong> (Thứ tự học/làm theo đề)</p><ol><li>Khởi tạo repo và kiểm tra môi trường</li><li>CP1: Phân tích Anti-patterns</li><li>CP2: Đóng gói Docker đa tầng</li><li>CP3 &amp; CP4: API Security và Scaling Redis</li><li>CP5: Hoàn thiện Part 6 (check_production_ready)</li><li>CP6: Triển khai Cloud (Part 3)</li><li>CP7: Benchmark develop &amp; Sửa eval RAG</li><li>CP8: Observability stack &amp; Benchmark scale</li></ol><p><strong>Luồng xử lý một Request POST /ask trong Agent Production</strong> (Luồng hệ thống)</p><ol><li>Tiếp nhận Request &amp; Auth Dependency</li><li>Kiểm tra Rate Limiter (Redis)</li><li>Kiểm tra Cost Guard (Redis)</li><li>Thực thi Agent &amp; Gọi Mock LLM</li><li>Cập nhật Cost Guard &amp; Trả lời</li></ol></div></section>
+<section id="walkthrough" class="lesson" data-section="walkthrough" aria-labelledby="h-walkthrough" data-empty-what="Chưa có bước nào để giải thích." data-empty-action="Cần workflow có nguồn (mục 2) trước; bổ sung mô tả từng bước trong Markdown rồi sinh lại."><h2 id="h-walkthrough" tabindex="-1">3. Hiểu từng bước</h2><div class="sec-body"><p>13 bước, 2 bài theo dấu luồng.</p></div></section>
+<section id="decisions" class="lesson" data-section="decisions" aria-labelledby="h-decisions" data-empty-what="Chưa có quyết định nào được tài liệu nêu." data-empty-action="Ghi các phương án và lý do lựa chọn (ví dụ trong báo cáo) ở Markdown cấp gốc rồi sinh lại."><h2 id="h-decisions" tabindex="-1">4. Quyết định quan trọng</h2><div class="sec-body"><ul><li>Lựa chọn nền tảng Cloud triển khai chính cho agent hoàn chỉnh ở Part 3 (CP6)?</li><li>Phương pháp xử lý header xác thực X-API-Key trong FastAPI để đảm bảo đúng mã lỗi?</li><li>Lựa chọn chỉ số đánh giá độ trễ phục vụ người dùng trong thiết lập SLO?</li></ul></div></section>
+<section id="evidence" class="lesson" data-section="evidence" aria-labelledby="h-evidence" data-empty-what="Chưa có yêu cầu, nhận định hay bằng chứng nào." data-empty-action="Thêm báo cáo bài làm (Markdown cấp gốc) có kết quả và nguồn rồi sinh lại."><h2 id="h-evidence" tabindex="-1">5. Kết quả, bằng chứng và rubric</h2><div class="sec-body"><p>22 yêu cầu, 15 nhận định, 21 bằng chứng, 16 số đo, 5 khoảng trống, 1 mâu thuẫn.</p><div class="tbl-wrap"><table><caption>Các file nguồn</caption><thead><tr><th scope="col">Tệp</th><th scope="col">Số dòng</th><th scope="col">Trạng thái đọc</th><th scope="col">Dòng đã xử lý</th><th scope="col">Dòng đã che</th><th scope="col">SHA256 (rút gọn)</th></tr></thead><tbody><tr><td>BENCHMARK_REPORT.md</td><td>185</td><td>Đã đọc</td><td>1–185</td><td>5</td><td><code>1c10c10529a5</code></td></tr><tr><td>CHECKPOINTS.md</td><td>131</td><td>Đã đọc</td><td>1–131</td><td>—</td><td><code>4bb79af827ba</code></td></tr><tr><td>CODE_LAB.md</td><td>1129</td><td>Đã đọc</td><td>1–1129</td><td>262, 358, 753, 860, 1021, 1102</td><td><code>5c1b907fff6d</code></td></tr><tr><td>DAY14_DELIVERY_CHECKLIST.md</td><td>261</td><td>Đã đọc</td><td>1–261</td><td>4, 48, 114, 123, 129, 205, 208, 212, 218, 236</td><td><code>702d83bd0d2f</code></td></tr><tr><td>DEPLOYMENT.md</td><td>71</td><td>Đã đọc</td><td>1–71</td><td>4, 12, 37, 41, 45, 51</td><td><code>60385889972b</code></td></tr><tr><td>INSTRUCTOR_GUIDE.md</td><td>814</td><td>Đã đọc</td><td>1–814</td><td>92, 95, 337, 599</td><td><code>7c432472d5f1</code></td></tr><tr><td>LEARNING_PATH.md</td><td>501</td><td>Đã đọc</td><td>1–501</td><td>31, 45, 96, 467</td><td><code>3df7c0f08287</code></td></tr><tr><td>MISSION_ANSWERS.md</td><td>475</td><td>Đã đọc</td><td>1–475</td><td>15, 153, 173, 187, 189, 203</td><td><code>03dc110b6b97</code></td></tr><tr><td>QUICK_REFERENCE.md</td><td>793</td><td>Đã đọc</td><td>1–793</td><td>184–185, 347</td><td><code>7fc358c6b3dc</code></td></tr><tr><td>QUICK_START.md</td><td>429</td><td>Đã đọc</td><td>1–429</td><td>110, 114, 127, 144</td><td><code>713b468809bb</code></td></tr><tr><td>README.md</td><td>145</td><td>Đã đọc</td><td>1–145</td><td>24</td><td><code>c1f2a5585d38</code></td></tr><tr><td>RUBRIC.md</td><td>77</td><td>Đã đọc</td><td>1–77</td><td>—</td><td><code>8832e9164191</code></td></tr><tr><td>RULES.md</td><td>34</td><td>Đã đọc</td><td>1–34</td><td>—</td><td><code>e6f1839bcd29</code></td></tr><tr><td>SUBMISSION.md</td><td>69</td><td>Đã đọc</td><td>1–69</td><td>—</td><td><code>ee7f4c0d1ebb</code></td></tr><tr><td>TROUBLESHOOTING.md</td><td>918</td><td>Đã đọc</td><td>1–918</td><td>764, 911</td><td><code>3a86f067c364</code></td></tr></tbody></table></div></div></section>
+<section id="teachback" class="lesson" data-section="teachback" aria-labelledby="h-teachback" data-empty-what="Chưa có câu hỏi tự giải thích." data-empty-action="Cần mục tiêu học có nguồn (mục 1); sinh lại sau khi bổ sung đề/rubric."><h2 id="h-teachback" tabindex="-1">6. Thử giải thích lại</h2><div class="sec-body"><ul><li>Giải thích cơ chế phát hiện suy giảm chất lượng khi hạ tầng không báo alert</li><li>Phân tích tác động của MOCK_SLOW_RATE đối với Tail Latency và lý do dùng Percentile</li><li>Tại sao việc đặt mục tiêu SLO cho độ trễ hệ thống dựa trên giá trị trung bình lại che giấu tail latency nguy hiểm?</li><li>Bùng nổ Cardinality Explosion trong Prometheus là gì và làm thế nào để phòng tránh khi đo đạc AI Agent?</li><li>Làm thế nào để phát hiện và ngăn chặn việc suy giảm chất lượng câu trả lời của agent khi toàn bộ hạ tầng kỹ thuật vẫn bình thường?</li><li>Trình bày cách phối hợp giữa ba trụ cột Observability (Metrics, Logs, Traces) để điều tra một sự cố request bị chậm.</li></ul></div></section>
+<section id="presentation" class="lesson" data-section="presentation" aria-labelledby="h-presentation" data-empty-what="Chưa có thẻ trình bày." data-empty-action="Cần nhận định/bằng chứng có nguồn; bổ sung báo cáo bài làm rồi sinh lại."><h2 id="h-presentation" tabindex="-1">7. Luyện thuyết trình</h2><div class="sec-body"><ol><li>Bài toán: Đưa AI Agent từ Localhost lên Cloud sẵn sàng Sản xuất</li><li>Quy trình Đóng gói Docker Đa tầng &amp; Tối ưu Dung lượng</li><li>Bảo mật API, Kiểm soát Chi phí &amp; Kiến trúc Stateless với Redis</li><li>Triển khai Thực tế lên Cloud &amp; Kết quả Nghiệm thu Pass 12/12</li><li>Đo kiểm Tải, Tail Latency &amp; Đánh giá Chất lượng RAG</li><li>Khả năng Quan sát (Observability): Metrics, Trace Trùng khớp &amp; Alert Hạ tầng</li><li>Giới hạn Bằng chứng, Rủi ro Kỹ thuật &amp; Bài học Kinh nghiệm</li></ol></div></section>
+</main></div>
+<script type="application/json" id="learning-data">{"model":{"schema_version":"learning-v1","repo_snapshot":{"snapshot_id":"28b407a659f004af424878bdf9aa14ba709b359cdbea2cdabbae9477eaa53b06","display_label":"Day 14 — Deployment, Benchmark \u0026 Observability","revision":null},"source_manifest":[{"source_id":"s1","name":"BENCHMARK_REPORT.md","sha256":"1c10c10529a56a1cca34eb0d7d062ea479dd54a9272229b546603b0a42dfff0f","line_count":185,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":185}],"redacted_ranges":[{"start_line":5,"end_line":5}],"issues":["iss-1"]},{"source_id":"s2","name":"CHECKPOINTS.md","sha256":"4bb79af827ba657f7243952815f7ba9a53308196129a1c152eefb62f4a17e860","line_count":131,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":131}],"redacted_ranges":[],"issues":[]},{"source_id":"s3","name":"CODE_LAB.md","sha256":"5c1b907fff6dfdd0e66100802f00a0c15b81ef2457a9b3a2f375ee086a099abd","line_count":1129,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":1129}],"redacted_ranges":[{"start_line":262,"end_line":262},{"start_line":358,"end_line":358},{"start_line":753,"end_line":753},{"start_line":860,"end_line":860},{"start_line":1021,"end_line":1021},{"start_line":1102,"end_line":1102}],"issues":["iss-2"]},{"source_id":"s4","name":"DAY14_DELIVERY_CHECKLIST.md","sha256":"702d83bd0d2fadfd0d1e6b8a9c9cff3775dd9f54fa6bd898323ae35829893129","line_count":261,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":261}],"redacted_ranges":[{"start_line":4,"end_line":4},{"start_line":48,"end_line":48},{"start_line":114,"end_line":114},{"start_line":123,"end_line":123},{"start_line":129,"end_line":129},{"start_line":205,"end_line":205},{"start_line":208,"end_line":208},{"start_line":212,"end_line":212},{"start_line":218,"end_line":218},{"start_line":236,"end_line":236}],"issues":["iss-3"]},{"source_id":"s5","name":"DEPLOYMENT.md","sha256":"60385889972b2cbeaf7db56adca070a838f571634cf1d33a66a6dbe29f684b27","line_count":71,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":71}],"redacted_ranges":[{"start_line":4,"end_line":4},{"start_line":12,"end_line":12},{"start_line":37,"end_line":37},{"start_line":41,"end_line":41},{"start_line":45,"end_line":45},{"start_line":51,"end_line":51}],"issues":["iss-4"]},{"source_id":"s6","name":"INSTRUCTOR_GUIDE.md","sha256":"7c432472d5f1cddb0a35706062047278a302d39aa1051ea876e188e1d897138c","line_count":814,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":814}],"redacted_ranges":[{"start_line":92,"end_line":92},{"start_line":95,"end_line":95},{"start_line":337,"end_line":337},{"start_line":599,"end_line":599}],"issues":["iss-5"]},{"source_id":"s7","name":"LEARNING_PATH.md","sha256":"3df7c0f08287af81ac8a535ebe2b1f2b59e408d35198f8f4e74762c6dbca6be8","line_count":501,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":501}],"redacted_ranges":[{"start_line":31,"end_line":31},{"start_line":45,"end_line":45},{"start_line":96,"end_line":96},{"start_line":467,"end_line":467}],"issues":["iss-6"]},{"source_id":"s8","name":"MISSION_ANSWERS.md","sha256":"03dc110b6b973be6d6aa1f894865b41f8be1c2be3f0e6fcb21ba99b3d0080afe","line_count":475,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":475}],"redacted_ranges":[{"start_line":15,"end_line":15},{"start_line":153,"end_line":153},{"start_line":173,"end_line":173},{"start_line":187,"end_line":187},{"start_line":189,"end_line":189},{"start_line":203,"end_line":203}],"issues":["iss-7"]},{"source_id":"s9","name":"QUICK_REFERENCE.md","sha256":"7fc358c6b3dcc7277207327703006014aa2ecf2e7e347aac7a99c33eeef84f25","line_count":793,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":793}],"redacted_ranges":[{"start_line":184,"end_line":185},{"start_line":347,"end_line":347}],"issues":["iss-8"]},{"source_id":"s10","name":"QUICK_START.md","sha256":"713b468809bb05981c4dd440f53ee937c2f2cb241b0388a7d311e147f927a884","line_count":429,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":429}],"redacted_ranges":[{"start_line":110,"end_line":110},{"start_line":114,"end_line":114},{"start_line":127,"end_line":127},{"start_line":144,"end_line":144}],"issues":["iss-9"]},{"source_id":"s11","name":"README.md","sha256":"c1f2a5585d38945570780fe82193bdbd8224ee77f69e1eb4abbbcd4779f144df","line_count":145,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":145}],"redacted_ranges":[{"start_line":24,"end_line":24}],"issues":["iss-10"]},{"source_id":"s12","name":"RUBRIC.md","sha256":"8832e916419101274c0ec1baaa4e7af8d2c183084d3a6e1ba2c3bca1af345107","line_count":77,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":77}],"redacted_ranges":[],"issues":[]},{"source_id":"s13","name":"RULES.md","sha256":"e6f1839bcd29682d03448d45865d8b9f430442f90b5214834d59d692cf18f672","line_count":34,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":34}],"redacted_ranges":[],"issues":[]},{"source_id":"s14","name":"SUBMISSION.md","sha256":"ee7f4c0d1ebb3cdae1f68f979409862004838332f57dc265fa43aff7bfe76b65","line_count":69,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":69}],"redacted_ranges":[],"issues":[]},{"source_id":"s15","name":"TROUBLESHOOTING.md","sha256":"3a86f067c364f8efd2c56ad9a70c59f8229d33220dff395c1bb553b01cd88443","line_count":918,"read_status":"read","processed_ranges":[{"start_line":1,"end_line":918}],"redacted_ranges":[{"start_line":764,"end_line":764},{"start_line":911,"end_line":911}],"issues":["iss-11"]}],"source_refs":[{"source_id":"s1","start_line":15,"end_line":15,"quote":"Đặt ngưỡng p95 `\u003c 500 ms` đảm bảo 95% người dùng nhận phản hồi mượt mà, đồng thời chừa biên độ an toàn trước ngưỡng cảnh báo `AgentHighLatencyP95` (`\u003e 1000 ms`).","role":"student_submission","id":"R1"},{"source_id":"s1","start_line":16,"end_line":16,"quote":"Tương ứng Error Budget `2.0%` (tỉ lệ thành công `≥ 98.0%`). Ngưỡng này đủ bao dung cho tỉ lệ lỗi ngẫu nhiên ~1% từ upstream LLM","role":"student_submission","id":"R2"},{"source_id":"s1","start_line":17,"end_line":17,"quote":"Accuracy trên golden dataset | `≥ 85 %` (`100 %` sau khi sửa KB, `0` regression) | Đảm bảo chất lượng câu trả lời RAG trên bộ 23 câu hỏi chuẩn","role":"student_submission","id":"R3"},{"source_id":"s1","start_line":25,"end_line":25,"quote":"Số liệu trích xuất từ `reports/load_v2_c1.json`, `reports/load_v2_c10.json`, `reports/load_v2_c50.json`, `reports/load_v2_c100.json` với `--requests 300`","role":"student_submission","id":"R4"},{"source_id":"s1","start_line":29,"end_line":32,"quote":"| 1 | 4.30 | 200.6 | 234.6 | 1695.0 | 1.67% (`5/300`) | ✅ PASS |\n| 10 | 35.04 | 197.6 | 461.7 | 1697.0 | 0.67% (`2/300`) | ✅ PASS |","role":"student_submission","id":"R5"},{"source_id":"s1","start_line":31,"end_line":32,"quote":"| 50 | 93.73 | 208.4 | 523.3 | 1708.0 | 1.00% (`3/300`) | ❌ FAIL (`p95 \u003e 500ms`) |\n| 100 | 57.25 | 650.4 | 4263.4 | 4600.7 | 0.33% (`1/300`) | ❌ FAIL (`p95 \u003e 500ms`) |","role":"student_submission","id":"R6"},{"source_id":"s1","start_line":42,"end_line":42,"quote":"Số liệu trích xuất từ `reports/load_v2_slow_0.json`, `reports/load_v2_slow_0.03.json`, `reports/load_v2_slow_0.1.json` với `--requests 300 --concurrency 20`","role":"student_submission","id":"R7"},{"source_id":"s1","start_line":46,"end_line":48,"quote":"| 0 | 208.9 | 469.0 | 492.4 |\n| 0.03 (mặc định) | 274.4 | 509.5 | 1721.1 |\n| 0.1 | 390.8 | 1701.9 | 1968.5 |","role":"student_submission","id":"R8"},{"source_id":"s1","start_line":52,"end_line":52,"quote":"Vì giá trị trung bình cộng (`average`) san phẳng các điểm dị biệt và **che giấu hoàn toàn trải nghiệm tồi tệ ở phần đuôi phân phối (tail latency)**.","role":"student_submission","id":"R9"},{"source_id":"s1","start_line":58,"end_line":58,"quote":"Số liệu trích xuất từ `reports/eval_v1.json`, `reports/eval_v2.json`, `reports/eval_v2_fixed.json` trên bộ 23 câu hỏi `golden_dataset.jsonl`","role":"student_submission","id":"R10"},{"source_id":"s1","start_line":62,"end_line":66,"quote":"| Accuracy | **4.35%** (`1/23`) | **91.30%** (`21/23`) | **100.00%** (`23/23`) |\n| Avg tokens / câu | `57.2` | `109.1` | `113.7` |\n| Tổng cost (USD) | `$0.000406` | `$0.000762` | `$0.000790` |","role":"student_submission","id":"R11"},{"source_id":"s1","start_line":72,"end_line":73,"quote":"Thêm mục kiến thức với từ khóa kích hoạt `[\"jwt\"]` vào `KNOWLEDGE_BASE` trong `utils/mock_llm.py`","role":"student_submission","id":"R12"},{"source_id":"s1","start_line":78,"end_line":78,"quote":"Script `run_eval.py` trả về `exit code 0` khi `accuracy \u003e= --min-accuracy` và `not regressions`, ngược lại trả về `exit code 1`.","role":"student_submission","id":"R13"},{"source_id":"s1","start_line":86,"end_line":89,"quote":"- [x] Dashboard Grafana khi đang có tải: [screenshots/grafana-dashboard.png](screenshots/grafana-dashboard.png)\n- [x] Một trace chậm trong Jaeger: [screenshots/jaeger-slow-trace.png](screenshots/jaeger-slow-trace.png)","role":"student_submission","id":"R14"},{"source_id":"s1","start_line":96,"end_line":97,"quote":"Để ngăn chặn **Cardinality Explosion (bùng nổ số lượng chuỗi thời gian)**. Trong Prometheus, mỗi giá trị label mới tạo ra một time series riêng biệt trong RAM.","role":"student_submission","id":"R15"},{"source_id":"s1","start_line":110,"end_line":114,"quote":"| **A** | `MOCK_ERROR_RATE=0.25` (\u003e 5%) | `AgentHighErrorRate` (`severity: critical`) | **87.2 giây**","role":"student_submission","id":"R17"},{"source_id":"s1","start_line":129,"end_line":133,"quote":"- `trace_id`: `9e8b7ba7b25e5210c2c6381e0c9621e2`\n- Tổng thời gian (`POST /ask`): **`1720.37 ms`** (`1.72 s`)\n  - `agent.run`: `1717.30 ms` (`99.82%`)\n  - `agent.retrieve_context`: `18.32 ms` (`1.06%`)\n  - `chat mock-llm-small`: `1698.82 ms` (`98.75%`)","role":"student_submission","id":"R18"},{"source_id":"s1","start_line":138,"end_line":138,"quote":"{\"ts\": \"2026-11-26T08:33:35.488592+00:00\", \"level\": \"INFO\", \"service\": \"observable-agent\", \"instance\": \"760457be3d78\", \"event\": \"llm_call\", \"trace_id\": \"9e8b7ba7b25e5210c2c6381e0c9621e2\", \"span_id\": \"ffe9991b79833237\", \"request_id\": \"f7e162cec611\", \"model\": \"mock-llm-small\", \"agent_version\": \"v2\", \"input_tokens\": 95, \"output_tokens\": 55, \"cost_usd\": 4.7e-05, \"llm_ms\": 1698.7}","role":"student_submission","id":"R19"},{"source_id":"s1","start_line":143,"end_line":143,"quote":"{\"ts\": \"2026-11-26T08:32:56.276574+00:00\", \"level\": \"INFO\", \"service\": \"observable-agent\", \"instance\": \"760457be3d78\", \"event\": \"llm_error\", \"trace_id\": \"d2acaa155c27382f913a975c34544b0a\", \"span_id\": \"6794f0e434c685f8\", \"request_id\": \"3ba4f5985688\", \"error\": \"Upstream LLM error: 503 Service Unavailable (mock)\"}","role":"student_submission","id":"R20"},{"source_id":"s1","start_line":155,"end_line":155,"quote":"| **1 (`scale_1_stats.csv`)** | `POST /ask` | **59.91** | **190** | **260** | **1700** | **136 / 7159** (`1.90%`) |","role":"student_submission","id":"R21"},{"source_id":"s1","start_line":156,"end_line":156,"quote":"| **1 (`scale_1_stats.csv`)** | `Aggregated` | **65.65** | **190** | **250** | **1700** | **141 / 7844** (`1.80%`) |","role":"student_submission","id":"R22"},{"source_id":"s1","start_line":157,"end_line":157,"quote":"| **3 (`scale_3_stats.csv`)** | `POST /ask` | **60.28** | **190** | **230** | **1700** | **57 / 7202** (`0.79%`) |","role":"student_submission","id":"R23"},{"source_id":"s1","start_line":158,"end_line":158,"quote":"| **3 (`scale_3_stats.csv`)** | `Aggregated` | **66.27** | **190** | **220** | **1700** | **57 / 7918** (`0.72%`) |","role":"student_submission","id":"R24"},{"source_id":"s1","start_line":172,"end_line":175,"quote":"- **3 điều quan trọng nhất học được về Benchmark \u0026 Observability:**\n  1. **Không bao giờ đánh giá hệ thống qua số trung bình (`average`):**","role":"student_submission","id":"R29"},{"source_id":"s1","start_line":176,"end_line":181,"quote":"- **Nếu đưa agent này lên production thật, tôi sẽ bổ sung thêm các Metric \u0026 Alert sau:**\n  - **Metrics:**\n    - `llm_time_to_first_token_seconds` (Histogram): Đo độ trễ đến token đầu tiên (TTFT) khi dùng streaming.","role":"student_submission","id":"R30"},{"source_id":"s1","start_line":182,"end_line":185,"quote":"- `RAGZeroHitRateAlert`: Báo động khi tỷ lệ `retrieval hit ratio \u003c 20%` kéo dài 5 phút (bắt lỗi Vector DB rỗng hoặc tụt version như thí nghiệm E).","role":"student_submission","id":"R31"},{"source_id":"s3","start_line":69,"end_line":69,"quote":"Đọc `app.py` và tìm ít nhất 5 vấn đề.","role":"assignment","id":"R33"},{"source_id":"s3","start_line":146,"end_line":151,"quote":"Đọc `Dockerfile` và trả lời:\n\n1. Base image là gì?\n2. Working directory là gì?\n3. Tại sao COPY requirements.txt trước?\n4. CMD vs ENTRYPOINT khác nhau thế nào?","role":"assignment","id":"R35"},{"source_id":"s3","start_line":230,"end_line":234,"quote":"| Platform | Độ khó | Free tier | Best for |\n|----------|--------|-----------|----------|\n| Railway | ⭐ | $5 credit | Prototypes |\n| Render | ⭐⭐ | 750h/month | Side projects |\n| Cloud Run | ⭐⭐⭐ | 2M requests | Production |","role":"background","id":"R38"},{"source_id":"s3","start_line":1054,"end_line":1054,"quote":"Làm **ít nhất 2** thí nghiệm trong bảng ở mục 2.6 của [README Benchmark \u0026 Observability](06-lab-complete/benchmark-observability/README.md) (ví dụ `MOCK_ERROR_RATE=0.2`, `LLM_MODEL=mock-llm-large`). Ghi lại alert nào firing và mất bao lâu.","role":"instruction","id":"R45"},{"source_id":"s3","start_line":1056,"end_line":1056,"quote":"**Câu hỏi:** Đổi `AGENT_VERSION=v1` thì không alert nào firing dù chất lượng giảm mạnh. Vậy loại sự cố này được phát hiện bằng cách nào?","role":"assignment","id":"R46"},{"source_id":"s3","start_line":1060,"end_line":1060,"quote":"Điền [06-lab-complete/benchmark-observability/BENCHMARK_REPORT_TEMPLATE.md](06-lab-complete/benchmark-observability/BENCHMARK_REPORT_TEMPLATE.md), lưu thành `BENCHMARK_REPORT.md` kèm report JSON, CSV của Locust và screenshot.","role":"instruction","id":"R47"},{"source_id":"s3","start_line":1113,"end_line":1113,"quote":"A: Có! Railway cho $5 credit, Render có 750h free tier.","role":"background","id":"R49"},{"source_id":"s3","start_line":638,"end_line":638,"quote":"Bài hoàn thành khi `python check_production_ready.py` báo **PASS 12/12**.","role":"assignment","id":"R50"},{"source_id":"s3","start_line":642,"end_line":643,"quote":"**Bắt buộc — 12 tiêu chí được script chấm tự động:**\n- [ ] Dockerfile (multi-stage, \u003c 500 MB)","role":"rubric","id":"R51"},{"source_id":"s3","start_line":722,"end_line":722,"quote":"**File:** `app/main.py`, `app/redis_client.py`","role":"instruction","id":"R55"},{"source_id":"s3","start_line":732,"end_line":732,"quote":"# TODO: Redis không kết nối được → raise HTTPException(503)","role":"instruction","id":"R56"},{"source_id":"s3","start_line":760,"end_line":760,"quote":"Dùng `auto_error=False` rồi tự trả 401. Nếu khai báo header là bắt buộc (`Header(...)`), FastAPI trả **422** khi thiếu header và không đạt tiêu chí.","role":"instruction","id":"R59"},{"source_id":"s3","start_line":770,"end_line":770,"quote":"vượt RATE_LIMIT_PER_MINUTE: raise HTTPException(429, headers={\"Retry-After\": \"60\"})","role":"instruction","id":"R61"},{"source_id":"s3","start_line":783,"end_line":783,"quote":"# TODO: tổng chi phí trong Redis \u003e= DAILY_BUDGET_USD → raise HTTPException(402)","role":"instruction","id":"R63"},{"source_id":"s3","start_line":791,"end_line":791,"quote":"Nối tất cả vào `/ask`: `Depends(verify_api_key)` → `check_rate_limit(...)` → `check_budget()` → gọi LLM → `record_cost(...)`.","role":"instruction","id":"R64"},{"source_id":"s3","start_line":795,"end_line":795,"quote":"Khi `docker stop`, container nhận SIGTERM: agent phải xử lý xong request đang chạy rồi thoát với exit code 0.","role":"instruction","id":"R65"},{"source_id":"s3","start_line":867,"end_line":867,"quote":"Dockerfile (multi-stage, \u003c 500 MB) | ≥ 2 lệnh FROM, base slim, user non-root, HEALTHCHECK; **build image, đo kích thước, chạy container và gọi /health**","role":"rubric","id":"R67"},{"source_id":"s3","start_line":876,"end_line":876,"quote":"Graceful shutdown | SIGTERM lúc đang có request → request vẫn 200; `docker stop` → exit code 0 trong \u003c 10s","role":"rubric","id":"R68"},{"source_id":"s3","start_line":908,"end_line":908,"quote":"Lý thuyết chi tiết (percentile, SLO, cardinality...): [06-lab-complete/benchmark-observability/README.md](06-lab-complete/benchmark-observability/README.md)","role":"instruction","id":"R69"},{"source_id":"s3","start_line":937,"end_line":940,"quote":"QUESTION_LENGTH = Histogram(\n    \"agent_question_length_chars\", \"Độ dài câu hỏi (ký tự)\",\n    buckets=(20, 50, 100, 200, 500, 1000, 2000),\n)","role":"instructor_example","id":"R70"},{"source_id":"s3","start_line":971,"end_line":973,"quote":"1. v2 trả lời sai 2 câu. Đọc `missing_keywords` trong `reports/eval_v2.json`, thêm tài liệu vào `KNOWLEDGE_BASE` (file `utils/mock_llm.py`) để đạt 100% mà **không có regression**.\n2. Viết 1 job CI chạy eval và fail nếu accuracy \u003c 85%.","role":"assignment","id":"R72"},{"source_id":"s2","start_line":9,"end_line":9,"quote":"Đưa **Part 3 (deploy) ra sau Part 6** và deploy luôn agent Part 6, thay vì deploy app mẫu trong `03-cloud-deployment/` rồi deploy lại lần nữa.","role":"instruction","id":"R75"},{"source_id":"s2","start_line":9,"end_line":9,"quote":"Exercise 3.3 (Cloud Run) không cần deploy: chỉ đọc `cloudbuild.yaml` và `service.yaml` rồi viết 3–5 dòng mô tả pipeline (1 điểm, xem [RUBRIC.md](RUBRIC.md#part-3--cloud-deployment-8-điểm)).","role":"instruction","id":"R76"},{"source_id":"s2","start_line":10,"end_line":10,"quote":"Làm **Part 7 Bước 1** (chạy local, Exercise 7.1–7.3) tại lớp. **Part 7 Bước 2** (Docker stack Grafana/Jaeger/alerts, Exercise 7.4–7.7) làm sau giờ lab, trước deadline.","role":"instruction","id":"R77"},{"source_id":"s2","start_line":30,"end_line":30,"quote":"fork repo, đổi tên theo [SUBMISSION.md](SUBMISSION.md#tên-repository), clone bản fork. Kiểm tra `python --version` (3.11+), `docker compose version`.","role":"instruction","id":"R79"},{"source_id":"s2","start_line":32,"end_line":32,"quote":"`docker run --rm hello-world` chạy được. Không có Docker thì vẫn làm được CP1, CP3, CP7, nhưng CP2, CP5 (phần build image) và CP8 cần Docker: báo Lab Coach ngay.","role":"instruction","id":"R80"},{"source_id":"s2","start_line":38,"end_line":38,"quote":"mục Part 1 trong `MISSION_ANSWERS.md`: ít nhất 5 anti-pattern, kết quả gọi được bản develop, bảng so sánh develop/production có cột giải thích.","role":"instruction","id":"R81"},{"source_id":"s2","start_line":46,"end_line":46,"quote":"mục Part 2 trong `MISSION_ANSWERS.md`: 4 câu trả lời của Exercise 2.1, kết quả gọi container, kích thước image develop và production đo bằng `docker images` kèm % chênh lệch","role":"instruction","id":"R82"},{"source_id":"s2","start_line":48,"end_line":48,"quote":"số MB trong bài là số bạn đo được, không chép từ README.","role":"rule","id":"R83"},{"source_id":"s2","start_line":54,"end_line":54,"quote":"mục Part 4 trong `MISSION_ANSWERS.md`, dán output `curl -i` của các trường hợp 401, 200, 429 (che token), và giải thích cách làm cost guard.","role":"instruction","id":"R84"},{"source_id":"s2","start_line":64,"end_line":64,"quote":"trong `05-scaling-reliability/production/`, chạy `docker compose -p k5-day14-scaling up -d --build --scale agent=3` (Exercise 5.4), rồi `python test_stateless.py` và giải thích kết quả.","role":"instruction","id":"R85"},{"source_id":"s2","start_line":69,"end_line":70,"quote":"Sửa các chỗ `TODO` trong `06-lab-complete/` theo thứ tự gợi ý ở [06-lab-complete/README.md](06-lab-complete/README.md). Làm ngay trong thư mục đó, không chuyển code ra chỗ khác.\n- **Sản phẩm:** `python check_production_ready.py` (chạy trong `06-lab-complete/`, có Docker) báo **`PASS 12/12`**.","role":"instruction","id":"R86"},{"source_id":"s2","start_line":77,"end_line":77,"quote":"Part 3, Exercise 3.1 (Railway) **hoặc** 3.2 (Render), nhưng deploy thư mục `06-lab-complete/` (dùng `railway.toml` hoặc `render.yaml` bạn viết ở CP5), không deploy app mẫu `03-cloud-deployment/`.","role":"instruction","id":"R87"},{"source_id":"s2","start_line":77,"end_line":77,"quote":"Đặt `AGENT_API_KEY` bằng biến môi trường trên nền tảng, không ghi vào code.","role":"rule","id":"R88"},{"source_id":"s2","start_line":78,"end_line":78,"quote":"`DEPLOYMENT.md` theo mẫu trong [DAY14_DELIVERY_CHECKLIST.md](DAY14_DELIVERY_CHECKLIST.md) mục 3; ảnh trong `screenshots/`; URL điền vào mục Part 3 của `MISSION_ANSWERS.md`","role":"instruction","id":"R89"},{"source_id":"s2","start_line":91,"end_line":92,"quote":"Part 7 Bước 1 trong `06-lab-complete/benchmark-observability/develop/` (Exercise 7.1–7.3): chạy agent v1 (cổng 8001) và v2 (cổng 8002) như Exercise 7.1, rồi:\n  1. Tạo báo cáo **một lần**, từ gốc repo: `cp -n 06-lab-complete/benchmark-observability/BENCHMARK_REPORT_TEMPLATE.md BENCHMARK_REPORT.md`","role":"instruction","id":"R90"},{"source_id":"s2","start_line":97,"end_line":99,"quote":"for c in 1 10 50 100; do\n        python load_test.py --url http://localhost:8002 --requests 300 --concurrency \"$c\" --out \"reports/load_v2_c${c}.json\"\n      done","role":"instruction","id":"R91"},{"source_id":"s2","start_line":102,"end_line":102,"quote":"So sánh `MOCK_SLOW_RATE`: bật lại v2 lần lượt với `MOCK_SLOW_RATE=0`, `0.03` (mặc định) và `0.1`, mỗi lần chạy cùng `--requests 300 --concurrency 20`","role":"instruction","id":"R92"},{"source_id":"s2","start_line":107,"end_line":107,"quote":"python eval/run_eval.py --url http://localhost:8002 --min-accuracy 1.0 --baseline reports/eval_v2.json --out reports/eval_v2_fixed.json","role":"instruction","id":"R93"},{"source_id":"s2","start_line":117,"end_line":117,"quote":"bật stack bằng Docker Compose, tạo tải bằng Locust, chụp Grafana, tìm 1 trace chậm và 1 trace lỗi trong Jaeger (chép kèm dòng log JSON có cùng `trace_id`), làm cho ít nhất 2 alert firing và ghi thời gian tới lúc firing.","role":"instruction","id":"R95"},{"source_id":"s2","start_line":118,"end_line":118,"quote":"Benchmark scale phải chạy Locust **headless** để có file CSV (Locust giao diện web không tự ghi CSV), theo mục 2.7 trong `06-lab-complete/benchmark-observability/README.md`.","role":"instruction","id":"R96"},{"source_id":"s2","start_line":130,"end_line":130,"quote":"`BENCHMARK_REPORT.md` điền đủ; `production/benchmark-results/scale_1_stats.csv` và `scale_3_stats.csv`; 4 ảnh Part 7 trong `screenshots/`. Đóng gói theo [SUBMISSION.md](SUBMISSION.md).","role":"instruction","id":"R98"},{"source_id":"s4","start_line":93,"end_line":93,"quote":"-  **`python check_production_ready.py` báo `PASS 12/12`** (chạy đầy đủ, có Docker) — dán phần \"📋 Checklist Deliverable\" của output vào `MISSION_ANSWERS.md`","role":"instruction","id":"R105"},{"source_id":"s4","start_line":95,"end_line":98,"quote":"-  Multi-stage Dockerfile (image \u003c 500 MB)\n-  API key authentication\n-  Rate limiting (10 req/min)\n-  Cost guard ($10/month)","role":"instruction","id":"R106"},{"source_id":"s4","start_line":151,"end_line":151,"quote":"Copy [06-lab-complete/benchmark-observability/BENCHMARK_REPORT_TEMPLATE.md](06-lab-complete/benchmark-observability/BENCHMARK_REPORT_TEMPLATE.md) thành `BENCHMARK_REPORT.md` và điền đầy đủ, kèm các file bằng chứng:","role":"instruction","id":"R109"},{"source_id":"s5","start_line":7,"end_line":7,"quote":"Railway (Project: `handsome-comfort`, Environment: `production`, Service: `agent` + `Redis` — cấu hình tại [06-lab-complete/railway.toml](06-lab-complete/railway.toml))","role":"student_submission","id":"R114"},{"source_id":"s5","start_line":38,"end_line":38,"quote":"{\"status\":\"ok\",\"environment\":\"production\",\"uptime_seconds\":31.97}","role":"student_submission","id":"R120"},{"source_id":"s5","start_line":42,"end_line":42,"quote":"{\"status\":\"ready\",\"redis\":\"connected\"}","role":"student_submission","id":"R121"},{"source_id":"s5","start_line":48,"end_line":48,"quote":"{\"detail\":\"Invalid or missing API key in X-API-Key header\"}","role":"student_submission","id":"R122"},{"source_id":"s5","start_line":55,"end_line":55,"quote":"{\"question\":\"Hello\",\"answer\":\"Tôi là AI agent được deploy lên cloud. Câu hỏi của bạn đã được nhận.\",\"user_id\":\"test\",\"cost_usd\":1.83e-05}","role":"student_submission","id":"R123"},{"source_id":"s6","start_line":28,"end_line":28,"quote":"Identify 5+ anti-patterns in basic code","role":"rubric","id":"R139"},{"source_id":"s6","start_line":80,"end_line":82,"quote":"| **Exercise 3.1** | 4 | Successfully deploy to Railway with working URL |\n| **Exercise 3.2** | 3 | Deploy to Render OR compare config files |\n| **Exercise 3.3** | 1 | (Optional) Understand GCP Cloud Run CI/CD |","role":"rubric","id":"R141"},{"source_id":"s6","start_line":86,"end_line":86,"quote":"Accept either Railway OR Render (not both required)","role":"rubric","id":"R142"},{"source_id":"s6","start_line":168,"end_line":169,"quote":"- Exercise 5.2: Must handle SIGTERM properly\n- Exercise 5.3: No state in memory, all in Redis","role":"rubric","id":"R143"},{"source_id":"s6","start_line":236,"end_line":236,"quote":"| **Image size** | 3 | \u003c 500 MB |","role":"rubric","id":"R144"},{"source_id":"s6","start_line":358,"end_line":360,"quote":"| **Bảng concurrency** | 2 | Đủ 4 mức concurrency, có RPS + p50/p95/p99 + error rate |\n| **Tail latency** | 2 | So sánh `MOCK_SLOW_RATE` 0 / 0.03 / 0.1, giải thích đúng vì sao SLO đặt theo percentile |","role":"rubric","id":"R146"},{"source_id":"s6","start_line":367,"end_line":369,"quote":"| **So sánh v1 vs v2** | 2 | Có accuracy, tokens, cost, cost/câu đúng; nhận xét được trade-off chất lượng ↔ chi phí ↔ latency |\n| **Sửa knowledge base** | 2 | v2 đạt 23/23, `--baseline` không báo regression |\n| **Quality gate trong CI** | 1 | Job CI (hoặc giải thích rõ) dùng exit code của `run_eval.py` để chặn merge |","role":"rubric","id":"R147"},{"source_id":"s8","start_line":8,"end_line":8,"quote":"Part 1: Localhost vs Production (8 điểm)","role":"student_submission","id":"R152"},{"source_id":"s8","start_line":12,"end_line":12,"quote":"Qua phân tích [01-localhost-vs-production/develop/app.py](01-localhost-vs-production/develop/app.py) và đối chiếu với [01-localhost-vs-production/production/app.py](01-localhost-vs-production/production/app.py), có **6 anti-pattern nghiêm trọng**","role":"student_submission","id":"R153"},{"source_id":"s8","start_line":71,"end_line":71,"quote":"Part 2: Docker Containerization (8 điểm)","role":"student_submission","id":"R154"},{"source_id":"s8","start_line":90,"end_line":91,"quote":"Cài đặt các công cụ biên dịch nặng (`gcc`, `libpq-dev`) và chạy `pip install --no-cache-dir --user -r requirements.txt` để cài toàn bộ thư viện Python vào `/root/.local`.","role":"student_submission","id":"R156"},{"source_id":"s8","start_line":100,"end_line":102,"quote":"REPOSITORY:TAG      SIZE\nmy-agent:advanced   240MB\nmy-agent:develop    1.67GB","role":"student_submission","id":"R157"},{"source_id":"s8","start_line":104,"end_line":106,"quote":"$ docker image inspect my-agent:develop my-agent:advanced --format \"{{.RepoTags}}: {{.Size}} bytes\"\n[my-agent:develop]: 426320088 bytes\n[my-agent:advanced]: 57409063 bytes","role":"student_submission","id":"R158"},{"source_id":"s8","start_line":112,"end_line":112,"quote":"Theo kích thước `docker images`: giảm từ `1670 MB` xuống `240 MB` → **giảm 1430 MB (85.63%)**.","role":"student_submission","id":"R159"},{"source_id":"s7","start_line":9,"end_line":9,"quote":"Transform a localhost AI agent into a **production-ready cloud service** that can handle real users.","role":"instruction","id":"R162"},{"source_id":"s7","start_line":348,"end_line":349,"quote":"Trigger at least 2 alerts\n- [ ] Complete BENCHMARK_REPORT.md","role":"instruction","id":"R171"},{"source_id":"s8","start_line":461,"end_line":462,"quote":"Result: 12/12 tiêu chí đạt · 43/43 checks passed\n  🎉 PASS 12/12 — PRODUCTION READY! Deploy nào!","role":"student_submission","id":"R175"},{"source_id":"s8","start_line":387,"end_line":387,"quote":"✅ Docker: image \u003c 500 MB — 69 MB","role":"student_submission","id":"R176"},{"source_id":"s8","start_line":437,"end_line":437,"quote":"✅ Docker: `docker stop` tắt êm (exit code 0, \u003c 10s) — exit code 0, 0.9s","role":"student_submission","id":"R177"},{"source_id":"s8","start_line":407,"end_line":407,"quote":"✅ Khi chạy: Redis mất kết nối → /ready 503 (còn /health vẫn 200)","role":"student_submission","id":"R178"},{"source_id":"s8","start_line":416,"end_line":417,"quote":"✅ Khi chạy: vượt giới hạn → 429 — 429 sau 5 request thành công (RATE_LIMIT_PER_MINUTE=5)\n     ✅ Khi chạy: state nằm trong Redis — restart agent vẫn bị 429","role":"student_submission","id":"R179"},{"source_id":"s8","start_line":421,"end_line":421,"quote":"✅ Khi chạy: hết budget → 402 — 402 ở request thứ 2","role":"student_submission","id":"R180"},{"source_id":"s8","start_line":473,"end_line":473,"quote":"Tự chạy lệnh `docker build` cho `my-agent:develop` (1.67 GB) và `my-agent:advanced` (240 MB)","role":"student_submission","id":"R181"},{"source_id":"s8","start_line":475,"end_line":475,"quote":"chạy `run_eval.py` xác nhận accuracy tăng từ `91.3% (21/23)` lên `100.0% (23/23)` với `0 regression`","role":"student_submission","id":"R182"},{"source_id":"s8","start_line":474,"end_line":474,"quote":"sliding window rate limiter bằng Redis Sorted Set (`ZREMRANGEBYSCORE`, `ZCARD`, `ZADD`), Cost Guard (`INCRBYFLOAT`)","role":"student_submission","id":"R184"},{"source_id":"s8","start_line":475,"end_line":475,"quote":"khởi tạo `Histogram(\"agent_question_length_chars\", ...)` để tránh bùng nổ cardinality","role":"student_submission","id":"R185"},{"source_id":"s8","start_line":169,"end_line":170,"quote":"pipeline CI/CD tự động khi có commit lên nhánh `main` đi qua **4 bước tuần tự**:\n1. **`test` (`python:3.11-slim`):** Cài đặt dependencies từ `requirements.txt` + `pytest` và chạy toàn bộ bộ kiểm thử `pytest tests/ -v --tb=short`; nếu test lỗi thì dừng pipeline ngay","role":"student_submission","id":"R186"},{"source_id":"s8","start_line":171,"end_line":171,"quote":"**`build` (`gcr.io/cloud-builders/docker`, chờ `test`):** Build Docker image gắn đồng thời 2 tag (`:$COMMIT_SHA` để truy vết chính xác phiên bản code và `:latest`), tận dụng `--cache-from` từ image `:latest`","role":"student_submission","id":"R187"},{"source_id":"s8","start_line":172,"end_line":172,"quote":"**`push` (chờ `build`):** Đẩy tất cả các tag của image vừa build lên Google Container Registry (`gcr.io/$PROJECT_ID/ai-agent`).","role":"student_submission","id":"R188"},{"source_id":"s8","start_line":173,"end_line":173,"quote":"Triển khai image `:$COMMIT_SHA` lên **Cloud Run** (serverless Knative theo cấu hình tương ứng trong `service.yaml`) tại region `asia-southeast1` với cơ chế tự động co giãn `min-instances=1` (tránh cold start) đến `max-instances=10`","role":"student_submission","id":"R189"},{"source_id":"s8","start_line":182,"end_line":182,"quote":"Tại hàm dependency `verify_api_key(api_key: str = Security(api_key_header))` (dòng 39–54) sử dụng `APIKeyHeader(name=\"X-API-Key\", auto_error=False)`, được gắn vào endpoint `POST /ask`","role":"student_submission","id":"R190"},{"source_id":"s8","start_line":184,"end_line":185,"quote":"Nếu thiếu header `X-API-Key` → trả về **`HTTP 401 Unauthorized`** (`Missing API key`).\n   - Nếu gửi sai giá trị key → trả về **`HTTP 403 Forbidden`** (`Invalid API key`, hoặc `401` trong quy ước hợp đồng Part 6).","role":"student_submission","id":"R191"},{"source_id":"s8","start_line":218,"end_line":218,"quote":"**Thuật toán sử dụng:** **Sliding Window Counter** (cửa sổ trượt 60 giây). Mỗi `user_id` có một hàng đợi `deque` lưu các mốc thời gian (`timestamp`) của request","role":"student_submission","id":"R192"},{"source_id":"s8","start_line":254,"end_line":257,"quote":"# 3. Vòng lặp gọi liên tiếp vượt 10 requests/phút (Request #11) -\u003e 429 Too Many Requests\n$ curl -i -X POST http://localhost:8000/ask -H \"Authorization: Bearer \u003cREDACTED_JWT_TOKEN\u003e\" -H \"Content-Type: application/json\" -d '{\"question\": \"Test 11\"}'\nHTTP/1.1 429 Too Many Requests\ndate: Thu, 26 Nov 2026 08:03:30 GMT","role":"student_submission","id":"R193"},{"source_id":"s8","start_line":281,"end_line":285,"quote":"Tạo khóa Redis theo ngày/tháng (ví dụ `cost:daily:\u003cYYYY-MM-DD\u003e:\u003capi_key\u003e`).\n  2. **Trước khi gọi LLM (`check_budget`):** Đọc tổng chi phí hiện tại từ Redis (`float(r.get(key) or 0.0)`). Nếu `spent \u003e= DAILY_BUDGET_USD`, chặn ngay lập tức và trả về **`HTTP 402 Payment Required`**.","role":"student_submission","id":"R194"},{"source_id":"s8","start_line":306,"end_line":306,"quote":"Kết quả chạy thực tế `docker compose -p k5-day14-scaling up -d --build --scale agent=3` và `python test_stateless.py`:","role":"student_submission","id":"R195"},{"source_id":"s8","start_line":336,"end_line":338,"quote":"Total requests: 5\nInstances used: {'instance-05e3f4', 'instance-ac570e', 'instance-a907e5'}\n✅ All requests served despite different instances!","role":"student_submission","id":"R196"},{"source_id":"s9","start_line":676,"end_line":679,"quote":"Locust headless (production stack)\ncd ../production\ndocker compose run --rm locust -f /mnt/locust/locustfile.py --host http://nginx \\\n  --headless -u 50 -r 10 -t 2m --csv /mnt/results/run1","role":"instruction","id":"R200"},{"source_id":"s9","start_line":684,"end_line":688,"quote":"Counter | Chỉ tăng | `http_requests_total` | `rate(x[1m])` |\n| Gauge | Lên xuống | `agent_in_flight_requests` | `sum(x)` |\n| Histogram | Phân bố vào bucket | `http_request_duration_seconds` | `histogram_quantile(0.95, sum by (le) (rate(x_bucket[1m])))`","role":"instruction","id":"R201"},{"source_id":"s9","start_line":183,"end_line":183,"quote":"# .env (NEVER commit this)","role":"rule","id":"R204"},{"source_id":"s13","start_line":18,"end_line":19,"quote":"`06-lab-complete/check_production_ready.py` (script chấm). - `06-lab-complete/benchmark-observability/develop/eval/golden_dataset.jsonl` (bộ câu hỏi eval). Exercise 7.3 sửa `KNOWLEDGE_BASE` trong `06-lab-complete/benchmark-observability/develop/utils/mock_llm.py`, không sửa đáp án.","role":"rule","id":"R215"},{"source_id":"s13","start_line":30,"end_line":31,"quote":"Không bao giờ** commit `.env`, `AGENT_API_KEY` thật, token Railway/Render. Chỉ commit `.env.example` (đã có trong `.gitignore`). - Lỡ commit secret: đổi key mới ngay trên dashboard rồi báo Lab Coach.","role":"rule","id":"R219"},{"source_id":"s12","start_line":5,"end_line":5,"quote":"mở link repo nộp trên LMS, chấm commit cuối trước deadline. Bước đầu tiên là chạy `python check_production_ready.py` trong `06-lab-complete/` trên máy có Docker.","role":"instruction","id":"R238"},{"source_id":"s12","start_line":11,"end_line":11,"quote":"Part 1 — Localhost vs Production | 8 | CP1 | `MISSION_ANSWERS.md` mục Part 1","role":"rubric","id":"R239"},{"source_id":"s12","start_line":12,"end_line":12,"quote":"Part 2 — Docker | 8 | CP2 | `MISSION_ANSWERS.md` mục Part 2, có số MB đo được","role":"rubric","id":"R240"},{"source_id":"s12","start_line":13,"end_line":13,"quote":"Part 3 — Cloud Deployment | 8 | CP6 | `MISSION_ANSWERS.md` mục Part 3, URL public trả lời được","role":"rubric","id":"R241"},{"source_id":"s12","start_line":14,"end_line":14,"quote":"Part 4 — API Security | 8 | CP3 | `MISSION_ANSWERS.md` mục Part 4, có output 401 / 200 / 429","role":"rubric","id":"R242"},{"source_id":"s12","start_line":15,"end_line":15,"quote":"Part 5 — Scaling \u0026 Reliability | 8 | CP4 | `MISSION_ANSWERS.md` mục Part 5","role":"rubric","id":"R243"},{"source_id":"s12","start_line":16,"end_line":16,"quote":"**Part 6 — Final Project** | **60** | CP5, CP6 | `06-lab-complete/` báo `PASS 12/12`; `DEPLOYMENT.md` có URL chạy được; ảnh trong `screenshots/`","role":"rubric","id":"R244"},{"source_id":"s12","start_line":17,"end_line":17,"quote":"Part 7 — Load test \u0026 SLO | 4 | CP7 | Bảng 4 mức concurrency (RPS, p50/p95/p99, error rate); so sánh `MOCK_SLOW_RATE`","role":"rubric","id":"R245"},{"source_id":"s12","start_line":18,"end_line":18,"quote":"Part 7 — Eval \u0026 quality gate | 5 | CP7 | v1 vs v2; v2 đạt 23/23 không regression; cách dùng exit code để chặn merge","role":"rubric","id":"R246"},{"source_id":"s12","start_line":19,"end_line":19,"quote":"Part 7 — Observability stack | 4 | CP8 | Ảnh Grafana có tải; trả lời Exercise 7.4","role":"rubric","id":"R247"},{"source_id":"s12","start_line":20,"end_line":20,"quote":"Part 7 — Tracing | 3 | CP8 | Ảnh trace chậm (span chậm nhất + số ms); `trace_id` khớp một dòng log JSON","role":"rubric","id":"R248"},{"source_id":"s12","start_line":21,"end_line":21,"quote":"Một ảnh `prometheus-alert-firing.png` (trang Alerts) thấy ≥ 2 alert đang firing; thời gian tới lúc firing; phân tích thí nghiệm","role":"rubric","id":"R249"},{"source_id":"s12","start_line":28,"end_line":28,"quote":"Chọn Railway **hoặc** Render làm nền tảng chính; chọn nền tảng nào cũng lấy được đủ 8 điểm.","role":"rubric","id":"R250"},{"source_id":"s12","start_line":32,"end_line":32,"quote":"Deploy trên nền tảng chính (Exercise 3.1 hoặc 3.2) | 4 | URL public của agent Part 6 chạy đúng 4 lệnh tự kiểm ở CP6","role":"rubric","id":"R251"},{"source_id":"s12","start_line":33,"end_line":33,"quote":"Deploy thêm lên nền tảng kia, **hoặc** so sánh `railway.toml` với `render.yaml` trong `MISSION_ANSWERS.md` (khác nhau chỗ nào, vì sao)","role":"rubric","id":"R252"},{"source_id":"s12","start_line":34,"end_line":34,"quote":"Đọc `cloudbuild.yaml` và `service.yaml` trong `03-cloud-deployment/production-cloud-run/`, viết 3–5 dòng trong `MISSION_ANSWERS.md` mô tả pipeline CI/CD đi qua những bước nào.","role":"rubric","id":"R253"},{"source_id":"s12","start_line":45,"end_line":45,"quote":"Image \u003c 500 MB | 2","role":"rubric","id":"R255"},{"source_id":"s12","start_line":48,"end_line":50,"quote":"API key (`X-API-Key`, thiếu hoặc sai → 401) | 4 |\n| | Rate limit (vượt → 429, state trong Redis) | 4 |\n| | Cost guard (vượt ngân sách → 402) | 4 |","role":"rubric","id":"R256"},{"source_id":"s12","start_line":52,"end_line":55,"quote":"`/health` | 2 |\n| | `/ready` (503 khi mất Redis) | 2 |\n| | Tắt an toàn khi nhận SIGTERM | 3 |\n| | Stateless: state trong Redis, không trong RAM | 3 |","role":"rubric","id":"R257"},{"source_id":"s12","start_line":73,"end_line":73,"quote":"Commit `.env`, API key hoặc token deploy (kể cả trong lịch sử commit) | −10 điểm; phải thu hồi (revoke) và tạo key mới. Xoá file thôi không đủ","role":"rule","id":"R261"},{"source_id":"s11","start_line":9,"end_line":9,"quote":"**Hình thức: CÁ NHÂN** · **Thời lượng:** 4 giờ tại lớp · **Deadline:** 23h59 (GMT+7) ngày lab, trừ khi Lab Coach thông báo khác","role":"rule","id":"R264"},{"source_id":"s11","start_line":11,"end_line":11,"quote":"**Bài nộp:** repo `K5-\u003cL3A|L3B\u003e-DAY14-HoVaTen-MSSV-Deployment-Benchmark-Observability`, nộp **link repo** trên LMS","role":"instruction","id":"R266"},{"source_id":"s11","start_line":90,"end_line":90,"quote":"Tự làm Lab 06 từ bản khung, chạy `python check_production_ready.py` tới khi `PASS 12/12`","role":"instruction","id":"R278"},{"source_id":"s14","start_line":3,"end_line":3,"quote":"Mỗi học viên nộp **một** repo, **một** link trên LMS.","role":"rule","id":"R281"},{"source_id":"s14","start_line":10,"end_line":10,"quote":"K5-\u003cL3A hoặc L3B\u003e-DAY14-HoVaTen-MSSV-Deployment-Benchmark-Observability","role":"instruction","id":"R282"},{"source_id":"s14","start_line":14,"end_line":14,"quote":"Họ tên viết liền, không dấu, viết hoa chữ cái đầu. Repo để **Public** để Lab Coach mở được.","role":"rule","id":"R283"},{"source_id":"s14","start_line":18,"end_line":20,"quote":"1. Fork repo này về tài khoản GitHub cá nhân.\n2. Vào **Settings → Repository name**, đổi tên theo mẫu trên.\n3. Clone bản fork về máy và làm bài **trong bản fork**, không làm trên repo đề bài.","role":"instruction","id":"R284"},{"source_id":"s14","start_line":57,"end_line":57,"quote":"- **23h59 (GMT+7) ngày lab.** Lab Coach có thể thông báo deadline khác; thông báo của Lab Coach được ưu tiên.","role":"rule","id":"R287"},{"source_id":"s14","start_line":58,"end_line":58,"quote":"Nộp **link repo** trên LMS. Không nộp file zip. Commit cuối trước deadline là bản được chấm (xem [RULES.md](RULES.md)).","role":"rule","id":"R288"},{"source_id":"s14","start_line":68,"end_line":69,"quote":"Không có `.env` hay secret trong repo và lịch sử commit (`git log --all --oneline -- '*.env' '.env'` không in gì).\n- [ ] Không có email, số điện thoại trong bài.","role":"rule","id":"R289"}],"requirements":[{"id":"Q1","text":"Hiểu bản chất phân vị thay vì trung bình để tránh che giấu tail latency và thiết kế metric tránh Cardinality Explosion.","category":"learning_goal","source_ref_ids":["R69","R70"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E1","E2"],"gap_ids":[],"conflict_ids":[]},{"id":"Q2","text":"Chuyển đổi agent từ môi trường localhost thành dịch vụ cloud sẵn sàng phục vụ người dùng thật.","category":"learning_goal","source_ref_ids":["R162"],"applicability":"required","condition":null,"scope":"toàn bài","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E6"],"gap_ids":[],"conflict_ids":[]},{"id":"Q3","text":"Phân tích và hiểu phương thức phát hiện suy giảm chất lượng agent khi không có alert hạ tầng nào kích hoạt.","category":"learning_goal","source_ref_ids":["R46"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E12"],"gap_ids":[],"conflict_ids":[]},{"id":"Q4","text":"Xác định ít nhất 5 anti-patterns trong app.py develop và so sánh với production trong MISSION_ANSWERS.md.","category":"deliverable","source_ref_ids":["R33","R81","R139","R239"],"applicability":"required","condition":null,"scope":"Part 1","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E3"],"gap_ids":[],"conflict_ids":[]},{"id":"Q5","text":"Đóng gói Docker đa tầng, đo kích thước image thực tế bằng docker images và tính tỷ lệ % giảm dung lượng.","category":"deliverable","source_ref_ids":["R35","R82","R83","R240"],"applicability":"required","condition":null,"scope":"Part 2","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E4","E5"],"gap_ids":[],"conflict_ids":["K1"]},{"id":"Q6","text":"Deploy agent Part 6 lên Railway hoặc Render, cấu hình biến môi trường trên nền tảng và viết DEPLOYMENT.md.","category":"deliverable","source_ref_ids":["R75","R87","R88","R89","R141","R241","R250","R251"],"applicability":"required","condition":null,"scope":"Part 3","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E6","E7"],"gap_ids":[],"conflict_ids":[]},{"id":"Q7","text":"Đọc cấu hình Cloud Run (cloudbuild.yaml, service.yaml) và viết 3–5 dòng mô tả pipeline CI/CD trong MISSION_ANSWERS.md.","category":"deliverable","source_ref_ids":["R76","R253"],"applicability":"required","condition":null,"scope":"Part 3","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E8"],"gap_ids":[],"conflict_ids":[]},{"id":"Q8","text":"Bảo mật API: nộp output curl các mã 401, 200, 429 và giải thích cơ chế Cost Guard trong MISSION_ANSWERS.md.","category":"deliverable","source_ref_ids":["R84","R242"],"applicability":"required","condition":null,"scope":"Part 4","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E9"],"gap_ids":[],"conflict_ids":[]},{"id":"Q9","text":"Chạy Docker Compose scale agent=3, chạy test_stateless.py và giải thích cơ chế stateless qua Redis.","category":"deliverable","source_ref_ids":["R85","R243"],"applicability":"required","condition":null,"scope":"Part 5","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E10"],"gap_ids":[],"conflict_ids":[]},{"id":"Q10","text":"Hoàn thành Part 6 trong thư mục 06-lab-complete/ đạt PASS 12/12 tiêu chí từ check_production_ready.py.","category":"assessment","source_ref_ids":["R50","R86","R105","R238","R244","R278"],"applicability":"required","condition":null,"scope":"Part 6","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E11"],"gap_ids":[],"conflict_ids":[]},{"id":"Q11","text":"Dockerfile multi-stage tối ưu với kích thước image nhỏ hơn 500 MB.","category":"constraint","source_ref_ids":["R51","R67","R106","R144","R255"],"applicability":"required","condition":null,"scope":"Part 6","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E11"],"gap_ids":[],"conflict_ids":[]},{"id":"Q12","text":"Xử lý graceful shutdown khi nhận SIGTERM, docker stop thoát với mã 0 trong thời gian dưới 10s.","category":"constraint","source_ref_ids":["R65","R68","R143","R257"],"applicability":"required","condition":null,"scope":"Part 6","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E11"],"gap_ids":[],"conflict_ids":[]},{"id":"Q13","text":"Cài đặt endpoint /health và /ready (trả 503 khi Redis mất kết nối).","category":"constraint","source_ref_ids":["R55","R56","R257"],"applicability":"required","condition":null,"scope":"Part 6","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E11"],"gap_ids":[],"conflict_ids":[]},{"id":"Q14","text":"Kiểm soát xác thực (thiếu/sai X-API-Key trả 401), rate limiting (429) và cost guard (402).","category":"constraint","source_ref_ids":["R59","R61","R63","R256"],"applicability":"required","condition":null,"scope":"Part 6","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E11"],"gap_ids":[],"conflict_ids":[]},{"id":"Q15","text":"Load test 4 mức concurrency (1, 10, 50, 100), đối chiếu SLO p95 \u003c 500 ms và so sánh MOCK_SLOW_RATE.","category":"deliverable","source_ref_ids":["R91","R92","R146","R245"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E13","E14"],"gap_ids":["G2"],"conflict_ids":[]},{"id":"Q16","text":"Đánh giá eval v1 vs v2, sửa KNOWLEDGE_BASE trong mock_llm.py để đạt accuracy 100% không regression.","category":"deliverable","source_ref_ids":["R72","R93","R147","R215","R246"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E12","E15"],"gap_ids":["G2"],"conflict_ids":[]},{"id":"Q17","text":"Quan sát Observability stack: chụp Grafana có tải, Jaeger trace chậm và trace lỗi kèm log JSON trùng trace_id.","category":"deliverable","source_ref_ids":["R95","R247","R248"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E16","E17","E18"],"gap_ids":["G1"],"conflict_ids":[]},{"id":"Q18","text":"Kích hoạt ít nhất 2 alerts firing trong Prometheus, ghi nhận thời gian phát hiện và ảnh chụp minh chứng.","category":"deliverable","source_ref_ids":["R45","R95","R171","R249"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_partial","evidence_ids":["E19"],"gap_ids":["G4"],"conflict_ids":[]},{"id":"Q19","text":"Benchmark scale với Locust headless xuất 2 file CSV scale_1_stats.csv và scale_3_stats.csv.","category":"deliverable","source_ref_ids":["R96","R98","R200"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E20","E21"],"gap_ids":["G3"],"conflict_ids":[]},{"id":"Q20","text":"Điền đầy đủ nội dung theo mẫu BENCHMARK_REPORT.md và nộp kèm các artifact báo cáo liên quan.","category":"deliverable","source_ref_ids":["R47","R98","R109"],"applicability":"required","condition":null,"scope":"Part 7","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E1","E13","E14","E16","E19","E20"],"gap_ids":[],"conflict_ids":[]},{"id":"Q21","text":"Nộp bài cá nhân: tạo repo public đúng mẫu tên repo, nộp link repo trên LMS trước 23h59.","category":"constraint","source_ref_ids":["R264","R266","R281","R282","R283","R287","R288"],"applicability":"required","condition":null,"scope":"toàn bài","overrides":[],"fulfillment":"not_reported","evidence_ids":[],"gap_ids":["G5"],"conflict_ids":[]},{"id":"Q22","text":"Tuyệt đối không commit file .env, API key thật hoặc token triển khai vào repo hay lịch sử git.","category":"constraint","source_ref_ids":["R204","R219","R261","R289"],"applicability":"required","condition":null,"scope":"toàn bài","overrides":[],"fulfillment":"reported_complete","evidence_ids":["E9"],"gap_ids":[],"conflict_ids":[]}],"contexts":[{"id":"X1","artifact_label":"01-localhost-vs-production","part_label":"Part 1","checkpoint_label":"CP1","environment":"local develop vs production","scope":"Part 1","source_ref_ids":["R81","R152","R153"]},{"id":"X2","artifact_label":"02-docker","part_label":"Part 2","checkpoint_label":"CP2","environment":"docker develop vs advanced","scope":"Part 2","source_ref_ids":["R82","R154","R157","R158","R159"]},{"id":"X3","artifact_label":"04-api-gateway","part_label":"Part 4","checkpoint_label":"CP3","environment":"api security local","scope":"Part 4","source_ref_ids":["R84","R193"]},{"id":"X4","artifact_label":"05-scaling-reliability","part_label":"Part 5","checkpoint_label":"CP4","environment":"docker compose 3 instances","scope":"Part 5","source_ref_ids":["R85","R195","R196"]},{"id":"X5","artifact_label":"06-lab-complete","part_label":"Part 6","checkpoint_label":"CP5","environment":"local test check_production_ready","scope":"Part 6","source_ref_ids":["R50","R86","R175","R176","R177","R178","R179","R180"]},{"id":"X6","artifact_label":"cloud-deployment","part_label":"Part 3","checkpoint_label":"CP6","environment":"Railway production","scope":"Part 3","source_ref_ids":["R87","R89","R114","R120","R121","R122","R123"]},{"id":"X7","artifact_label":"benchmark-develop","part_label":"Part 7","checkpoint_label":"CP7","environment":"local develop v1 vs v2","scope":"Part 7 develop","source_ref_ids":["R90","R91","R92","R93","R1","R2","R3","R5","R6","R8","R11"]},{"id":"X8","artifact_label":"observability-production","part_label":"Part 7","checkpoint_label":"CP8","environment":"docker stack Grafana Jaeger Prometheus Locust","scope":"Part 7 production","source_ref_ids":["R95","R98","R17","R18","R19","R20","R21","R22","R23","R24"]}],"claims":[{"id":"C1","text":"Báo cáo tự ghi đặt SLO p95 \u003c 500 ms và Error Budget 2.0% cho endpoint /ask.","kind":"reported","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R1","R2"],"evidence_ids":["E1"],"requirement_ids":["Q1","Q15"],"premise_ids":[],"assumption":null},{"id":"C2","text":"Báo cáo tự ghi kết quả load test: concurrency 1 đạt p95 234.6 ms, concurrency 10 đạt 461.7 ms, concurrency 50 là 523.3 ms và 100 là 4263.4 ms.","kind":"reported","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R5","R6"],"evidence_ids":["E13"],"requirement_ids":["Q15"],"premise_ids":[],"assumption":null},{"id":"C3","text":"Báo cáo tự ghi tail latency p99 tăng từ 492.4 ms lên 1721.1 ms ở mức 0.03 và 1968.5 ms ở mức 0.1 khi thử MOCK_SLOW_RATE.","kind":"reported","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R8"],"evidence_ids":["E14"],"requirement_ids":["Q15"],"premise_ids":[],"assumption":null},{"id":"C4","text":"Báo cáo tự ghi accuracy trên golden dataset đạt 100.00% (23/23) sau khi sửa KNOWLEDGE_BASE với 0 regression.","kind":"reported","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R3","R11","R182"],"evidence_ids":["E12","E15"],"requirement_ids":["Q16"],"premise_ids":[],"assumption":null},{"id":"C5","text":"Báo cáo tự ghi nhận alert AgentHighErrorRate kích hoạt sau 87.2 giây khi MOCK_ERROR_RATE=0.25.","kind":"reported","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R17"],"evidence_ids":["E19"],"requirement_ids":["Q18"],"premise_ids":[],"assumption":null},{"id":"C6","text":"Báo cáo tự ghi trace chậm nhất trong Jaeger mất 1720.37 ms với span mock-llm chiếm 1698.82 ms trùng khớp trace_id trong log.","kind":"reported","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R18","R19"],"evidence_ids":["E17","E18"],"requirement_ids":["Q17"],"premise_ids":[],"assumption":null},{"id":"C7","text":"Báo cáo tự ghi benchmark scale 1 instance: RPS /ask là 59.91, p50 là 190, p95 là 260, p99 là 1700 và tổng Aggregated RPS là 65.65.","kind":"reported","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R21","R22"],"evidence_ids":["E20"],"requirement_ids":["Q19"],"premise_ids":[],"assumption":null},{"id":"C8","text":"Báo cáo tự ghi benchmark scale 3 instances: p95 /ask đạt 230 ms và tổng Aggregated RPS là 66.27.","kind":"reported","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R23","R24"],"evidence_ids":["E21"],"requirement_ids":["Q19"],"premise_ids":[],"assumption":null},{"id":"C9","text":"Bài làm ghi nhận 6 anti-pattern nghiêm trọng khi so sánh giữa app.py develop và production.","kind":"reported","context_ids":["X1"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R153"],"evidence_ids":["E3"],"requirement_ids":["Q4"],"premise_ids":[],"assumption":null},{"id":"C10","text":"Bài làm ghi kích thước image my-agent:develop là 1.67GB và my-agent:advanced là 240MB theo docker images, giảm 85.63%.","kind":"reported","context_ids":["X2"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R157","R159","R181"],"evidence_ids":["E4"],"requirement_ids":["Q5"],"premise_ids":[],"assumption":null},{"id":"C11","text":"Bài làm ghi kết quả docker image inspect là 426320088 bytes cho my-agent:develop và 57409063 bytes cho my-agent:advanced.","kind":"reported","context_ids":["X2"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R158"],"evidence_ids":["E5"],"requirement_ids":["Q5"],"premise_ids":[],"assumption":null},{"id":"C12","text":"Bài làm ghi dịch vụ deploy trên Railway tại project handsome-comfort trả về uptime 31.97 và cost 1.83e-05 USD.","kind":"reported","context_ids":["X6"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R114","R120","R123"],"evidence_ids":["E6","E7"],"requirement_ids":["Q6"],"premise_ids":[],"assumption":null},{"id":"C13","text":"Bài làm ghi nhận kết quả chạy test_stateless.py với 5 request chia đều qua 3 instance khác nhau.","kind":"reported","context_ids":["X4"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R196"],"evidence_ids":["E10"],"requirement_ids":["Q9"],"premise_ids":[],"assumption":null},{"id":"C14","text":"Bài làm ghi kết quả check_production_ready.py đạt PASS 12/12 tiêu chí và 43/43 checks passed.","kind":"reported","context_ids":["X5"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R175"],"evidence_ids":["E11"],"requirement_ids":["Q10"],"premise_ids":[],"assumption":null},{"id":"C15","text":"Bài làm ghi image production đạt 69 MB và docker stop tắt an toàn trong 0.9s với exit code 0.","kind":"reported","context_ids":["X5"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R176","R177"],"evidence_ids":["E11"],"requirement_ids":["Q11","Q12"],"premise_ids":[],"assumption":null}],"evidence":[{"id":"E1","description":"Tự báo cáo trong BENCHMARK_REPORT.md phân tích SLO, phân vị tail latency và rủi ro Cardinality Explosion.","status":"reported_in_markdown","context_ids":["X7","X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R1","R2","R9","R15","R29"],"external_ref":null,"limitation":null},{"id":"E2","description":"Đoạn mã mẫu minh họa thiết lập Prometheus Histogram với các bucket cố định nhằm tránh bùng nổ nhãn.","status":"reported_in_markdown","context_ids":["X8"],"data_origin":"teaching_hypothetical","simulation_label_required":true,"source_ref_ids":["R70","R185"],"external_ref":null,"limitation":null},{"id":"E3","description":"Mục Part 1 trong MISSION_ANSWERS.md liệt kê 6 anti-pattern và so sánh develop vs production.","status":"reported_in_markdown","context_ids":["X1"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R153"],"external_ref":null,"limitation":null},{"id":"E4","description":"Bảng kích thước image đo bằng docker images trong MISSION_ANSWERS.md.","status":"reported_in_markdown","context_ids":["X2"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R157","R159","R181"],"external_ref":null,"limitation":null},{"id":"E5","description":"Bản ghi kết quả docker image inspect dán trong MISSION_ANSWERS.md (chưa xác minh).","status":"embedded_record_unverified","context_ids":["X2"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R158"],"external_ref":null,"limitation":null},{"id":"E6","description":"Thông tin dịch vụ triển khai trên Railway kèm cấu hình và link trong DEPLOYMENT.md.","status":"reported_in_markdown","context_ids":["X6"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R114"],"external_ref":"06-lab-complete/railway.toml","limitation":null},{"id":"E7","description":"Transcript dán trong DEPLOYMENT.md ghi nhận phản hồi từ curl các endpoint /health, /ready, /ask.","status":"embedded_record_unverified","context_ids":["X6"],"data_origin":"unknown","simulation_label_required":false,"source_ref_ids":["R120","R121","R122","R123"],"external_ref":null,"limitation":null},{"id":"E8","description":"Mục Part 3 trong MISSION_ANSWERS.md mô tả pipeline CI/CD 4 bước cho Cloud Run.","status":"reported_in_markdown","context_ids":["X6"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R186","R187","R188","R189"],"external_ref":"03-cloud-deployment/production-cloud-run/cloudbuild.yaml","limitation":null},{"id":"E9","description":"Transcript curl dán trong MISSION_ANSWERS.md kiểm tra rate limit HTTP 429 và giải thích cost guard.","status":"embedded_record_unverified","context_ids":["X3"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R193","R194"],"external_ref":null,"limitation":null},{"id":"E10","description":"Transcript output chạy test_stateless.py dán trong MISSION_ANSWERS.md.","status":"embedded_record_unverified","context_ids":["X4"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R196"],"external_ref":"test_stateless.py","limitation":null},{"id":"E11","description":"Transcript output chạy check_production_ready.py báo PASS 12/12 và 43/43 checks passed.","status":"embedded_record_unverified","context_ids":["X5"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R175","R176","R177","R178","R179","R180"],"external_ref":"06-lab-complete/check_production_ready.py","limitation":null},{"id":"E12","description":"Bài làm tự báo cáo bổ sung JWT vào KNOWLEDGE_BASE và giải thích chất lượng trong CI quality gate.","status":"reported_in_markdown","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R12","R13","R182"],"external_ref":"06-lab-complete/benchmark-observability/develop/utils/mock_llm.py","limitation":null},{"id":"E13","description":"Bảng số liệu load test 4 mức concurrency trích xuất từ các file reports/load_v2_c*.json.","status":"reported_in_markdown","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R4","R5","R6"],"external_ref":"reports/load_v2_c1.json","limitation":"Chưa đọc file JSON báo cáo gốc ngoài markdown."},{"id":"E14","description":"Bảng số liệu tail latency trích xuất từ reports/load_v2_slow_*.json.","status":"reported_in_markdown","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R7","R8"],"external_ref":"reports/load_v2_slow_0.json","limitation":"Chưa đọc file JSON báo cáo gốc ngoài markdown."},{"id":"E15","description":"Bảng so sánh eval v1 vs v2 trích xuất từ reports/eval_v*.json.","status":"reported_in_markdown","context_ids":["X7"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R10","R11"],"external_ref":"golden_dataset.jsonl","limitation":"Chưa đọc file JSON và dataset ngoài markdown."},{"id":"E16","description":"Dẫn chứng liên kết các ảnh chụp màn hình Grafana và Jaeger trong BENCHMARK_REPORT.md.","status":"referenced_unread","context_ids":["X8"],"data_origin":"not_applicable","simulation_label_required":false,"source_ref_ids":["R14"],"external_ref":"screenshots/grafana-dashboard.png","limitation":"File ảnh chụp nằm ngoài markdown cấp gốc chưa được xem nội dung."},{"id":"E17","description":"Chi tiết thời gian các span của trace chậm trong Jaeger ghi nhận trong BENCHMARK_REPORT.md.","status":"reported_in_markdown","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R18"],"external_ref":null,"limitation":null},{"id":"E18","description":"Dòng log JSON từ agent chứa sự kiện llm_call và llm_error dán trong BENCHMARK_REPORT.md.","status":"embedded_record_unverified","context_ids":["X8"],"data_origin":"unknown","simulation_label_required":false,"source_ref_ids":["R19","R20"],"external_ref":null,"limitation":null},{"id":"E19","description":"Bảng ghi nhận kết quả thí nghiệm A kích hoạt alert AgentHighErrorRate sau 87.2 giây.","status":"reported_in_markdown","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R17"],"external_ref":null,"limitation":null},{"id":"E20","description":"Bảng kết quả benchmark scale 1 instance đối chiếu từ scale_1_stats.csv.","status":"reported_in_markdown","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R21","R22"],"external_ref":"scale_1_stats.csv","limitation":"Chưa đọc file CSV nguồn ngoài markdown."},{"id":"E21","description":"Bảng kết quả benchmark scale 3 instances đối chiếu từ scale_3_stats.csv.","status":"reported_in_markdown","context_ids":["X8"],"data_origin":"student_reported_measurement","simulation_label_required":false,"source_ref_ids":["R23","R24"],"external_ref":"scale_3_stats.csv","limitation":"Chưa đọc file CSV nguồn ngoài markdown."}],"measurements":[{"id":"M1","claim_id":"C7","evidence_ids":["E20"],"context_id":"X8","method":"Locust headless","value":"59.91","unit":"Requests/s","operator":"=","source_ref_ids":["R21"],"conflict_ids":[]},{"id":"M2","claim_id":"C7","evidence_ids":["E20"],"context_id":"X8","method":"Locust headless","value":"190","unit":"ms","operator":"=","source_ref_ids":["R21"],"conflict_ids":[]},{"id":"M3","claim_id":"C7","evidence_ids":["E20"],"context_id":"X8","method":"Locust headless","value":"260","unit":"ms","operator":"=","source_ref_ids":["R21"],"conflict_ids":[]},{"id":"M4","claim_id":"C7","evidence_ids":["E20"],"context_id":"X8","method":"Locust headless","value":"1700","unit":"ms","operator":"=","source_ref_ids":["R21"],"conflict_ids":[]},{"id":"M5","claim_id":"C7","evidence_ids":["E20"],"context_id":"X8","method":"Locust headless","value":"65.65","unit":"Requests/s","operator":"=","source_ref_ids":["R22"],"conflict_ids":[]},{"id":"M6","claim_id":"C8","evidence_ids":["E21"],"context_id":"X8","method":"Locust headless","value":"230","unit":"ms","operator":"=","source_ref_ids":["R23"],"conflict_ids":[]},{"id":"M7","claim_id":"C8","evidence_ids":["E21"],"context_id":"X8","method":"Locust headless","value":"66.27","unit":"Requests/s","operator":"=","source_ref_ids":["R24"],"conflict_ids":[]},{"id":"M8","claim_id":"C5","evidence_ids":["E19"],"context_id":"X8","method":"Chaos test A","value":"87.2","unit":"giây","operator":"=","source_ref_ids":["R17"],"conflict_ids":[]},{"id":"M9","claim_id":"C6","evidence_ids":["E17"],"context_id":"X8","method":"Jaeger trace 9e8b7ba7b25e5210c2c6381e0c9621e2","value":"1720.37","unit":"ms","operator":"=","source_ref_ids":["R18"],"conflict_ids":[]},{"id":"M10","claim_id":"C10","evidence_ids":["E4"],"context_id":"X2","method":"docker images","value":"1.67","unit":"GB","operator":"=","source_ref_ids":["R157","R181"],"conflict_ids":["K1"]},{"id":"M11","claim_id":"C10","evidence_ids":["E4"],"context_id":"X2","method":"docker images","value":"240","unit":"MB","operator":"=","source_ref_ids":["R157","R181"],"conflict_ids":["K1"]},{"id":"M12","claim_id":"C10","evidence_ids":["E4"],"context_id":"X2","method":"so sánh docker images","value":"85.63","unit":"%","operator":"=","source_ref_ids":["R159"],"conflict_ids":[]},{"id":"M13","claim_id":"C15","evidence_ids":["E11"],"context_id":"X5","method":"check_production_ready.py","value":"69","unit":"MB","operator":"=","source_ref_ids":["R176"],"conflict_ids":[]},{"id":"M14","claim_id":"C15","evidence_ids":["E11"],"context_id":"X5","method":"docker stop","value":"0.9","unit":"s","operator":"=","source_ref_ids":["R177"],"conflict_ids":[]},{"id":"M15","claim_id":"C12","evidence_ids":["E7"],"context_id":"X6","method":"curl","value":"31.97","unit":"uptime_seconds","operator":"=","source_ref_ids":["R120"],"conflict_ids":[]},{"id":"M17","claim_id":"C4","evidence_ids":["E12","E15"],"context_id":"X7","method":"run_eval.py","value":"100.00","unit":"%","operator":"=","source_ref_ids":["R11","R182"],"conflict_ids":[]}],"workflow":{"graphs":[{"id":"W1","label":"Lộ trình thực hành và hoàn thiện bài lab theo Checkpoints","graph_kind":"learning_order","context_ids":["X1","X2","X3","X4","X5","X6","X7","X8"],"nodes":[{"id":"N1","label":"Khởi tạo repo và kiểm tra môi trường","purpose":"Fork repo, đổi tên chuẩn quy ước, kiểm tra Docker và Python môi trường.","inputs":["Repo mẫu bài giảng","Môi trường máy học viên"],"outputs":["Repo cá nhân đã cấu hình","Kiểm tra phiên bản hợp lệ"],"kind":"required_step","requirement_ids":["Q21"],"claim_ids":[],"source_ref_ids":["R79","R80","R284"],"gap_ids":["G5"]},{"id":"N2","label":"CP1: Phân tích Anti-patterns","purpose":"So sánh app.py giữa develop và production, ghi nhận ít nhất 5 vấn đề.","inputs":["01-localhost-vs-production/develop/app.py","production/app.py"],"outputs":["Bảng phân tích 6 anti-patterns trong MISSION_ANSWERS.md"],"kind":"reported_step","requirement_ids":["Q4"],"claim_ids":["C9"],"source_ref_ids":["R81","R153"],"gap_ids":[]},{"id":"N3","label":"CP2: Đóng gói Docker đa tầng","purpose":"Xây dựng Dockerfile tối ưu kích thước và kiểm tra layer caching.","inputs":["02-docker/Dockerfile","requirements.txt"],"outputs":["Image tối ưu","Số liệu docker images ghi vào markdown"],"kind":"reported_step","requirement_ids":["Q5"],"claim_ids":["C10","C11"],"source_ref_ids":["R82","R157","R158","R159"],"gap_ids":[]},{"id":"N4","label":"CP3 \u0026 CP4: API Security và Scaling Redis","purpose":"Kiểm tra bảo vệ API (Auth, Rate Limit, Cost Guard) và chạy mô hình stateless 3 instance với Redis.","inputs":["04-api-gateway","05-scaling-reliability/docker-compose.yml"],"outputs":["Output curl 401/200/429","Transcript test_stateless.py chia tải 3 node"],"kind":"reported_step","requirement_ids":["Q8","Q9"],"claim_ids":["C13"],"source_ref_ids":["R84","R85","R193","R196"],"gap_ids":[]},{"id":"N5","label":"CP5: Hoàn thiện Part 6 (check_production_ready)","purpose":"Giải quyết các mục TODO trong 06-lab-complete/ để vượt qua script kiểm tra tự động.","inputs":["06-lab-complete/ khung bài làm"],"outputs":["Kết quả PASS 12/12 và 43/43 checks passed"],"kind":"reported_step","requirement_ids":["Q10","Q11","Q12","Q13","Q14"],"claim_ids":["C14","C15"],"source_ref_ids":["R86","R175","R176","R177"],"gap_ids":[]},{"id":"N6","label":"CP6: Triển khai Cloud (Part 3)","purpose":"Đưa sản phẩm Part 6 lên cloud (Railway/Render) kèm cấu hình biến môi trường và ghi nhận test curl.","inputs":["06-lab-complete/","Cấu hình railway.toml / render.yaml"],"outputs":["DEPLOYMENT.md với URL public và transcript kiểm tra"],"kind":"reported_step","requirement_ids":["Q6","Q7"],"claim_ids":[],"source_ref_ids":["R75","R87","R89","R114","R120"],"gap_ids":[]},{"id":"N7","label":"CP7: Benchmark develop \u0026 Sửa eval RAG","purpose":"Thực hiện load test 4 mức concurrency, so sánh MOCK_SLOW_RATE và sửa KNOWLEDGE_BASE đạt 100% eval.","inputs":["benchmark-observability/develop/","golden_dataset.jsonl"],"outputs":["Các file JSON kết quả","KNOWLEDGE_BASE được sửa","Bảng dữ liệu trong BENCHMARK_REPORT.md"],"kind":"reported_step","requirement_ids":["Q1","Q15","Q16"],"claim_ids":["C1","C2","C3","C4"],"source_ref_ids":["R90","R91","R92","R93","R1","R5","R8","R11"],"gap_ids":["G2"]},{"id":"N8","label":"CP8: Observability stack \u0026 Benchmark scale","purpose":"Chạy Docker stack, thu thập trace Jaeger, kích hoạt Prometheus alerts, chạy Locust xuất CSV và tổng hợp báo cáo.","inputs":["Docker stack Observability","Locustfile"],"outputs":["scale_1_stats.csv","scale_3_stats.csv","BENCHMARK_REPORT.md hoàn chỉnh"],"kind":"reported_step","requirement_ids":["Q17","Q18","Q19","Q20"],"claim_ids":["C5","C6","C7","C8"],"source_ref_ids":["R95","R96","R98","R17","R18","R21","R23"],"gap_ids":["G1","G3","G4"]}],"dependency_edges":[{"id":"D1","from":"N1","to":"N2","reason":"Cần môi trường và repo cá nhân trước khi thực hiện các bài tập phân tích.","source_ref_ids":["R79","R81"],"basis":"explicit"},{"id":"D2","from":"N2","to":"N3","reason":"Tiến trình theo thứ tự các checkpoint CP1 sang CP2.","source_ref_ids":["R81","R82"],"basis":"explicit"},{"id":"D3","from":"N3","to":"N4","reason":"Hiểu containerization trước khi sang cấu hình Gateway bảo mật và scale nhiều node.","source_ref_ids":["R82","R84","R85"],"basis":"explicit"},{"id":"D4","from":"N4","to":"N5","reason":"Các khái niệm bảo mật và scale được tích hợp làm nền tảng trong Part 6 complete.","source_ref_ids":["R85","R86"],"basis":"inferred"},{"id":"D5","from":"N5","to":"N6","reason":"Chiến lược K5: Hoàn thiện agent Part 6 rồi mới deploy bản hoàn chỉnh lên cloud.","source_ref_ids":["R75","R87"],"basis":"explicit"},{"id":"D6","from":"N5","to":"N7","reason":"Part 7 develop kế thừa code và cấu trúc agent hoàn chỉnh từ Part 6.","source_ref_ids":["R77","R90"],"basis":"explicit"},{"id":"D7","from":"N7","to":"N8","reason":"Hoàn thành đo kiểm develop và eval tại lớp trước khi chạy full stack Docker Observability sau giờ lab.","source_ref_ids":["R77","R95"],"basis":"explicit"}],"feedback_edges":[{"id":"F1","from":"N7","to":"N7","condition":"Đánh giá eval v2 bị lỗi (accuracy \u003c 100% hoặc có regression)","stop_condition":"Đạt 100% accuracy trên 23 câu hỏi golden dataset không phát sinh regression","source_ref_ids":["R72","R93","R182"],"basis":"explicit"}]},{"id":"W2","label":"Luồng xử lý một Request POST /ask trong Agent Production","graph_kind":"system_flow","context_ids":["X3","X5"],"nodes":[{"id":"N9","label":"Tiếp nhận Request \u0026 Auth Dependency","purpose":"Kiểm tra header X-API-Key bằng Depends(verify_api_key), trả 401 nếu thiếu hoặc sai.","inputs":["HTTP Request","Header X-API-Key"],"outputs":["Xác thực hợp lệ hoặc Exception 401"],"kind":"required_step","requirement_ids":["Q14"],"claim_ids":[],"source_ref_ids":["R59","R64","R190","R191"],"gap_ids":[]},{"id":"N10","label":"Kiểm tra Rate Limiter (Redis)","purpose":"Sử dụng Sorted Set kiểm tra số lượng request trong sliding window, trả 429 nếu vượt ngưỡng.","inputs":["user_id / api_key","Redis Sorted Set timestamp"],"outputs":["Cho phép đi tiếp hoặc Exception 429 kèm Retry-After"],"kind":"required_step","requirement_ids":["Q14"],"claim_ids":[],"source_ref_ids":["R61","R64","R184","R192"],"gap_ids":[]},{"id":"N11","label":"Kiểm tra Cost Guard (Redis)","purpose":"Đọc tổng chi tiêu trong ngày từ Redis, chặn bằng mã 402 nếu vượt ngân sách cho phép.","inputs":["Redis key cost:daily","DAILY_BUDGET_USD"],"outputs":["Ngân sách hợp lệ hoặc Exception 402"],"kind":"required_step","requirement_ids":["Q14"],"claim_ids":[],"source_ref_ids":["R63","R64","R194","R195"],"gap_ids":[]},{"id":"N12","label":"Thực thi Agent \u0026 Gọi Mock LLM","purpose":"Truy xuất ngữ cảnh RAG và gọi mô hình xử lý câu trả lời kèm ghi nhận span trong Jaeger.","inputs":["Câu hỏi người dùng","KNOWLEDGE_BASE"],"outputs":["Nội dung câu trả lời","Token usage","Chi phí request"],"kind":"reported_step","requirement_ids":["Q16","Q17"],"claim_ids":["C6"],"source_ref_ids":["R18","R19","R64"],"gap_ids":[]},{"id":"N13","label":"Cập nhật Cost Guard \u0026 Trả lời","purpose":"Ghi nhận chi phí vừa dùng vào Redis bằng INCRBYFLOAT, trả phản hồi JSON kèm thông tin cost.","inputs":["Chi phí phát sinh","Redis connection"],"outputs":["HTTP 200 OK Response"],"kind":"reported_step","requirement_ids":["Q14"],"claim_ids":[],"source_ref_ids":["R64","R123","R184"],"gap_ids":[]}],"dependency_edges":[{"id":"D8","from":"N9","to":"N10","reason":"Xác thực API key thành công mới kiểm tra giới hạn tần suất của key đó.","source_ref_ids":["R64"],"basis":"explicit"},{"id":"D9","from":"N10","to":"N11","reason":"Rate limit còn hạn mức mới chuyển sang kiểm tra ngân sách tài chính.","source_ref_ids":["R64"],"basis":"explicit"},{"id":"D10","from":"N11","to":"N12","reason":"Ngân sách còn mới cho phép gọi LLM thực thi.","source_ref_ids":["R64"],"basis":"explicit"},{"id":"D11","from":"N12","to":"N13","reason":"Sau khi LLM phản hồi thành công và tính toán token, tiến hành ghi nhận chi phí vào Redis.","source_ref_ids":["R64"],"basis":"explicit"}],"feedback_edges":[]}]},"decisions":[{"id":"DC1","question":"Lựa chọn nền tảng Cloud triển khai chính cho agent hoàn chỉnh ở Part 3 (CP6)?","requirement_ids":["Q6"],"source_ref_ids":["R75","R87","R141","R142","R250"],"options":[{"id":"O1","label":"Railway (Exercise 3.1)","rationale":"Cung cấp credit miễn phí, hỗ trợ cấu hình qua railway.toml kết hợp cả service agent và Redis.","source_ref_ids":["R38","R49","R87","R114"]},{"id":"O2","label":"Render (Exercise 3.2)","rationale":"Cung cấp gói free tier 750 giờ/tháng, cấu hình qua render.yaml.","source_ref_ids":["R38","R49","R87","R252"]}],"recorded_choice_id":"O1","recorded_choice_ref_ids":["R114"],"gap_ids":[]},{"id":"DC2","question":"Phương pháp xử lý header xác thực X-API-Key trong FastAPI để đảm bảo đúng mã lỗi?","requirement_ids":["Q14"],"source_ref_ids":["R59","R190","R191"],"options":[{"id":"O1","label":"Sử dụng Header(..., auto_error=True)","rationale":"Mặc định của FastAPI, tự động báo lỗi 422 Unprocessable Entity khi thiếu header.","source_ref_ids":["R59"]},{"id":"O2","label":"Sử dụng APIKeyHeader(auto_error=False) và tự bắt ngoại lệ ném 401","rationale":"Tránh mã 422, đảm bảo đúng hợp đồng API trả mã HTTP 401 khi thiếu hoặc sai API key.","source_ref_ids":["R59","R190","R191"]}],"recorded_choice_id":"O2","recorded_choice_ref_ids":["R190","R191"],"gap_ids":[]},{"id":"DC3","question":"Lựa chọn chỉ số đánh giá độ trễ phục vụ người dùng trong thiết lập SLO?","requirement_ids":["Q1","Q15"],"source_ref_ids":["R1","R9","R29","R146"],"options":[{"id":"O1","label":"Sử dụng Latency trung bình (Average)","rationale":"Đơn giản, dễ tính toán trên tổng số request.","source_ref_ids":["R9"]},{"id":"O2","label":"Sử dụng phân vị tail latency (p95, p99)","rationale":"Tránh bị san phẳng số liệu ngoại lệ, phản ánh chính xác trải nghiệm tồi tệ ở nhóm người dùng cuối.","source_ref_ids":["R1","R9","R29"]}],"recorded_choice_id":"O2","recorded_choice_ref_ids":["R1","R9","R29"],"gap_ids":[]}],"interactions":[{"id":"I1","type":"trace_flow","title":"Theo dõi luồng xử lý của một request hợp lệ qua các lớp bảo vệ API","learning_goal_ids":["Q2"],"source_ref_ids":["R64","R190","R192","R194","R184"],"basis":"source_backed","prompt":"Theo dấu một HTTP request đi vào endpoint POST /ask từ lúc gửi kèm X-API-Key hợp lệ cho đến khi phản hồi 200.","feedback":"Request được thẩm định tuần tự: xác thực key -\u003e kiểm tra rate limit bằng sliding window trong Redis -\u003e kiểm tra ngân sách còn lại -\u003e gọi LLM lấy phản hồi -\u003e ghi nhận chi phí vào Redis.","gap_ids":[],"payload":{"graph_id":"W2","token_label":"POST /ask payload","steps":[{"node_id":"N9","before":"Request mang header X-API-Key đi vào cổng endpoint","after":"Xác thực API Key hợp lệ thành công","explanation":"verify_api_key kiểm tra key không rỗng và khớp giá trị cấu hình."},{"node_id":"N10","before":"Xác thực xong, chuyển dữ liệu sang bộ rate limiter","after":"Số request trong 60s chưa vượt hạn mức, ghi nhận timestamp mới vào Redis Sorted Set","explanation":"Sliding window rate limiter cho phép request đi tiếp."},{"node_id":"N11","before":"Rate limit hợp lệ, chuyển sang kiểm tra chi phí","after":"Chi phí tích lũy trong ngày nhỏ hơn DAILY_BUDGET_USD","explanation":"Cost Guard xác nhận tài khoản còn ngân sách sử dụng."},{"node_id":"N12","before":"Các chốt chặn bảo mật hoàn tất, chuyển vào nhân agent","after":"RAG truy xuất context và mock LLM trả về câu trả lời kèm thống kê token","explanation":"Mô hình xử lý và đo lường chi phí phát sinh cho câu hỏi."},{"node_id":"N13","before":"Có kết quả và số token tiêu tốn","after":"Cộng dồn chi phí vào Redis bằng INCRBYFLOAT và trả JSON 200 về client","explanation":"Kết thúc vòng đời request hoàn chỉnh."}]}},{"id":"I2","type":"trace_flow","title":"Theo dấu lộ trình thực hiện bài lab của học viên theo chiến lược K5","learning_goal_ids":["Q2"],"source_ref_ids":["R75","R77","R86","R87","R90","R95"],"basis":"source_backed","prompt":"Theo dấu trình tự hoàn thành các module từ code Part 6 đến deploy cloud và đo kiểm Part 7.","feedback":"Học viên tập trung hoàn thiện code Part 6 để đạt PASS 12/12 trước, sau đó dùng chính code đó để deploy Part 3 lên Cloud, rồi tiến hành đo kiểm Part 7 develop tại lớp và Observability stack.","gap_ids":[],"payload":{"graph_id":"W1","token_label":"Tiến trình thực hiện lab","steps":[{"node_id":"N5","before":"Đã qua các bài tập khảo sát CP1-CP4, bắt đầu làm hoàn thiện Part 6","after":"Chạy check_production_ready.py đạt PASS 12/12","explanation":"Hoàn thiện mã nguồn khung đạt chuẩn production theo rubric K5."},{"node_id":"N6","before":"Part 6 đã hoàn chỉnh và kiểm tra cục bộ đạt chuẩn","after":"Deploy Part 6 lên Railway, có public URL và test curl thành công","explanation":"Triển khai dịch vụ cloud sẵn sàng phục vụ người dùng thật theo CP6."},{"node_id":"N7","before":"Hoàn tất deploy cloud, bắt đầu thực hiện bài tập đo kiểm Part 7","after":"Hoàn thành load test 4 mức concurrency và sửa KNOWLEDGE_BASE đạt eval 100%","explanation":"Thực hiện các bài tập đo lường và chất lượng tại lớp."},{"node_id":"N8","before":"Xong bước 1 của Part 7, chuyển sang dựng full stack giám sát","after":"Thu thập metrics Grafana, traces Jaeger, firing alerts và benchmark Locust CSV","explanation":"Hoàn tất toàn bộ yêu cầu Observability và tổng hợp báo cáo BENCHMARK_REPORT.md."}]}},{"id":"I3","type":"choose_explain","title":"Xử lý mã trạng thái HTTP khi thiếu header X-API-Key","learning_goal_ids":["Q2"],"source_ref_ids":["R59","R190","R191"],"basis":"source_backed","prompt":"Trong FastAPI, nếu khai báo Header(..., name='X-API-Key') bắt buộc mặc định, framework sẽ trả về mã HTTP nào khi client không gửi header này, và tại sao không đạt rubric?","feedback":"FastAPI mặc định trả mã 422 Unprocessable Entity do vi phạm validation schema, trong khi hợp đồng API chuẩn bảo mật và rubric yêu cầu phải trả mã 401 Unauthorized.","gap_ids":[],"payload":{"options":[{"id":"O1","label":"Trả về HTTP 401 Unauthorized tự động mà không cần can thiệp","feedback":"Không chính xác. Khai báo Header(...) bắt buộc khiến FastAPI coi đây là lỗi validate tham số và trả về mã 422.","source_ref_ids":["R59"]},{"id":"O2","label":"Trả về HTTP 422 Unprocessable Entity, khiến bài làm không đạt tiêu chí trả 401","feedback":"Chính xác. Rubric và hợp đồng yêu cầu 401, do đó cần dùng auto_error=False để tự kiểm tra và raise HTTPException(401).","source_ref_ids":["R59","R190"]},{"id":"O3","label":"Trả về HTTP 403 Forbidden theo mặc định của OpenAPI","feedback":"Không chính xác. Mã 403 thường chỉ áp dụng khi key có gửi lên nhưng không hợp lệ, không phải mã mặc định của FastAPI validation.","source_ref_ids":["R59","R191"]}],"accepted_option_ids":["O2"],"explanation_prompt":"Giải thích sự khác biệt giữa lỗi validation schema (422) và lỗi thiếu thông tin xác thực danh tính (401) trong API gateway."}},{"id":"I4","type":"choose_explain","title":"Nguy cơ bùng nổ Cardinality Explosion trong Prometheus Metrics","learning_goal_ids":["Q1"],"source_ref_ids":["R15","R70","R185"],"basis":"source_backed","prompt":"Tại sao không nên sử dụng request.url.path hoặc câu hỏi tự do của người dùng làm label cho Prometheus Histogram/Counter?","feedback":"Mỗi tổ hợp label-value tạo ra một time series riêng biệt lưu trữ trong RAM Prometheus. Dữ liệu có tính biến thiên vô hạn sẽ làm cạn kiệt tài nguyên bộ nhớ.","gap_ids":[],"payload":{"options":[{"id":"O1","label":"Làm tăng kích thước Docker image của container chạy agent","feedback":"Không đúng. Label metric chỉ ảnh hưởng tới số lượng time series lưu trong bộ nhớ của tiến trình giám sát, không liên quan đến dung lượng image.","source_ref_ids":["R15"]},{"id":"O2","label":"Gây ra Cardinality Explosion làm bùng nổ số lượng chuỗi thời gian trong RAM của Prometheus","feedback":"Chính xác. Các nhãn có giá trị biến thiên không giới hạn (như câu hỏi hay URL chứa dynamic ID) khiến Prometheus quá tải bộ nhớ.","source_ref_ids":["R15","R185"]},{"id":"O3","label":"Làm sai lệch kết quả tính toán phân vị tail latency p95 trong Grafana","feedback":"Không chính xác. Thuật toán tính histogram_quantile dựa trên các bucket le, việc bùng nổ label gây sập server giám sát chứ không đơn thuần làm sai công thức.","source_ref_ids":["R15","R201"]}],"accepted_option_ids":["O2"],"explanation_prompt":"Nêu nguyên tắc thiết kế label an toàn khi ghi nhận thông tin request đường dẫn (dùng route template thay vì URL thô)."}},{"id":"I5","type":"teach_back","title":"Giải thích cơ chế phát hiện suy giảm chất lượng khi hạ tầng không báo alert","learning_goal_ids":["Q3"],"source_ref_ids":["R46","R72","R147","R182"],"basis":"source_backed","prompt":"Trong thí nghiệm Part 7, khi hạ phiên bản agent xuống AGENT_VERSION=v1, các alert hạ tầng (CPU, RAM, 5xx) không kích hoạt nhưng chất lượng suy giảm nghiêm trọng. Làm thế nào để phát hiện loại sự cố này?","feedback":"Cần thiết lập hệ thống Semantic Evaluation và LLM-as-a-judge liên tục hoặc Quality Gate trong CI chạy golden dataset để giám sát accuracy nội dung, thay vì chỉ dựa vào metrics hạ tầng kỹ thuật.","gap_ids":[],"payload":{"question":"Làm thế nào để phát hiện sự suy giảm chất lượng câu trả lời của AI agent trong production khi mà độ trễ và tỷ lệ lỗi HTTP 5xx của hệ thống vẫn hoàn toàn bình thường?","checklist":[{"point":"Chỉ ra rằng metrics hạ tầng (HTTP status, CPU, RAM, latency) chỉ đo tính sẵn sàng kỹ thuật chứ không đo độ chính xác ngữ nghĩa của AI.","source_ref_ids":["R46","R147"]},{"point":"Đề xuất cơ chế Quality Gate chạy định kỳ trên golden dataset với các chỉ số accuracy/regression.","source_ref_ids":["R13","R72","R147"]},{"point":"Đề xuất giám sát online bằng các chỉ số nghiệp vụ: tỷ lệ user thumbs down, retrieval hit rate hoặc đánh giá tự động bằng LLM-as-a-judge.","source_ref_ids":["R30","R31"]}],"hint_levels":["Gợi ý 1: Hãy so sánh kết quả accuracy giữa v1 và v2 trong bảng eval (4.35% so với \u003e90%). Mã trạng thái HTTP lúc đó có trả về 200 không?","Gợi ý 2: Để bắt được lỗi ngữ nghĩa mà không phụ thuộc vào alert CPU/RAM, ta cần kiểm tra đầu ra bằng phương pháp gì (xem cách hoạt động của script run_eval.py)?","Gợi ý 3: Đưa ra các giải pháp phân lớp: kiểm thử chặn merge (Quality Gate CI với exit code) và giám sát phản hồi thực tế của người dùng."]}},{"id":"I6","type":"teach_back","title":"Phân tích tác động của MOCK_SLOW_RATE đối với Tail Latency và lý do dùng Percentile","learning_goal_ids":["Q1"],"source_ref_ids":["R1","R8","R9","R29"],"basis":"source_backed","prompt":"Dựa trên số liệu tự báo cáo khi thay đổi MOCK_SLOW_RATE từ 0 lên 0.1, hãy giải thích tại sao SLO phải đặt dựa trên phân vị p95/p99 thay vì giá trị trung bình.","feedback":"Khi MOCK_SLOW_RATE tăng, giá trị trung bình tăng không đáng kể nhưng p99 tăng vọt gấp nhiều lần. Phân vị tail latency giúp bắt trúng nhóm người dùng gặp trải nghiệm tồi tệ nhất.","gap_ids":["G2"],"payload":{"question":"Hãy giải thích sự khác biệt giữa latency trung bình và p99 khi có tỷ lệ nhỏ request bị chậm, và tại sao cam kết SLO luôn phải dùng phân vị?","checklist":[{"point":"Chỉ ra số liệu tự báo cáo: p99 tăng từ 492.4 ms lên 1968.5 ms khi tỷ lệ slow request là 0.1.","source_ref_ids":["R8"]},{"point":"Giải thích bản chất toán học: số trung bình (average) san phẳng các điểm dị biệt và che giấu tail latency.","source_ref_ids":["R9","R29"]},{"point":"Nêu ý nghĩa thực tế của việc đặt SLO theo p95/p99 để bảo vệ trải nghiệm của người dùng cuối trong môi trường sản xuất.","source_ref_ids":["R1"]}],"hint_levels":["Gợi ý 1: Xem lại bảng đo MOCK_SLOW_RATE ở các mức 0, 0.03 và 0.1 trong BENCHMARK_REPORT.md.","Gợi ý 2: Nếu 90% request chạy trong 200ms nhưng 10% request mất 2000ms, số trung bình sẽ là bao nhiêu? Số trung bình đó có phản ánh được việc 10% khách hàng phải chờ 2 giây không?","Gợi ý 3: Kết luận về việc phân vị p95/p99 giúp phát hiện sự chậm trễ của upstream LLM hoặc nghẽn hàng đợi mà giá trị trung bình bỏ qua."]}}],"presentation":{"cards":[{"id":"P1","title":"Bài toán: Đưa AI Agent từ Localhost lên Cloud sẵn sàng Sản xuất","claim_ids":["C9"],"node_ids":["N1","N2"],"decision_ids":[],"evidence_ids":["E3"],"speaker_prompts":["Hãy giải thích vì sao agent chạy tốt trên localhost lại chưa đủ điều kiện đưa lên môi trường sản xuất?","Kể tên ít nhất 3 anti-patterns nghiêm trọng đã được ghi nhận trong app.py develop và tác động của chúng đối với tính sẵn sàng kỹ thuật."],"source_ref_ids":["R81","R153","R162"],"gap_ids":[]},{"id":"P2","title":"Quy trình Đóng gói Docker Đa tầng \u0026 Tối ưu Dung lượng","claim_ids":["C10","C11","C15"],"node_ids":["N3"],"decision_ids":[],"evidence_ids":["E4","E5","E11"],"speaker_prompts":["Trình bày cấu trúc multi-stage trong Dockerfile: builder stage làm gì và runtime stage làm gì?","Lưu ý điểm mâu thuẫn K1 giữa docker images (240MB) và docker image inspect (57MB) và giải thích con số giảm dung lượng tự báo cáo."],"source_ref_ids":["R82","R156","R157","R158","R159"],"gap_ids":[]},{"id":"P3","title":"Bảo mật API, Kiểm soát Chi phí \u0026 Kiến trúc Stateless với Redis","claim_ids":["C13"],"node_ids":["N4","N9","N10","N11","N13"],"decision_ids":["DC2"],"evidence_ids":["E9","E10"],"speaker_prompts":["Trình bày luồng bảo vệ 3 tầng của endpoint /ask: Xác thực API Key, Rate Limit theo sliding window và Cost Guard.","Tại sao phải lưu state trong Redis thay vì RAM container khi scale hệ thống lên 3 instance?"],"source_ref_ids":["R59","R61","R63","R64","R85","R184","R194","R196"],"gap_ids":[]},{"id":"P4","title":"Triển khai Thực tế lên Cloud \u0026 Kết quả Nghiệm thu Pass 12/12","claim_ids":["C14","C15"],"node_ids":["N5","N6"],"decision_ids":["DC1"],"evidence_ids":["E6","E7","E11"],"speaker_prompts":["Báo cáo kết quả chạy script check_production_ready.py: các tiêu chí nào đã được vượt qua?","Mô tả quá trình triển khai Part 6 lên dịch vụ cloud (Railway) và kiểm tra hoạt động qua 4 lệnh curl tự kiểm."],"source_ref_ids":["R87","R114","R120","R175","R176","R177"],"gap_ids":[]},{"id":"P5","title":"Đo kiểm Tải, Tail Latency \u0026 Đánh giá Chất lượng RAG","claim_ids":["C1","C2","C3","C4"],"node_ids":["N7"],"decision_ids":["DC3"],"evidence_ids":["E1","E12","E13","E14","E15"],"speaker_prompts":["Phân tích kết quả load test tự báo cáo ở 4 mức concurrency: ngưỡng nào làm vi phạm SLO p95 \u003c 500 ms?","Trình bày cách sửa KNOWLEDGE_BASE trong mock_llm.py để đưa accuracy từ 91.3% lên 100.0% mà không bị regression."],"source_ref_ids":["R1","R5","R6","R8","R11","R12","R13"],"gap_ids":["G2"]},{"id":"P6","title":"Khả năng Quan sát (Observability): Metrics, Trace Trùng khớp \u0026 Alert Hạ tầng","claim_ids":["C5","C6","C7","C8"],"node_ids":["N8","N12"],"decision_ids":[],"evidence_ids":["E16","E17","E18","E19","E20","E21"],"speaker_prompts":["Giải thích cách liên kết ba trụ cột Observability: chỉ ra sự trùng khớp trace_id giữa span Jaeger và log JSON.","Phân tích kết quả thí nghiệm chaos: alert AgentHighErrorRate kích hoạt sau thời gian tự báo cáo là bao lâu?"],"source_ref_ids":["R17","R18","R19","R21","R23"],"gap_ids":["G1","G3","G4"]},{"id":"P7","title":"Giới hạn Bằng chứng, Rủi ro Kỹ thuật \u0026 Bài học Kinh nghiệm","claim_ids":[],"node_ids":[],"decision_ids":[],"evidence_ids":[],"speaker_prompts":["Nêu rõ các giới hạn bằng chứng hiện tại: file ảnh screenshot, báo cáo JSON và CSV thô nằm ngoài markdown chưa được đọc trực tiếp.","Nếu đưa hệ thống ra môi trường production thực tế với tải thật, những metric và alert nào cần được bổ sung thêm?"],"source_ref_ids":["R15","R29","R30","R31"],"gap_ids":["G1","G2","G3","G4","G5"]}],"questions":[{"id":"QQ1","prompt":"Tại sao việc đặt mục tiêu SLO cho độ trễ hệ thống dựa trên giá trị trung bình lại che giấu tail latency nguy hiểm?","learning_goal_ids":["Q1"],"checklist":[{"point":"Giải thích giá trị trung bình bị san phẳng khi chỉ có một nhóm nhỏ request bị chậm bất thường.","source_ref_ids":["R9"]},{"point":"Chỉ ra rằng phân vị tail latency (như p95, p99) nắm bắt chính xác trải nghiệm của người dùng ở nhóm biên xấu nhất.","source_ref_ids":["R1","R29"]}],"source_ref_ids":["R1","R9","R29"]},{"id":"QQ2","prompt":"Bùng nổ Cardinality Explosion trong Prometheus là gì và làm thế nào để phòng tránh khi đo đạc AI Agent?","learning_goal_ids":["Q1"],"checklist":[{"point":"Giải thích nguyên nhân: mỗi giá trị nhãn (label) mới tạo ra một chuỗi thời gian (time series) riêng biệt chiếm RAM trong Prometheus.","source_ref_ids":["R15"]},{"point":"Nêu biện pháp: không gắn dữ liệu động vô hạn (User ID, text câu hỏi, query path) vào label; sử dụng Histogram với bucket định trước.","source_ref_ids":["R70","R185"]}],"source_ref_ids":["R15","R70","R185"]},{"id":"QQ3","prompt":"Làm thế nào để phát hiện và ngăn chặn việc suy giảm chất lượng câu trả lời của agent khi toàn bộ hạ tầng kỹ thuật vẫn bình thường?","learning_goal_ids":["Q3"],"checklist":[{"point":"Nhận thức được rằng hạ tầng chỉ đo mã lỗi HTTP và thời gian phản hồi, không đo nội dung ngữ nghĩa.","source_ref_ids":["R46"]},{"point":"Thiết lập Quality Gate chạy đánh giá trên golden dataset trước khi merge/deploy, dùng exit code để chặn pipeline.","source_ref_ids":["R13","R72","R147"]},{"point":"Bổ sung các metric nghiệp vụ trực tiếp như retrieval hit rate, RAG context relevance hoặc cơ chế LLM đánh giá định kỳ.","source_ref_ids":["R30","R31"]}],"source_ref_ids":["R13","R31","R46","R147"]},{"id":"QQ4","prompt":"Trình bày cách phối hợp giữa ba trụ cột Observability (Metrics, Logs, Traces) để điều tra một sự cố request bị chậm.","learning_goal_ids":["Q1","Q3"],"checklist":[{"point":"Sử dụng Metrics (Prometheus/Grafana) để phát hiện triệu chứng tail latency p95/p99 tăng vọt và kích hoạt cảnh báo.","source_ref_ids":["R1","R17"]},{"point":"Sử dụng Traces (Jaeger) để tìm vết span cụ thể bị chậm (ví dụ: span mock-llm chiếm phần lớn thời gian).","source_ref_ids":["R18"]},{"point":"Sử dụng trace_id để tra cứu trực tiếp dòng Log JSON chi tiết của request tương ứng nhằm tìm nguyên nhân gốc rễ.","source_ref_ids":["R19","R20"]}],"source_ref_ids":["R17","R18","R19","R20","R29"]}]},"gaps":[{"id":"G1","scope_ids":["Q17"],"reason":"Các file ảnh màn hình minh chứng Grafana và Jaeger nằm ngoài tài liệu markdown chưa được đọc trực tiếp.","requested_evidence":"Kiểm tra trực tiếp file ảnh trong thư mục screenshots/grafana-dashboard.png và jaeger-slow-trace.png."},{"id":"G2","scope_ids":["Q15","Q16"],"reason":"Các file báo cáo load test và eval dạng JSON nằm ngoài markdown cấp gốc chưa được kiểm tra nội dung.","requested_evidence":"Đọc trực tiếp các file reports/load_v2_c*.json và reports/eval_v*.json."},{"id":"G3","scope_ids":["Q19"],"reason":"Các file kết quả đo benchmark Locust CSV nằm ngoài tài liệu markdown cấp gốc.","requested_evidence":"Đọc trực tiếp file scale_1_stats.csv và scale_3_stats.csv."},{"id":"G4","scope_ids":["Q18"],"reason":"Đoạn trích từ BENCHMARK_REPORT.md chỉ thể hiện thông tin về 1 alert (A) firing, chưa thấy thông tin alert thứ 2.","requested_evidence":"Bổ sung bản ghi bảng thí nghiệm hoặc ảnh chụp prometheus-alert-firing.png hiển thị đủ ít nhất 2 alert firing."},{"id":"G5","scope_ids":["Q21"],"reason":"Hành động nộp link repo trên hệ thống LMS không thể kiểm chứng từ repo markdown.","requested_evidence":"Kiểm tra bản nộp và thời gian ghi nhận trên hệ thống LMS của khóa học."}],"conflicts":[{"id":"K1","left_ref_ids":["R157"],"right_ref_ids":["R158"],"topic":"Kích thước image Docker develop và advanced giữa lệnh docker images và docker image inspect","state":"unresolved","resolution_ref_ids":[],"human_resolution_note":null,"impact":"Số liệu kích thước my-agent:develop là 1.67GB theo docker images nhưng lại là 426320088 bytes (~426MB) theo docker image inspect; my-agent:advanced là 240MB so với 57409063 bytes (~57MB)."}],"validation":{"content_state":"draft_ready","issues":[{"id":"iss-1","code":"redacted","severity":"info","message":"Đã che 1 dòng (loại: pii) trong BENCHMARK_REPORT.md; vị trí dòng giữ nguyên.","scope_ids":["s1"]},{"id":"iss-2","code":"redacted","severity":"info","message":"Đã che 6 dòng (loại: secret, url) trong CODE_LAB.md; vị trí dòng giữ nguyên.","scope_ids":["s3"]},{"id":"iss-3","code":"redacted","severity":"info","message":"Đã che 10 dòng (loại: pii, url) trong DAY14_DELIVERY_CHECKLIST.md; vị trí dòng giữ nguyên.","scope_ids":["s4"]},{"id":"iss-4","code":"redacted","severity":"info","message":"Đã che 6 dòng (loại: url) trong DEPLOYMENT.md; vị trí dòng giữ nguyên.","scope_ids":["s5"]},{"id":"iss-5","code":"redacted","severity":"info","message":"Đã che 4 dòng (loại: secret, url) trong INSTRUCTOR_GUIDE.md; vị trí dòng giữ nguyên.","scope_ids":["s6"]},{"id":"iss-6","code":"redacted","severity":"info","message":"Đã che 4 dòng (loại: secret, url) trong LEARNING_PATH.md; vị trí dòng giữ nguyên.","scope_ids":["s7"]},{"id":"iss-7","code":"redacted","severity":"info","message":"Đã che 6 dòng (loại: secret, url) trong MISSION_ANSWERS.md; vị trí dòng giữ nguyên.","scope_ids":["s8"]},{"id":"iss-8","code":"redacted","severity":"info","message":"Đã che 3 dòng (loại: secret) trong QUICK_REFERENCE.md; vị trí dòng giữ nguyên.","scope_ids":["s9"]},{"id":"iss-9","code":"redacted","severity":"info","message":"Đã che 4 dòng (loại: secret, url) trong QUICK_START.md; vị trí dòng giữ nguyên.","scope_ids":["s10"]},{"id":"iss-10","code":"redacted","severity":"info","message":"Đã che 1 dòng (loại: secret) trong README.md; vị trí dòng giữ nguyên.","scope_ids":["s11"]},{"id":"iss-11","code":"redacted","severity":"info","message":"Đã che 2 dòng (loại: url) trong TROUBLESHOOTING.md; vị trí dòng giữ nguyên.","scope_ids":["s15"]},{"id":"iss-12","code":"refs_dropped","severity":"info","message":"CHECKPOINTS.md:1-131: loại 2 ref/note không khớp nguồn","scope_ids":["s2"]},{"id":"iss-13","code":"refs_dropped","severity":"info","message":"CODE_LAB.md:1-636: loại 12 ref/note không khớp nguồn","scope_ids":["s3"]},{"id":"iss-14","code":"refs_dropped","severity":"info","message":"CODE_LAB.md:637-1025: loại 7 ref/note không khớp nguồn","scope_ids":["s3"]},{"id":"iss-15","code":"refs_dropped","severity":"info","message":"CODE_LAB.md:1026-1129: loại 8 ref/note không khớp nguồn","scope_ids":["s3"]},{"id":"iss-16","code":"refs_dropped","severity":"info","message":"DAY14_DELIVERY_CHECKLIST.md:1-261: loại 5 ref/note không khớp nguồn","scope_ids":["s4"]},{"id":"iss-17","code":"refs_dropped","severity":"info","message":"DEPLOYMENT.md:1-71: loại 2 ref/note không khớp nguồn","scope_ids":["s5"]},{"id":"iss-18","code":"refs_dropped","severity":"info","message":"INSTRUCTOR_GUIDE.md:1-417: loại 8 ref/note không khớp nguồn","scope_ids":["s6"]},{"id":"iss-19","code":"refs_dropped","severity":"info","message":"INSTRUCTOR_GUIDE.md:418-814: loại 8 ref/note không khớp nguồn","scope_ids":["s6"]},{"id":"iss-20","code":"refs_dropped","severity":"info","message":"LEARNING_PATH.md:1-501: loại 2 ref/note không khớp nguồn","scope_ids":["s7"]},{"id":"iss-21","code":"refs_dropped","severity":"info","message":"MISSION_ANSWERS.md:1-167: loại 6 ref/note không khớp nguồn","scope_ids":["s8"]},{"id":"iss-22","code":"refs_dropped","severity":"info","message":"MISSION_ANSWERS.md:168-362: loại 8 ref/note không khớp nguồn","scope_ids":["s8"]},{"id":"iss-23","code":"refs_dropped","severity":"info","message":"QUICK_REFERENCE.md:1-663: loại 2 ref/note không khớp nguồn","scope_ids":["s9"]},{"id":"iss-24","code":"refs_dropped","severity":"info","message":"QUICK_REFERENCE.md:664-793: loại 7 ref/note không khớp nguồn","scope_ids":["s9"]},{"id":"iss-25","code":"refs_dropped","severity":"info","message":"QUICK_START.md:1-429: loại 2 ref/note không khớp nguồn","scope_ids":["s10"]},{"id":"iss-26","code":"refs_dropped","severity":"info","message":"README.md:1-145: loại 1 ref/note không khớp nguồn","scope_ids":["s11"]},{"id":"iss-27","code":"refs_dropped","severity":"info","message":"RUBRIC.md:1-77: loại 5 ref/note không khớp nguồn","scope_ids":["s12"]},{"id":"iss-28","code":"refs_dropped","severity":"info","message":"RULES.md:1-34: loại 1 ref/note không khớp nguồn","scope_ids":["s13"]},{"id":"iss-29","code":"refs_dropped","severity":"info","message":"SUBMISSION.md:1-69: loại 24 ref/note không khớp nguồn","scope_ids":["s14"]},{"id":"iss-30","code":"refs_dropped","severity":"info","message":"TROUBLESHOOTING.md:1-711: loại 10 ref/note không khớp nguồn","scope_ids":["s15"]},{"id":"iss-31","code":"refs_dropped","severity":"info","message":"TROUBLESHOOTING.md:712-918: loại 26 ref/note không khớp nguồn","scope_ids":["s15"]},{"id":"iss-32","code":"downgrade_fulfillment","severity":"info","message":"Hạ fulfillment về not_reported vì không còn bằng chứng","scope_ids":["Q21"]}],"coverage_summary":{"files_total":15,"files_processed":15,"lines_total":6032,"lines_processed":6032,"redacted_lines":47,"unresolved_issue_ids":[]},"review_state":"unreviewed"}},"meta":{"generation_id":"ab2b8815","generated_at":"2026-11-28T07:46:51","model":"gemini-3.8-flash","prompt_version":"learning-v1-p1","template_version":"learning-html-1","fake":false}}</script>
+<script>
+
+(function () {
+'use strict';
+function dict() { return Object.create(null); }
+function isObj(x) { return !!x && typeof x === 'object' && !Array.isArray(x); }
+function obj(x) { return isObj(x) ? x : {}; }
+function arr(x) { return Array.isArray(x) ? x : []; }
+function str(x) { return typeof x === 'string' ? x : (x === null || x === undefined) ? '' : String(x); }
+function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+function lab(t, k, fb) { return has(t, k) ? t[k] : (fb === undefined ? str(k) : fb); }
+function cssKey(x) { x = str(x); return /^[a-z_]{1,40}$/.test(x) ? x : 'unknown'; }
+function trunc(s, n) { s = str(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+
+var D = {};
+try { var de = document.getElementById('learning-data'); D = JSON.parse(de ? de.textContent : '{}') || {}; } catch (e) { D = {}; }
+var M = obj(D.model), META = obj(D.meta);
+var SNAP = str(obj(M.repo_snapshot).snapshot_id);
+var TV = str(META.template_version) || 'learning-html-1';
+var STORE_KEY = 'learning-v1:' + SNAP + ':' + TV;
+
+var ROLE = {assignment: 'Đề bài', rule: 'Luật', rubric: 'Rubric', instruction: 'Hướng dẫn',
+  student_submission: 'Bài làm tự báo cáo', instructor_example: 'Ví dụ/hướng dẫn giảng viên', background: 'Nền',
+  unknown: 'Chưa rõ vai trò'};
+var FUL = {not_reported: 'Chưa có nội dung bài làm', reported_complete: 'Bài làm tự báo cáo: xong',
+  reported_partial: 'Tự báo cáo: một phần', reported_not_done: 'Tự báo cáo: chưa làm', conflicting: 'Mâu thuẫn'};
+var KIND = {required: 'Đề yêu cầu', reported: 'Bài làm tự báo cáo', document_observation: 'Quan sát trong tài liệu',
+  inference: 'Suy luận', hypothetical: 'Giả định minh họa'};
+var EVS = {reported_in_markdown: 'Ghi trong Markdown, chưa xác minh',
+  embedded_record_unverified: 'Bản ghi dán vào, chưa xác minh', referenced_unread: 'Nguồn được nhắc tới — chưa đọc',
+  missing: 'Thiếu', conflicting: 'Mâu thuẫn'};
+var ORIGIN = {lab_simulated: 'Dữ liệu giả lập của lab', student_reported_measurement: 'Số do học viên tự báo cáo',
+  teaching_hypothetical: 'Ví dụ giả định để dạy', unknown: 'Chưa rõ xuất xứ', not_applicable: 'Không áp dụng'};
+var CAT = {learning_goal: 'Mục tiêu học', deliverable: 'Sản phẩm cần nộp', constraint: 'Ràng buộc',
+  assessment: 'Tiêu chí đánh giá'};
+var APPL = {required: 'Bắt buộc', optional: 'Tùy chọn', conditional: 'Có điều kiện', unresolved: 'Chưa rõ áp dụng'};
+var GKIND = {learning_order: 'Thứ tự học/làm theo đề', system_flow: 'Luồng hệ thống',
+  decision_process: 'Quy trình quyết định'};
+var NKIND = {required_step: 'theo đề', reported_step: 'bài làm ghi nhận', inferred_step: 'suy luận'};
+var CSTATE = {unresolved: 'Chưa giải quyết — cần người học/TA xác nhận',
+  resolved_by_source: 'Có nguồn chỉ dẫn ưu tiên', resolved_by_human: 'Có ghi chú giải quyết của người'};
+var RSTATUS = {read: 'Đã đọc', empty: 'Rỗng', unreadable: 'Không đọc được', excluded: 'Bị loại',
+  over_limit: 'Vượt giới hạn', changed: 'Đổi trong lúc đọc'};
+var SEV = {info: 'Thông tin', warning: 'Cảnh báo', error: 'Lỗi'};
+var SIM_TEXT = 'Số liệu giả lập (simulated)';
+
+// ---------------------------------------------------------------- DOM helpers (chỉ textContent)
+var BLOCKED_ATTR = /^(on|href$|src$|srcdoc$|action$|formaction$|xlink:href$|style$)/i;
+var uidN = 0;
+function uid(p) { uidN += 1; return 'lx-' + p + '-' + uidN; }
+function append(n, kids) {
+  if (kids === null || kids === undefined || kids === false) return;
+  if (!Array.isArray(kids)) kids = [kids];
+  kids.forEach(function (k) {
+    if (k === null || k === undefined || k === false) return;
+    if (Array.isArray(k)) append(n, k);
+    else if (typeof k === 'string' || typeof k === 'number') n.appendChild(document.createTextNode(String(k)));
+    else n.appendChild(k);
+  });
+}
+function setAttrs(n, props) {
+  Object.keys(props || {}).forEach(function (k) {
+    var v = props[k];
+    if (v === null || v === undefined || v === false) return;
+    if (k === 'cls') n.setAttribute('class', v);
+    else if (k === 'text') n.textContent = str(v);
+    else if (k === 'on') Object.keys(v).forEach(function (ev) { n.addEventListener(ev, v[ev]); });
+    else if (BLOCKED_ATTR.test(k)) throw new Error('thuộc tính bị chặn: ' + k);
+    else if (v === true) n.setAttribute(k, '');
+    else n.setAttribute(k, str(v));
+  });
+}
+function el(tag, props, kids) { var n = document.createElement(tag); setAttrs(n, props); append(n, kids); return n; }
+var SVGNS = 'http://www.w3.org/2000/svg';
+function sv(tag, props, kids) { var n = document.createElementNS(SVGNS, tag); setAttrs(n, props); append(n, kids); return n; }
+function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+function btn(text, props, onClick) {
+  var p = props || {}; p.type = 'button';
+  var b = el('button', p, text);
+  if (onClick) b.addEventListener('click', onClick);
+  return b;
+}
+
+// ---------------------------------------------------------------- index
+var IX = {ref: dict(), src: dict(), req: dict(), claim: dict(), ev: dict(), gap: dict(), conf: dict(), ctx: dict(),
+  meas: dict(), graph: dict(), node: dict(), nodeGraph: dict(), dec: dict(), card: dict(), q: dict(), it: dict()};
+function put(map, o, key) { if (isObj(o) && typeof o[key || 'id'] === 'string') map[o[key || 'id']] = o; }
+arr(M.source_manifest).forEach(function (o) { put(IX.src, o, 'source_id'); });
+arr(M.source_refs).forEach(function (o) { put(IX.ref, o); });
+arr(M.requirements).forEach(function (o) { put(IX.req, o); });
+arr(M.claims).forEach(function (o) { put(IX.claim, o); });
+arr(M.evidence).forEach(function (o) { put(IX.ev, o); });
+arr(M.gaps).forEach(function (o) { put(IX.gap, o); });
+arr(M.conflicts).forEach(function (o) { put(IX.conf, o); });
+arr(M.contexts).forEach(function (o) { put(IX.ctx, o); });
+arr(M.measurements).forEach(function (o) { put(IX.meas, o); });
+arr(M.decisions).forEach(function (o) { put(IX.dec, o); });
+arr(M.interactions).forEach(function (o) { put(IX.it, o); });
+var GRAPHS = arr(obj(M.workflow).graphs).filter(isObj);
+GRAPHS.forEach(function (g) {
+  put(IX.graph, g);
+  arr(g.nodes).forEach(function (n) { put(IX.node, n); if (isObj(n) && typeof n.id === 'string') IX.nodeGraph[n.id] = g; });
+});
+var PRES = obj(M.presentation);
+var CARDS = arr(PRES.cards).filter(isObj), QUESTIONS = arr(PRES.questions).filter(isObj);
+CARDS.forEach(function (o) { put(IX.card, o); });
+QUESTIONS.forEach(function (o) { put(IX.q, o); });
+var INTER = arr(M.interactions).filter(isObj);
+
+function evSim(e) { return !!(e && e.simulation_label_required === true); }
+function claimSim(c) {
+  return !!(c && (c.simulation_label_required === true || arr(c.evidence_ids).some(function (x) { return evSim(IX.ev[x]); })));
+}
+function measSim(m) { return claimSim(IX.claim[m.claim_id]) || arr(m.evidence_ids).some(function (x) { return evSim(IX.ev[x]); }); }
+var SIM_REFS = dict();
+arr(M.claims).forEach(function (c) { if (claimSim(c)) arr(c.source_ref_ids).forEach(function (r) { SIM_REFS[r] = true; }); });
+arr(M.evidence).forEach(function (e) { if (evSim(e)) arr(e.source_ref_ids).forEach(function (r) { SIM_REFS[r] = true; }); });
+function refsSim(ids) { return arr(ids).some(function (r) { return SIM_REFS[r] === true; }); }
+
+function ctxText(c) {
+  c = obj(c);
+  var parts = [c.artifact_label, c.part_label, c.checkpoint_label, c.environment, c.scope].filter(function (x) { return typeof x === 'string' && x; });
+  return parts.length ? parts.join(' · ') : 'Ngữ cảnh chưa rõ';
+}
+function describeId(id) {
+  if (IX.req[id]) return 'Yêu cầu: ' + str(IX.req[id].text);
+  if (IX.claim[id]) return 'Nhận định: ' + str(IX.claim[id].text);
+  if (IX.node[id]) return 'Bước: ' + str(IX.node[id].label);
+  if (IX.graph[id]) return 'Sơ đồ: ' + str(IX.graph[id].label);
+  if (IX.ev[id]) return 'Bằng chứng: ' + str(IX.ev[id].description);
+  if (IX.dec[id]) return 'Quyết định: ' + str(IX.dec[id].question);
+  if (IX.card[id]) return 'Thẻ trình bày: ' + str(IX.card[id].title);
+  if (IX.q[id]) return 'Câu hỏi: ' + str(IX.q[id].prompt);
+  if (IX.it[id]) return 'Tương tác: ' + str(IX.it[id].title);
+  if (IX.src[id]) return 'Tệp: ' + str(IX.src[id].name);
+  if (IX.ctx[id]) return 'Ngữ cảnh: ' + ctxText(IX.ctx[id]);
+  if (IX.gap[id]) return 'Khoảng trống: ' + str(IX.gap[id].reason);
+  if (IX.conf[id]) return 'Mâu thuẫn: ' + str(IX.conf[id].topic);
+  if (IX.meas[id]) return 'Số đo: ' + str(IX.meas[id].value);
+  return str(id);
+}
+
+// ---------------------------------------------------------------- components
+function chip(text, cls) { return el('span', {cls: 'chip ' + (cls || '')}, text); }
+function simChip() { return chip(SIM_TEXT, 'chip-sim'); }
+function fulChip(f) { return chip(lab(FUL, f, 'Trạng thái chưa biết: ' + str(f)), 'ful-' + cssKey(f)); }
+function kindChip(k) { return chip(lab(KIND, k), 'kind-' + cssKey(k)); }
+function evChip(s) { return chip(lab(EVS, s), 'evs-' + cssKey(s)); }
+function nodeKindChip(k) { return chip(lab(NKIND, k), 'nk-' + cssKey(k)); }
+function inferChip() { return chip('suy luận', 'chip-infer'); }
+function gapChip() { return chip('Còn thiếu', 'chip-gap'); }
+function para(cls, kids) { return el('p', {cls: cls || null}, kids); }
+function labelled(name, value) { return para('kv', [el('span', {cls: 'muted', text: name + ': '}), value]); }
+
+function refName(r) {
+  var s = IX.src[r.source_id];
+  var name = s ? str(s.name) : str(r.source_id);
+  var a = r.start_line, b = r.end_line;
+  return name + ':' + a + (b !== undefined && b !== a ? '-' + b : '');
+}
+function refsBlock(ids, opts) {
+  opts = opts || {};
+  var list = arr(ids).filter(function (id) { return IX.ref[id]; });
+  var wrap = el('div', {cls: 'refs'});
+  if (!list.length) {
+    if (opts.noneText !== false) append(wrap, el('span', {cls: 'refs-none', text: opts.noneText || 'Không có trích dẫn nguồn trực tiếp'}));
+    return wrap;
+  }
+  var row = el('div', {cls: 'ref-row'}, el('span', {cls: 'ref-lead', text: opts.lead || 'Nguồn:'}));
+  var panels = el('div', {cls: 'ref-panels'});
+  list.forEach(function (id) {
+    var r = IX.ref[id], pid = uid('ref'), name = refName(r), role = lab(ROLE, r.role, ROLE.unknown);
+    var panel = el('div', {cls: 'ref-panel', id: pid, hidden: true, role: 'region', 'aria-label': 'Trích dẫn ' + name}, [
+      el('div', {cls: 'ref-meta'}, [chip(role, 'role'), el('span', {cls: 'ref-loc', text: name})]),
+      el('blockquote', {cls: 'ref-quote', text: str(r.quote)})]);
+    var b = btn(name, {cls: 'ref-btn', 'aria-expanded': 'false', 'aria-controls': pid, 'aria-label': 'Trích dẫn ' + name + ' (' + role + ')'});
+    b.addEventListener('click', function () {
+      var open = b.getAttribute('aria-expanded') === 'true';
+      b.setAttribute('aria-expanded', open ? 'false' : 'true');
+      panel.hidden = open;
+    });
+    append(row, b);
+    append(panels, panel);
+  });
+  append(wrap, row);
+  append(wrap, panels);
+  return wrap;
+}
+function missing(what, action) {
+  return el('div', {cls: 'missing'}, [para(null, [el('strong', {text: 'Còn thiếu: '}), what]),
+    action ? para(null, [el('strong', {text: 'Cách bổ sung: '}), action]) : null]);
+}
+function sectionEmpty(sec) {
+  return missing(sec.getAttribute('data-empty-what') || 'Chưa có nội dung.', sec.getAttribute('data-empty-action') || '');
+}
+function gapView(id) {
+  var g = IX.gap[id];
+  if (!g) return null;
+  return el('div', {cls: 'item gap'}, [para(null, [gapChip(), el('span', {text: str(g.reason)})]),
+    g.requested_evidence ? labelled('Cần bổ sung', str(g.requested_evidence)) : null]);
+}
+function gapList(ids) {
+  var gs = arr(ids).map(gapView).filter(Boolean);
+  return gs.length ? el('div', {cls: 'gaps'}, gs) : null;
+}
+function contextLine(ids) {
+  var cs = arr(ids).filter(function (x) { return IX.ctx[x]; });
+  return cs.length ? labelled('Ngữ cảnh', cs.map(function (x) { return ctxText(IX.ctx[x]); }).join(' | ')) : null;
+}
+function claimView(c, compact) {
+  if (!c) return null;
+  var kids = [para('item-head', [kindChip(c.kind), claimSim(c) ? simChip() : null, el('span', {cls: 'item-text', text: str(c.text)})])];
+  if (c.kind === 'hypothetical') kids.push(labelled('Giả định', str(c.assumption) || '(chưa ghi giả định)'));
+  if (c.kind === 'inference') {
+    var ps = arr(c.premise_ids).filter(function (p) { return IX.claim[p]; });
+    kids.push(labelled('Suy luận từ', ps.length ? ps.map(function (p) { return '«' + str(IX.claim[p].text) + '»'; }).join('; ') : '(không có tiền đề)'));
+  }
+  if (!compact) {
+    if (c.data_origin && c.data_origin !== 'not_applicable') kids.push(labelled('Xuất xứ dữ liệu', lab(ORIGIN, c.data_origin)));
+    kids.push(contextLine(c.context_ids));
+  }
+  kids.push(refsBlock(c.source_ref_ids));
+  return el('div', {cls: 'item claim'}, kids);
+}
+function evView(e, compact) {
+  if (!e) return null;
+  var kids = [para('item-head', [evChip(e.status), evSim(e) ? simChip() : null, el('span', {cls: 'item-text', text: str(e.description)})])];
+  if (e.external_ref) kids.push(labelled('Tệp được nhắc tới (chưa đọc, không tự mở)', el('code', {text: str(e.external_ref)})));
+  if (!compact) {
+    if (e.data_origin && e.data_origin !== 'not_applicable') kids.push(labelled('Xuất xứ dữ liệu', lab(ORIGIN, e.data_origin)));
+    if (e.limitation) kids.push(labelled('Giới hạn', str(e.limitation)));
+    kids.push(contextLine(e.context_ids));
+  }
+  kids.push(refsBlock(e.source_ref_ids));
+  return el('div', {cls: 'item evidence'}, kids);
+}
+function reqView(q, opts) {
+  opts = opts || {};
+  var kids = [para('item-head', [fulChip(q.fulfillment), opts.showCat ? chip(lab(CAT, q.category), 'cat') : null,
+    chip(lab(APPL, q.applicability), 'appl'), el('span', {cls: 'item-text', text: str(q.text)})])];
+  kids.push(refsBlock(q.source_ref_ids));
+  if (q.condition) kids.push(labelled('Điều kiện', str(q.condition)));
+  if (q.scope) kids.push(labelled('Phạm vi', str(q.scope)));
+  arr(q.overrides).forEach(function (ov) {
+    ov = obj(ov);
+    kids.push(el('div', {cls: 'override'}, [labelled('Thay thế yêu cầu', describeId(ov.requirement_id)), refsBlock(ov.source_ref_ids)]));
+  });
+  if (!opts.noEvidence) {
+    var evs = arr(q.evidence_ids).filter(function (x) { return IX.ev[x]; });
+    if (evs.length) kids.push(el('div', {cls: 'sub'}, [el('p', {cls: 'muted', text: 'Bằng chứng liên kết:'}), evs.map(function (x) { return evView(IX.ev[x], true); })]));
+  }
+  arr(q.conflict_ids).forEach(function (x) { if (IX.conf[x]) kids.push(para('gap', [chip('Mâu thuẫn', 'ful-conflicting'), str(IX.conf[x].topic) + ' — xem mục 5'])); });
+  kids.push(gapList(q.gap_ids));
+  return el('div', {cls: 'item req'}, kids);
+}
+function goalsLine(ids) {
+  var gs = arr(ids).filter(function (x) { return IX.req[x]; });
+  return gs.length ? labelled('Gắn với mục tiêu', gs.map(function (x) { return str(IX.req[x].text); }).join(' | ')) : null;
+}
+function basisLine(it, traceStyle) {
+  if (it.basis === 'hypothetical') return para(null, chip(traceStyle ? 'Ví dụ giả định — không phải replay code' : 'Ví dụ giả định', 'kind-hypothetical'));
+  return null;
+}
+function nodeHasGap(n) {
+  return arr(n.gap_ids).length > 0 || arr(n.requirement_ids).some(function (id) {
+    return IX.req[id] && IX.req[id].fulfillment !== 'reported_complete';
+  });
+}
+
+// ---------------------------------------------------------------- notes / storage
+var NOTES = dict(), CHECKS = dict(), KNOWN = dict(), noteEls = dict(), noteCbs = dict();
+var NOTE_MAX = 20000, NOTES_MAX = 1000, FILE_MAX = 1048576;
+var storeOn = false, saveTimer = null, storeMsgEl = null, storeCb = null;
+function noteArea(id, labelText, opts) {
+  opts = opts || {};
+  KNOWN[id] = true;
+  var tid = uid('note');
+  var ta = el('textarea', {id: tid, rows: opts.rows || 3, maxlength: NOTE_MAX});
+  ta.value = NOTES[id] || '';
+  ta.addEventListener('input', function () {
+    NOTES[id] = ta.value;
+    (noteEls[id] || []).forEach(function (t) { if (t !== ta && t.isConnected) t.value = ta.value; });
+    runCbs(id);
+    scheduleSave();
+  });
+  (noteEls[id] = noteEls[id] || []).push(ta);
+  if (opts.onInput) (noteCbs[id] = noteCbs[id] || []).push(opts.onInput);
+  var wrap = el('div', {cls: 'field private-note-wrap' + (opts.cls ? ' ' + opts.cls : '')}, [el('label', {'for': tid, text: labelText}), ta]);
+  return {wrap: wrap, ta: ta};
+}
+function runCbs(id) { (noteCbs[id] || []).forEach(function (f) { try { f(NOTES[id] || ''); } catch (e) { /* bỏ qua */ } }); }
+function applyNotes(notes) {
+  Object.keys(notes).forEach(function (id) {
+    if (!(id in KNOWN)) return;
+    NOTES[id] = notes[id];
+    (noteEls[id] || []).forEach(function (t) { if (t.isConnected) t.value = notes[id]; });
+    runCbs(id);
+  });
+}
+function storageMsg(text) { if (storeMsgEl) storeMsgEl.textContent = text; }
+function payload(withChecks) {
+  var notes = dict();
+  Object.keys(NOTES).forEach(function (k) { if (NOTES[k]) notes[k] = NOTES[k]; });
+  var o = {schema: 'learning-notes-1', snapshot_id: SNAP, notes: notes};
+  if (withChecks) o.checks = CHECKS;
+  return o;
+}
+function saveNow() {
+  if (!storeOn) return;
+  try { window.localStorage.setItem(STORE_KEY, JSON.stringify(payload(true))); }
+  catch (e) {
+    storeOn = false;
+    if (storeCb) storeCb.checked = false;
+    storageMsg('Không lưu được trên thiết bị này (trình duyệt chặn localStorage, thường gặp khi mở file://). Ghi chú chỉ giữ trong phiên này — hãy dùng “Xuất ghi chú (.json)”.');
+  }
+}
+function scheduleSave() {
+  if (!storeOn) return;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function () { saveTimer = null; saveNow(); }, 400);
+}
+function validateNotes(o) {
+  function bad(m) { return {ok: false, err: m}; }
+  if (!isObj(o)) return bad('Tệp không phải một object JSON.');
+  if (o.schema !== 'learning-notes-1') return bad('Sai schema (cần "learning-notes-1").');
+  if (typeof o.snapshot_id !== 'string' || !o.snapshot_id || o.snapshot_id.length > 200) return bad('Thiếu snapshot_id hợp lệ.');
+  if (!isObj(o.notes)) return bad('Thiếu "notes" dạng object.');
+  var keys = Object.keys(o.notes);
+  if (keys.length > NOTES_MAX) return bad('Quá nhiều ghi chú (tối đa ' + NOTES_MAX + ').');
+  var out = dict(), unknown = 0;
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i], v = o.notes[k];
+    if (typeof v !== 'string') return bad('Ghi chú "' + trunc(k, 40) + '" không phải chuỗi.');
+    if (v.length > NOTE_MAX || k.length > 200) return bad('Ghi chú "' + trunc(k, 40) + '" quá dài.');
+    if (!(k in KNOWN)) { unknown += 1; continue; }
+    out[k] = v;
+  }
+  var checks = dict();
+  if (isObj(o.checks)) Object.keys(o.checks).forEach(function (k) { if (o.checks[k] === true && k.length < 200) checks[k] = true; });
+  return {ok: true, notes: out, unknown: unknown, snapshot_id: o.snapshot_id, checks: checks};
+}
+function loadStored() {
+  var raw = null;
+  try { raw = window.localStorage.getItem(STORE_KEY); } catch (e) { raw = null; }
+  if (!raw) return;
+  var v;
+  try { v = validateNotes(JSON.parse(raw)); } catch (e) { v = {ok: false}; }
+  if (!v.ok || v.snapshot_id !== SNAP) { storageMsg('Có dữ liệu đã lưu nhưng không hợp lệ cho bài này; đã bỏ qua.'); return; }
+  applyNotes(v.notes);
+  Object.keys(v.checks).forEach(function (k) { CHECKS[k] = true; });
+  syncChecks();
+  storeOn = true;
+  if (storeCb) storeCb.checked = true;
+  storageMsg('Đã nạp ghi chú đã lưu trên thiết bị này.');
+}
+var checkEls = dict();
+function syncChecks() { Object.keys(checkEls).forEach(function (k) { checkEls[k].checked = CHECKS[k] === true; }); }
+function selfCheck(key, text) {
+  var id = uid('chk');
+  var cb = el('input', {type: 'checkbox', id: id});
+  cb.checked = CHECKS[key] === true;
+  cb.addEventListener('change', function () { if (cb.checked) CHECKS[key] = true; else delete CHECKS[key]; scheduleSave(); });
+  checkEls[key] = cb;
+  return el('label', {cls: 'inline', 'for': id}, [cb, text || 'Điểm cần tự kiểm tra']);
+}
+
+// ---------------------------------------------------------------- toolbar
+function checkbox(text, onChange) {
+  var id = uid('opt');
+  var cb = el('input', {type: 'checkbox', id: id});
+  cb.addEventListener('change', function () { onChange(cb.checked, cb); });
+  return {cb: cb, label: el('label', {cls: 'inline', 'for': id}, [cb, text])};
+}
+var printCurrentBtn = null;
+function buildToolbar() {
+  var slot = document.getElementById('toolbar-slot');
+  if (!slot) return;
+  var bar = el('div', {cls: 'toolbar', role: 'region', 'aria-label': 'Công cụ trang'});
+  printCurrentBtn = btn('In mục đang xem', {}, function () { document.body.classList.remove('print-all'); window.print(); });
+  var printAll = btn('In tất cả mục', {}, function () {
+    document.body.classList.add('print-all');
+    window.print();
+    setTimeout(function () { document.body.classList.remove('print-all'); }, 500);
+  });
+  window.addEventListener('afterprint', function () { document.body.classList.remove('print-all'); });
+  var pa = checkbox('In kèm đáp án đã mở', function (on) { document.body.classList.toggle('print-answers', on); });
+  var pn = checkbox('In kèm ghi chú', function (on) { document.body.classList.toggle('print-notes', on); });
+  append(bar, el('fieldset', {}, [el('legend', {text: 'In'}), printCurrentBtn, printAll, pa.label, pn.label]));
+  var mo = checkbox('Tắt hiệu ứng', function (on) { document.body.classList.toggle('no-motion', on); });
+  try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { mo.cb.checked = true; document.body.classList.add('no-motion'); } } catch (e) { /* bỏ qua */ }
+  append(bar, el('fieldset', {}, [el('legend', {text: 'Hiển thị'}), mo.label]));
+  storeMsgEl = el('p', {cls: 'store-msg', 'aria-live': 'polite', text: 'Ghi chú và tiến độ mặc định chỉ giữ trong bộ nhớ của tab này; không có gì được gửi đi.'});
+  var st = checkbox('Lưu ghi chú trên thiết bị này', function (on, cb) {
+    if (!on) { storeOn = false; storageMsg('Đã tắt lưu trên thiết bị. Dữ liệu đã lưu trước đó vẫn còn cho tới khi bạn bấm “Xóa dữ liệu đã lưu”.'); return; }
+    storeOn = true;
+    saveNow();
+    if (storeOn) storageMsg('Đang lưu ghi chú trong trình duyệt của thiết bị này (khóa riêng cho snapshot này).');
+    else cb.checked = false;
+  });
+  storeCb = st.cb;
+  var exp = btn('Xuất ghi chú (.json)', {}, exportNotes);
+  var fileId = uid('file');
+  var file = el('input', {type: 'file', id: fileId, accept: '.json,application/json'});
+  file.addEventListener('change', function () { if (file.files && file.files[0]) readNotesFile(file.files[0]); file.value = ''; });
+  var del = btn('Xóa dữ liệu đã lưu', {}, function () {
+    try { window.localStorage.removeItem(STORE_KEY); storageMsg('Đã xóa dữ liệu đã lưu trên thiết bị này. Ghi chú trong tab vẫn còn tới khi bạn đóng trang.'); }
+    catch (e) { storageMsg('Trình duyệt không cho truy cập localStorage — không có dữ liệu nào được lưu.'); }
+    storeOn = false; storeCb.checked = false;
+  });
+  pendingBox = el('div', {cls: 'pending-import', hidden: true, role: 'alert'});
+  append(bar, el('fieldset', {}, [el('legend', {text: 'Ghi chú của bạn'}), st.label, exp,
+    el('label', {cls: 'inline', 'for': fileId, text: 'Nhập ghi chú (.json):'}), file, del, storeMsgEl, pendingBox]));
+  append(slot, bar);
+}
+var pendingBox = null;
+function exportNotes() {
+  try {
+    var blob = new Blob([JSON.stringify(payload(false), null, 2)], {type: 'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'learning-notes-' + (SNAP.replace(/[^A-Za-z0-9]/g, '').slice(0, 12) || 'bai') + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    storageMsg('Đã tạo tệp ghi chú để tải về (không gửi đi đâu).');
+  } catch (e) { storageMsg('Không tạo được tệp xuất: ' + str(e && e.message)); }
+}
+function readNotesFile(f) {
+  if (f.size > FILE_MAX) { storageMsg('Tệp quá lớn (tối đa 1 MB).'); return; }
+  var rd = new FileReader();
+  rd.onload = function () {
+    var v;
+    try { v = validateNotes(JSON.parse(str(rd.result))); } catch (e) { v = {ok: false, err: 'Tệp không phải JSON hợp lệ.'}; }
+    if (!v.ok) { storageMsg('Không nhập: ' + v.err); return; }
+    var info = Object.keys(v.notes).length + ' ghi chú khớp bài này' + (v.unknown ? ', bỏ qua ' + v.unknown + ' ghi chú có ID lạ' : '');
+    if (v.snapshot_id !== SNAP) {
+      clear(pendingBox);
+      append(pendingBox, [para(null, [el('strong', {text: 'Cảnh báo: '}), 'tệp ghi chú thuộc snapshot khác (' + trunc(v.snapshot_id, 16) + ') — có thể là phiên bản bài khác. Chưa áp dụng gì. (' + info + ')']),
+        btn('Vẫn áp dụng ghi chú này', {}, function () { applyNotes(v.notes); scheduleSave(); pendingBox.hidden = true; storageMsg('Đã áp dụng ghi chú từ snapshot khác theo yêu cầu của bạn (' + info + ').'); }),
+        ' ', btn('Hủy', {}, function () { pendingBox.hidden = true; storageMsg('Đã hủy nhập ghi chú.'); })]);
+      pendingBox.hidden = false;
+      return;
+    }
+    applyNotes(v.notes);
+    scheduleSave();
+    storageMsg('Đã nhập ' + info + '.');
+  };
+  rd.onerror = function () { storageMsg('Không đọc được tệp.'); };
+  rd.readAsText(f);
+}
+
+// ---------------------------------------------------------------- workflow graph (SVG)
+var GW = 190, GH = 92, GX = 60, GY = 26, PADX = 44, PADT = 40, PADB = 20;
+function layoutGraph(g) {
+  var nodes = arr(g.nodes).filter(function (n) { return isObj(n) && typeof n.id === 'string'; });
+  var idx = dict();
+  nodes.forEach(function (n, i) { idx[n.id] = i; });
+  var deps = arr(g.dependency_edges).filter(function (e) { return isObj(e) && (e.from in idx) && (e.to in idx) && e.from !== e.to; });
+  var fbs = arr(g.feedback_edges).filter(function (e) { return isObj(e) && (e.from in idx) && (e.to in idx); });
+  var indeg = dict(), out = dict(), layer = dict();
+  nodes.forEach(function (n) { indeg[n.id] = 0; out[n.id] = []; layer[n.id] = 0; });
+  deps.forEach(function (e) { indeg[e.to] += 1; out[e.from].push(e.to); });
+  var queue = nodes.filter(function (n) { return indeg[n.id] === 0; }).map(function (n) { return n.id; });
+  while (queue.length) {
+    var u = queue.shift();
+    out[u].forEach(function (v) { layer[v] = Math.max(layer[v], layer[u] + 1); indeg[v] -= 1; if (indeg[v] === 0) queue.push(v); });
+  }
+  var cols = [];
+  nodes.forEach(function (n) { var l = layer[n.id]; (cols[l] = cols[l] || []).push(n); });
+  cols = cols.filter(Boolean);
+  var order = [];
+  cols.forEach(function (c) { c.forEach(function (n) { order.push(n); }); });
+  return {nodes: nodes, deps: deps, fbs: fbs, cols: cols, order: order};
+}
+function wrapText(s, max, lines) {
+  var words = str(s).split(/\s+/).filter(Boolean), out = [], cur = '';
+  words.forEach(function (w) {
+    while (w.length > max) { if (cur) { out.push(cur); cur = ''; } out.push(w.slice(0, max)); w = w.slice(max); }
+    if (!cur) cur = w; else if ((cur + ' ' + w).length <= max) cur += ' ' + w; else { out.push(cur); cur = w; }
+  });
+  if (cur) out.push(cur);
+  if (out.length > lines) { out = out.slice(0, lines); out[lines - 1] = trunc(out[lines - 1], max - 1) + '…'; }
+  return out;
+}
+function buildGraph(g, opts) {
+  opts = opts || {};
+  var L = layoutGraph(g);
+  var ncols = Math.max(1, L.cols.length), nrows = 1;
+  L.cols.forEach(function (c) { nrows = Math.max(nrows, c.length); });
+  var baseBottom = PADT + nrows * GH + (nrows - 1) * GY;
+  var width = PADX * 2 + ncols * GW + (ncols - 1) * GX;
+  var height = baseBottom + PADB + (L.fbs.length ? 18 + L.fbs.length * 30 : 0);
+  var pos = dict();
+  L.cols.forEach(function (col, ci) { col.forEach(function (n, ri) { pos[n.id] = {x: PADX + ci * (GW + GX), y: PADT + ri * (GH + GY)}; }); });
+  var tid = uid('svgt'), mA = uid('arr'), mF = uid('arrf');
+  var svg = sv('svg', {viewBox: '0 0 ' + width + ' ' + height, role: 'img', 'aria-labelledby': tid, cls: 'wf-svg', focusable: 'false'});
+  svg.style.maxWidth = width + 'px';
+  svg.style.minWidth = Math.min(width, 620) + 'px';
+  append(svg, sv('title', {id: tid}, 'Sơ đồ ' + str(g.label) + ' (' + lab(GKIND, g.graph_kind) + '). Mô tả bằng chữ ở danh sách ngay dưới sơ đồ.'));
+  append(svg, sv('defs', {}, [
+    sv('marker', {id: mA, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto'}, sv('path', {d: 'M0,0 L10,5 L0,10 z', cls: 'wf-arrow'})),
+    sv('marker', {id: mF, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto'}, sv('path', {d: 'M0,0 L10,5 L0,10 z', cls: 'wf-arrow-fb'}))]));
+  var edgesG = sv('g', {}), nodesG = sv('g', {}), labelsG = sv('g', {});
+  L.deps.forEach(function (e) {
+    var a = pos[e.from], b = pos[e.to];
+    var x1 = a.x + GW, y1 = a.y + GH / 2, x2 = b.x, y2 = b.y + GH / 2, dx = Math.max(24, (x2 - x1) / 2);
+    var inferred = e.basis === 'inferred';
+    var p = sv('path', {d: 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2,
+      cls: 'wf-edge' + (inferred ? ' inferred' : ''), 'marker-end': 'url(#' + mA + ')'});
+    append(p, sv('title', {}, 'Phụ thuộc: ' + str(IX.node[e.from] && IX.node[e.from].label) + ' → ' + str(IX.node[e.to] && IX.node[e.to].label) + '. ' + str(e.reason) + (inferred ? ' (suy luận)' : '')));
+    append(edgesG, p);
+    if (inferred) append(labelsG, sv('text', {x: (x1 + x2) / 2, y: (y1 + y2) / 2 - 7, 'text-anchor': 'middle', cls: 'wf-elabel'}, 'suy luận'));
+  });
+  L.fbs.forEach(function (e, k) {
+    var a = pos[e.from], b = pos[e.to];
+    var sx = a.x + GW, sy = a.y + GH / 2 + 18, tx = b.x, ty = b.y + GH / 2 + 18;
+    var gx1 = sx + 14 + k * 6, gx2 = tx - 14 - k * 6, yD = baseBottom + 18 + k * 30;
+    var p = sv('path', {d: 'M' + sx + ',' + sy + ' H' + gx1 + ' V' + yD + ' H' + gx2 + ' V' + ty + ' H' + tx,
+      cls: 'wf-fb', 'marker-end': 'url(#' + mF + ')'});
+    append(p, sv('title', {}, 'Vòng phản hồi: khi ' + str(e.condition) + '; dừng khi ' + str(e.stop_condition)));
+    append(edgesG, p);
+    append(labelsG, sv('text', {x: Math.min(gx1, gx2) + 6, y: yD - 6, cls: 'wf-fblabel'},
+      '↺ quay lại khi: ' + trunc(e.condition, 52) + (e.basis === 'inferred' ? ' (suy luận)' : '')));
+  });
+  var nodeEls = dict();
+  L.nodes.forEach(function (n) {
+    var p = pos[n.id], gap = nodeHasGap(n);
+    var grp = sv('g', {cls: 'wf-node kind-' + cssKey(n.kind) + (gap ? ' has-gap' : ''), transform: 'translate(' + p.x + ',' + p.y + ')'});
+    append(grp, sv('title', {}, str(n.label) + ' — ' + lab(NKIND, n.kind) + (gap ? ' — còn thiếu' : '')));
+    append(grp, sv('rect', {width: GW, height: GH, rx: 8}));
+    append(grp, sv('text', {x: 10, y: 17, cls: 'wf-badge'}, lab(NKIND, n.kind).toUpperCase()));
+    wrapText(n.label, 21, gap ? 2 : 3).forEach(function (line, i) { append(grp, sv('text', {x: 10, y: 37 + i * 17, cls: 'wf-label'}, line)); });
+    if (gap) append(grp, sv('text', {x: 10, y: GH - 9, cls: 'wf-gap'}, '⚠ còn thiếu'));
+    append(nodesG, grp);
+    nodeEls[n.id] = grp;
+  });
+  append(svg, edgesG); append(svg, nodesG); append(svg, labelsG);
+  var token = null;
+  if (opts.token) {
+    var tl = trunc(opts.token, 26), tw = Math.min(180, 24 + tl.length * 6.6);
+    token = sv('g', {cls: 'token-g', 'aria-hidden': 'true'}, [sv('rect', {x: -tw / 2, y: -11, width: tw, height: 22, rx: 11}),
+      sv('text', {x: 0, y: 4, 'text-anchor': 'middle'}, '● ' + tl)]);
+    token.style.transform = 'translate(-200px,-200px)';
+    append(svg, token);
+  }
+  var wrap = el('div', {cls: 'svg-wrap', tabindex: '0', role: 'group', 'aria-label': 'Sơ đồ ' + str(g.label) + ' (cuộn ngang nếu rộng)'}, svg);
+  return {wrap: wrap, layout: L, highlight: function (id) {
+    Object.keys(nodeEls).forEach(function (k) { nodeEls[k].classList.toggle('is-current', k === id); });
+    if (token && pos[id]) token.style.transform = 'translate(' + (pos[id].x + GW / 2) + 'px,' + (pos[id].y - 16) + 'px)';
+  }};
+}
+function graphTextList(g, L) {
+  var ol = el('ol', {cls: 'wf-text'});
+  L.order.forEach(function (n) {
+    var li = el('li', {}, [para(null, [el('strong', {text: str(n.label)}), ' ', nodeKindChip(n.kind), nodeHasGap(n) ? gapChip() : null])]);
+    L.deps.filter(function (e) { return e.to === n.id; }).forEach(function (e) {
+      append(li, el('div', {cls: 'edge'}, [para(null, ['Sau «' + str(IX.node[e.from].label) + '»: ' + str(e.reason) + ' ', e.basis === 'inferred' ? inferChip() : null]),
+        refsBlock(e.source_ref_ids, {lead: 'Nguồn quan hệ:', noneText: e.basis === 'inferred' ? 'Quan hệ suy luận, không có trích dẫn trực tiếp' : null})]));
+    });
+    append(li, refsBlock(n.source_ref_ids, {lead: 'Nguồn bước:'}));
+    append(ol, li);
+  });
+  var out = [el('h4', {text: 'Mô tả bằng chữ (tương đương sơ đồ)'}), ol];
+  if (L.fbs.length) {
+    out.push(el('h4', {text: 'Vòng phản hồi'}));
+    out.push(el('ul', {}, L.fbs.map(function (e) {
+      return el('li', {}, [para(null, ['Từ «' + str(IX.node[e.from].label) + '» quay lại «' + str(IX.node[e.to].label) + '» khi: ' + str(e.condition) + '. Dừng khi: ' + str(e.stop_condition) + '. ',
+        e.basis === 'inferred' ? inferChip() : null]), refsBlock(e.source_ref_ids)]);
+    })));
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------- sections
+function bOverview(body, sec) {
+  var reqs = arr(M.requirements).filter(isObj);
+  var goals = reqs.filter(function (q) { return q.category === 'learning_goal'; });
+  var reported = arr(M.claims).filter(function (c) { return isObj(c) && c.kind === 'reported'; });
+  if (!reqs.length) append(body, sectionEmpty(sec));
+  append(body, para('muted', 'Bài: ' + str(obj(M.repo_snapshot).display_label)));
+  var se = el('div', {cls: 'card selfexplain'});
+  append(se, el('h3', {text: 'Tự diễn đạt trước'}));
+  append(se, noteArea('#overview', 'Tự diễn đạt mục tiêu trước khi mở gợi ý', {rows: 3}).wrap);
+  var gid = uid('goals');
+  var goalsBox = el('div', {id: gid, hidden: true});
+  append(goalsBox, el('h3', {text: 'Mục tiêu học theo đề'}));
+  if (goals.length) goals.forEach(function (q) { append(goalsBox, reqView(q)); });
+  else append(goalsBox, missing('Chưa có mục tiêu học có nguồn.', 'Bổ sung câu mục tiêu trong đề/README cấp gốc rồi sinh lại.'));
+  var reveal = btn('Mở gợi ý: mục tiêu theo đề', {'aria-expanded': 'false', 'aria-controls': gid, cls: 'primary'}, function () {
+    var open = reveal.getAttribute('aria-expanded') === 'true';
+    reveal.setAttribute('aria-expanded', open ? 'false' : 'true');
+    goalsBox.hidden = open;
+    reveal.textContent = open ? 'Mở gợi ý: mục tiêu theo đề' : 'Ẩn mục tiêu theo đề';
+  });
+  append(se, el('div', {cls: 'controls'}, reveal));
+  append(se, goalsBox);
+  append(body, se);
+  var ctxs = arr(M.contexts).filter(isObj);
+  append(body, el('h3', {text: 'Ngữ cảnh trong bài'}));
+  if (ctxs.length) append(body, el('ul', {cls: 'plain'}, ctxs.map(function (c) { return el('li', {cls: 'item'}, [para(null, ctxText(c)), refsBlock(c.source_ref_ids)]); })));
+  else append(body, para('muted', 'Chưa có ngữ cảnh (sản phẩm, phần, môi trường) được ghi.'));
+  ['deliverable', 'constraint', 'assessment'].forEach(function (cat) {
+    var qs = reqs.filter(function (q) { return q.category === cat; });
+    append(body, el('h3', {text: CAT[cat]}));
+    if (qs.length) qs.forEach(function (q) { append(body, reqView(q)); });
+    else append(body, para('muted', 'Không có mục nào thuộc loại này trong nguồn.'));
+  });
+  if (reported.length) {
+    append(body, el('h3', {text: 'Bài làm được tài liệu ghi nhận'}));
+    append(body, para('muted', 'Đây là điều bài làm tự ghi trong Markdown, chưa được xác minh bằng chạy code.'));
+    reported.forEach(function (c) { append(body, claimView(c)); });
+  } else {
+    append(body, el('h3', {text: 'Yêu cầu — chưa có nội dung bài làm'}));
+    append(body, missing('Markdown cấp gốc chưa có đoạn bài làm tự báo cáo.', 'Thêm báo cáo bài làm (ví dụ REPORT.md) ở thư mục gốc rồi sinh lại.'));
+  }
+}
+function bWorkflow(body, sec) {
+  if (!GRAPHS.length) { append(body, sectionEmpty(sec)); return; }
+  append(body, para('legend', 'Mỗi sơ đồ độc lập, không nối với nhau. Nét liền: phụ thuộc có nguồn · nét chấm: quan hệ suy luận · nét gạch cam: vòng phản hồi · “⚠ còn thiếu”: bước có khoảng trống hoặc yêu cầu chưa được tự báo cáo là xong.'));
+  GRAPHS.forEach(function (g) {
+    var box = el('div', {cls: 'card graph'});
+    append(box, el('h3', {}, [str(g.label) + ' ', chip(lab(GKIND, g.graph_kind), 'cat')]));
+    append(box, contextLine(g.context_ids));
+    if (!arr(g.nodes).length) { append(box, missing('Sơ đồ chưa có bước nào.', 'Bổ sung mô tả bước trong Markdown rồi sinh lại.')); append(body, box); return; }
+    var G = buildGraph(g);
+    append(box, G.wrap);
+    append(box, graphTextList(g, G.layout));
+    append(body, box);
+  });
+}
+function bWalkthrough(body, sec) {
+  var nodeCount = 0;
+  GRAPHS.forEach(function (g) { nodeCount += arr(g.nodes).length; });
+  var traces = INTER.filter(function (i) { return i.type === 'trace_flow'; });
+  if (!nodeCount && !traces.length) { append(body, sectionEmpty(sec)); return; }
+  GRAPHS.forEach(function (g) {
+    var L = layoutGraph(g);
+    if (!L.order.length) return;
+    append(body, el('h3', {}, [str(g.label) + ' ', chip(lab(GKIND, g.graph_kind), 'cat')]));
+    L.order.forEach(function (n) {
+      var c = el('article', {cls: 'card node'});
+      append(c, el('h4', {}, [str(n.label) + ' ', nodeKindChip(n.kind), nodeHasGap(n) ? gapChip() : null]));
+      if (n.purpose) append(c, labelled('Mục đích', str(n.purpose)));
+      append(c, labelled('Đầu vào', arr(n.inputs).length ? arr(n.inputs).map(str).join('; ') : '(tài liệu không ghi)'));
+      append(c, labelled('Đầu ra', arr(n.outputs).length ? arr(n.outputs).map(str).join('; ') : '(tài liệu không ghi)'));
+      arr(n.requirement_ids).forEach(function (q) { if (IX.req[q]) append(c, reqView(IX.req[q], {showCat: true, noEvidence: true})); });
+      arr(n.claim_ids).forEach(function (x) { if (IX.claim[x]) append(c, claimView(IX.claim[x], true)); });
+      append(c, gapList(n.gap_ids));
+      append(c, refsBlock(n.source_ref_ids));
+      append(body, c);
+    });
+  });
+  append(body, el('h3', {text: 'Theo dấu từng bước'}));
+  if (!traces.length) append(body, para('muted', 'Chưa có bài theo dấu luồng cho bài này.'));
+  traces.forEach(function (it) { append(body, buildTrace(it)); });
+}
+function interHead(box, it, traceStyle) {
+  append(box, el('h4', {text: str(it.title)}));
+  append(box, basisLine(it, traceStyle));
+  if (it.prompt) append(box, para(null, str(it.prompt)));
+  append(box, goalsLine(it.learning_goal_ids));
+  append(box, refsBlock(it.source_ref_ids));
+  append(box, gapList(it.gap_ids));
+}
+function buildTrace(it) {
+  var p = obj(it.payload), g = IX.graph[p.graph_id], steps = arr(p.steps).filter(isObj);
+  var box = el('article', {cls: 'card interaction trace'});
+  interHead(box, it, true);
+  if (!g || !steps.length) { append(box, missing('Không có sơ đồ hoặc bước để theo dấu.', 'Cần trace_flow trỏ tới một sơ đồ có bước.')); return box; }
+  var G = buildGraph(g, {token: str(p.token_label) || 'token'});
+  append(box, G.wrap);
+  var counter = el('p', {cls: 'step-counter'});
+  var nodeLine = para(null, '');
+  var before = el('span', {cls: 'state before'}), after = el('span', {cls: 'state after'});
+  var expl = para(null, '');
+  var live = el('div', {cls: 'sr-only', 'aria-live': 'polite'});
+  var i = 0;
+  var prev = btn('← Bước trước', {}, function () { if (i > 0) { i -= 1; show(true); } });
+  var next = btn('Bước sau →', {cls: 'primary'}, function () { if (i < steps.length - 1) { i += 1; show(true); } });
+  function show(announce) {
+    var s = steps[i], n = IX.node[s.node_id];
+    var nl = n ? str(n.label) : '(bước không có trong sơ đồ: ' + str(s.node_id) + ')';
+    counter.textContent = 'Bước ' + (i + 1) + '/' + steps.length;
+    clear(nodeLine); append(nodeLine, [chip('● ' + str(p.token_label), 'token-chip'), ' đang ở: ', el('strong', {text: nl})]);
+    before.textContent = 'Trước: ' + str(s.before);
+    after.textContent = 'Sau: ' + str(s.after);
+    expl.textContent = str(s.explanation);
+    prev.disabled = i === 0;
+    next.disabled = i === steps.length - 1;
+    G.highlight(s.node_id);
+    if (announce) live.textContent = counter.textContent + ': ' + nl + '. Trước: ' + str(s.before) + '. Sau: ' + str(s.after) + '. ' + str(s.explanation);
+  }
+  append(box, el('div', {cls: 'step-panel'}, [counter, nodeLine, el('div', {cls: 'state-change'}, [before, ' → ', after]), expl, live]));
+  append(box, el('div', {cls: 'controls'}, [prev, next]));
+  if (it.feedback) append(box, labelled('Ghi nhớ', str(it.feedback)));
+  append(box, el('h5', {cls: 'sr-only', text: 'Danh sách các bước'}));
+  append(box, el('details', {}, [el('summary', {text: 'Xem toàn bộ các bước bằng chữ'}), el('ol', {}, steps.map(function (s) {
+    var n = IX.node[s.node_id];
+    return el('li', {text: (n ? str(n.label) : str(s.node_id)) + ': ' + str(s.before) + ' → ' + str(s.after) + '. ' + str(s.explanation)});
+  }))]));
+  show(false);
+  return box;
+}
+function bDecisions(body, sec) {
+  var decs = arr(M.decisions).filter(isObj);
+  var chs = INTER.filter(function (i) { return i.type === 'choose_explain'; });
+  var other = INTER.filter(function (i) { return ['trace_flow', 'choose_explain', 'teach_back'].indexOf(i.type) < 0; });
+  if (!decs.length && !chs.length && !other.length) { append(body, sectionEmpty(sec)); return; }
+  append(body, el('h3', {text: 'Quyết định trong bài'}));
+  if (!decs.length) append(body, para('muted', 'Tài liệu chưa nêu quyết định nào.'));
+  decs.forEach(function (d) {
+    var c = el('article', {cls: 'card decision'});
+    append(c, el('h4', {text: str(d.question)}));
+    arr(d.requirement_ids).forEach(function (q) { if (IX.req[q]) append(c, labelled('Yêu cầu liên quan', str(IX.req[q].text))); });
+    append(c, refsBlock(d.source_ref_ids));
+    var opts = arr(d.options).filter(isObj);
+    append(c, el('p', {cls: 'muted', text: 'Các phương án (không phải đáp án dùng để chấm):'}));
+    append(c, el('ul', {cls: 'plain'}, opts.map(function (o) {
+      return el('li', {cls: 'item'}, [para(null, [el('strong', {text: str(o.label)}), ' — ' + str(o.rationale)]), refsBlock(o.source_ref_ids)]);
+    })));
+    var rec = d.recorded_choice_id !== null && d.recorded_choice_id !== undefined ? opts.filter(function (o) { return o.id === d.recorded_choice_id; })[0] : null;
+    if (rec) append(c, el('div', {cls: 'item'}, [para(null, [chip('Bài làm tự báo cáo', 'kind-reported'), 'Bài làm ghi nhận lựa chọn: ', el('strong', {text: str(rec.label)})]), refsBlock(d.recorded_choice_ref_ids)]));
+    else append(c, para('muted', 'Bài làm chưa ghi nhận lựa chọn.'));
+    append(c, gapList(d.gap_ids));
+    append(body, c);
+  });
+  append(body, el('h3', {text: 'Chọn và giải thích'}));
+  if (!chs.length) append(body, para('muted', 'Chưa có câu chọn-và-giải-thích có căn cứ cho bài này.'));
+  chs.forEach(function (it) { append(body, buildChoose(it)); });
+  if (other.length) {
+    append(body, el('h3', {text: 'Tương tác khác'}));
+    other.forEach(function (it) { append(body, buildUnsupported(it)); });
+  }
+}
+function buildChoose(it) {
+  var p = obj(it.payload), opts = arr(p.options).filter(isObj), accepted = arr(p.accepted_option_ids);
+  var box = el('article', {cls: 'card interaction choose'});
+  interHead(box, it, false);
+  var name = uid('radio'), selected = null, radios = [];
+  var fs = el('fieldset', {cls: 'choices'}, el('legend', {text: str(it.prompt) || 'Chọn một phương án'}));
+  opts.forEach(function (o) {
+    var id = uid('opt');
+    var r = el('input', {type: 'radio', name: name, id: id, value: str(o.id)});
+    r.addEventListener('change', function () { if (r.checked) { selected = o; update(); } });
+    radios.push(r);
+    append(fs, el('label', {'for': id}, [r, ' ' + str(o.label)]));
+  });
+  append(box, fs);
+  var why = noteArea(it.id, (str(p.explanation_prompt) || 'Lý do') + ' — lý do (bắt buộc trước khi xem phản hồi)', {rows: 3, onInput: function () { update(); }});
+  append(box, why.wrap);
+  var hintId = uid('hint');
+  var hint = el('p', {cls: 'muted', id: hintId, text: 'Chọn một phương án và viết lý do để mở phản hồi. Lý do của bạn không được chấm.'});
+  var show = btn('Xem phản hồi', {cls: 'primary', disabled: true, 'aria-describedby': hintId}, reveal);
+  var retry = btn('Thử lại', {hidden: true}, function () {
+    radios.forEach(function (r) { r.checked = false; r.disabled = false; });
+    selected = null; fbBox.hidden = true; clear(fbBox); retry.hidden = true; show.hidden = false; update();
+    if (radios[0]) radios[0].focus();
+  });
+  append(box, el('div', {cls: 'controls'}, [show, retry]));
+  append(box, hint);
+  var live = el('div', {'aria-live': 'polite'});
+  var fbBox = el('div', {cls: 'answer', hidden: true});
+  append(live, fbBox);
+  append(box, live);
+  function update() { show.disabled = !(selected && (NOTES[it.id] || '').trim()); }
+  function reveal() {
+    if (!selected || !(NOTES[it.id] || '').trim()) return;
+    clear(fbBox);
+    var ok = accepted.indexOf(selected.id) >= 0;
+    append(fbBox, [para(null, [el('strong', {text: 'Bạn chọn: ' + str(selected.label) + ' '}),
+      ok ? chip('Thuộc phương án được nguồn chấp nhận', 'chip-accept') : chip('Không thuộc phương án được nguồn chấp nhận', 'ful-reported_not_done'),
+      refsSim(selected.source_ref_ids) ? simChip() : null]),
+      para(null, str(selected.feedback)), refsBlock(selected.source_ref_ids),
+      el('p', {cls: 'muted', text: 'Các phương án được nguồn chấp nhận:'}),
+      el('ul', {}, opts.map(function (o) {
+        return el('li', {}, [str(o.label) + ' ', accepted.indexOf(o.id) >= 0 ? chip('✓ được nguồn chấp nhận', 'chip-accept') : null]);
+      })),
+      it.feedback ? labelled('Gợi ý chung', str(it.feedback)) : null,
+      refsSim(it.source_ref_ids) ? para(null, simChip()) : null]);
+    fbBox.hidden = false;
+    radios.forEach(function (r) { r.disabled = true; });
+    show.hidden = true; retry.hidden = false;
+    retry.focus();
+  }
+  return box;
+}
+function buildUnsupported(it) {
+  var box = el('article', {cls: 'card interaction unsupported'});
+  interHead(box, it, false);
+  append(box, para(null, [chip('Tương tác này chưa hỗ trợ trong bản MVP', 'evs-referenced_unread'), 'Loại: ', el('code', {text: str(it.type)})]));
+  var p = obj(it.payload);
+  if (it.type === 'order_dependencies') {
+    var g = IX.graph[p.graph_id];
+    append(box, labelled('Sơ đồ', g ? str(g.label) : str(p.graph_id)));
+    append(box, labelled('Các bước', arr(p.node_ids).map(function (x) { return IX.node[x] ? str(IX.node[x].label) : str(x); }).join('; ') || '(không có)'));
+    var edges = g ? arr(g.dependency_edges).filter(function (e) { return arr(p.edge_ids).indexOf(e.id) >= 0; }) : [];
+    append(box, labelled('Phụ thuộc cần giữ', edges.map(function (e) { return str(IX.node[e.from] && IX.node[e.from].label) + ' → ' + str(IX.node[e.to] && IX.node[e.to].label); }).join('; ') || '(không có)'));
+    append(box, para('muted', 'Bạn có thể tự sắp xếp các bước trên giấy: mọi thứ tự giữ đúng các phụ thuộc trên đều hợp lệ.'));
+  } else {
+    append(box, el('ul', {}, Object.keys(p).map(function (k) {
+      var v; try { v = JSON.stringify(p[k]); } catch (e) { v = '?'; }
+      return el('li', {}, [el('code', {text: k}), ': ' + trunc(v, 400)]);
+    })));
+  }
+  if (it.feedback) append(box, labelled('Gợi ý', str(it.feedback)));
+  return box;
+}
+function bEvidence(body, sec) {
+  var reqs = arr(M.requirements).filter(isObj), claims = arr(M.claims).filter(isObj), evs = arr(M.evidence).filter(isObj);
+  var meas = arr(M.measurements).filter(isObj), gaps = arr(M.gaps).filter(isObj), confs = arr(M.conflicts).filter(isObj);
+  if (!reqs.length && !claims.length && !evs.length && !meas.length) append(body, sectionEmpty(sec));
+  append(body, para('muted', 'Mọi trạng thái ở đây là điều tài liệu ghi lại. Trang này không chạy code và không chứng nhận kết quả.'));
+  // requirement table
+  append(body, el('h3', {text: 'Yêu cầu ↔ bằng chứng ↔ nhận định ↔ khoảng trống'}));
+  if (reqs.length) {
+    var tb = el('tbody');
+    reqs.forEach(function (q) {
+      var rc = claims.filter(function (c) { return arr(c.requirement_ids).indexOf(q.id) >= 0; });
+      var qe = arr(q.evidence_ids).filter(function (x) { return IX.ev[x]; });
+      append(tb, el('tr', {}, [
+        el('td', {}, [para(null, [chip(lab(CAT, q.category), 'cat'), str(q.text)]), refsBlock(q.source_ref_ids)]),
+        el('td', {}, fulChip(q.fulfillment)),
+        el('td', {}, qe.length ? qe.map(function (x) { return evView(IX.ev[x], true); }) : el('span', {cls: 'muted', text: 'Chưa có'})),
+        el('td', {}, rc.length ? rc.map(function (c) { return claimView(c, true); }) : el('span', {cls: 'muted', text: 'Chưa có'})),
+        el('td', {}, [gapList(q.gap_ids), arr(q.conflict_ids).filter(function (x) { return IX.conf[x]; }).map(function (x) { return para('gap', [chip('Mâu thuẫn', 'ful-conflicting'), str(IX.conf[x].topic)]); }),
+          (!arr(q.gap_ids).length && !arr(q.conflict_ids).length) ? el('span', {cls: 'muted', text: 'Không ghi'}) : null]),
+        el('td', {}, selfCheck('req:' + q.id))]));
+    });
+    append(body, el('div', {cls: 'tbl-wrap'}, el('table', {}, [el('caption', {text: 'Mỗi dòng là một yêu cầu'}),
+      el('thead', {}, el('tr', {}, ['Yêu cầu', 'Trạng thái tự báo cáo', 'Bằng chứng', 'Nhận định liên quan', 'Khoảng trống / mâu thuẫn', 'Tự kiểm tra'].map(function (h) { return el('th', {scope: 'col', text: h}); }))), tb])));
+  } else append(body, para('muted', 'Chưa có yêu cầu nào.'));
+  // claims by kind
+  append(body, el('h3', {text: 'Nhận định theo loại'}));
+  if (!claims.length) append(body, para('muted', 'Chưa có nhận định nào.'));
+  ['required', 'reported', 'document_observation', 'inference', 'hypothetical'].forEach(function (k) {
+    var cs = claims.filter(function (c) { return c.kind === k; });
+    if (!cs.length) return;
+    append(body, el('h4', {}, [kindChip(k), ' ' + cs.length + ' nhận định']));
+    cs.forEach(function (c) { append(body, claimView(c)); });
+  });
+  // evidence by status
+  append(body, el('h3', {text: 'Bằng chứng theo trạng thái'}));
+  if (!evs.length) append(body, para('muted', 'Chưa có bằng chứng nào.'));
+  ['reported_in_markdown', 'embedded_record_unverified', 'referenced_unread', 'missing', 'conflicting'].forEach(function (s) {
+    var es = evs.filter(function (e) { return e.status === s; });
+    if (!es.length) return;
+    append(body, el('h4', {}, [evChip(s), ' ' + es.length + ' mục']));
+    es.forEach(function (e) { append(body, evView(e)); });
+  });
+  // measurements
+  append(body, el('h3', {text: 'Số đo được ghi'}));
+  if (meas.length) {
+    var mt = el('tbody');
+    meas.forEach(function (m) {
+      var c = IX.claim[m.claim_id];
+      append(mt, el('tr', {}, [
+        el('td', {}, [c ? para(null, [kindChip(c.kind), str(c.text)]) : el('span', {text: str(m.claim_id)}), measSim(m) ? simChip() : null]),
+        el('td', {}, el('code', {text: str(m.value)})),
+        el('td', {text: m.operator === null || m.operator === undefined ? '(không ghi)' : str(m.operator)}),
+        el('td', {text: m.unit === null || m.unit === undefined ? '(không ghi đơn vị)' : str(m.unit)}),
+        el('td', {text: m.method === null || m.method === undefined ? '(không ghi phương pháp)' : str(m.method)}),
+        el('td', {text: IX.ctx[m.context_id] ? ctxText(IX.ctx[m.context_id]) : str(m.context_id)}),
+        el('td', {}, [arr(m.evidence_ids).filter(function (x) { return IX.ev[x]; }).map(function (x) { return para(null, [evChip(IX.ev[x].status), evSim(IX.ev[x]) ? simChip() : null]); }),
+          arr(m.conflict_ids).filter(function (x) { return IX.conf[x]; }).map(function (x) { return para('gap', [chip('Mâu thuẫn', 'ful-conflicting'), str(IX.conf[x].topic)]); })]),
+        el('td', {}, refsBlock(m.source_ref_ids))]));
+    });
+    append(body, el('div', {cls: 'tbl-wrap'}, el('table', {}, [el('caption', {text: 'Giữ nguyên giá trị, đơn vị, toán tử như nguồn; không vẽ biểu đồ, không tự quy đổi'}),
+      el('thead', {}, el('tr', {}, ['Nhận định', 'Giá trị', 'Toán tử', 'Đơn vị', 'Phương pháp', 'Ngữ cảnh', 'Trạng thái bằng chứng', 'Nguồn'].map(function (h) { return el('th', {scope: 'col', text: h}); }))), mt])));
+  } else append(body, para('muted', 'Chưa có số đo nào được ghi.'));
+  // conflicts
+  append(body, el('h3', {text: 'Mâu thuẫn giữa các nguồn'}));
+  if (!confs.length) append(body, para('muted', 'Không ghi nhận mâu thuẫn.'));
+  confs.forEach(function (c) {
+    var box = el('article', {cls: 'card conflict'});
+    append(box, el('h4', {text: str(c.topic)}));
+    append(box, para(null, [chip(lab(CSTATE, c.state), c.state === 'unresolved' ? 'ful-conflicting' : 'cat')]));
+    function side(title, ids) {
+      return el('div', {}, [el('p', {cls: 'muted', text: title}), arr(ids).filter(function (r) { return IX.ref[r]; }).map(function (r) {
+        return el('blockquote', {cls: 'ref-quote', text: '«' + str(IX.ref[r].quote) + '» — ' + refName(IX.ref[r])});
+      }), refsBlock(ids)]);
+    }
+    append(box, el('div', {cls: 'cols'}, [side('Một phía', c.left_ref_ids), side('Phía còn lại', c.right_ref_ids)]));
+    append(box, labelled('Ảnh hưởng', str(c.impact)));
+    if (arr(c.resolution_ref_ids).length) append(box, refsBlock(c.resolution_ref_ids, {lead: 'Nguồn giải quyết:'}));
+    if (c.human_resolution_note) append(box, labelled('Ghi chú của người', str(c.human_resolution_note)));
+    append(box, selfCheck('conf:' + c.id));
+    append(body, box);
+  });
+  // gaps
+  append(body, el('h3', {text: 'Khoảng trống cần bổ sung'}));
+  if (!gaps.length) append(body, para('muted', 'Không ghi khoảng trống.'));
+  gaps.forEach(function (g) {
+    append(body, el('div', {cls: 'item gap'}, [para(null, [gapChip(), str(g.reason)]), labelled('Cần bổ sung', str(g.requested_evidence)),
+      arr(g.scope_ids).length ? labelled('Liên quan', arr(g.scope_ids).map(describeId).join(' | ')) : null, selfCheck('gap:' + g.id)]));
+  });
+  // unread external refs
+  append(body, el('h3', {text: 'Tệp được nhắc tới nhưng chưa đọc'}));
+  var unread = evs.filter(function (e) { return e.status === 'referenced_unread' || e.external_ref; });
+  if (unread.length) append(body, el('ul', {}, unread.map(function (e) { return el('li', {}, [el('code', {text: str(e.external_ref) || '(không ghi tên)'}), ' — ' + str(e.description)]); })));
+  else append(body, para('muted', 'Không có.'));
+  // manifest
+  append(body, el('h3', {text: 'Các file nguồn đã đọc'}));
+  var cov = obj(obj(M.validation).coverage_summary);
+  append(body, para(null, 'Đã xử lý ' + str(cov.files_processed) + '/' + str(cov.files_total) + ' file · ' + str(cov.lines_processed) + '/' + str(cov.lines_total) + ' dòng · ' + str(cov.redacted_lines) + ' dòng đã che.'));
+  var man = arr(M.source_manifest).filter(isObj);
+  function rng(rs) { return arr(rs).map(function (r) { r = obj(r); return r.start_line === r.end_line ? str(r.start_line) : str(r.start_line) + '–' + str(r.end_line); }).join(', ') || '—'; }
+  if (man.length) append(body, el('div', {cls: 'tbl-wrap'}, el('table', {}, [
+    el('thead', {}, el('tr', {}, ['Tệp', 'Số dòng', 'Trạng thái đọc', 'Dòng đã xử lý', 'Dòng đã che', 'SHA256 (rút gọn)'].map(function (h) { return el('th', {scope: 'col', text: h}); }))),
+    el('tbody', {}, man.map(function (m) {
+      return el('tr', {}, [el('td', {text: str(m.name)}), el('td', {text: m.line_count === null || m.line_count === undefined ? '—' : str(m.line_count)}),
+        el('td', {text: lab(RSTATUS, m.read_status)}), el('td', {text: rng(m.processed_ranges)}), el('td', {text: rng(m.redacted_ranges)}),
+        el('td', {}, el('code', {text: str(m.sha256).slice(0, 12) || '—'}))]);
+    }))])));
+  else append(body, para('muted', 'Không có file trong manifest.'));
+  // validation issues
+  append(body, el('h3', {text: 'Vấn đề do bước kiểm tra ghi lại'}));
+  var issues = arr(obj(M.validation).issues).filter(isObj);
+  if (issues.length) append(body, el('ul', {}, issues.map(function (i) {
+    return el('li', {}, [chip(lab(SEV, i.severity), 'sev-' + cssKey(i.severity)), el('code', {text: str(i.code)}), ' ' + str(i.message),
+      arr(i.scope_ids).length ? el('span', {cls: 'muted', text: ' (phạm vi: ' + arr(i.scope_ids).map(str).join(', ') + ')'}) : null]);
+  })));
+  else append(body, para('muted', 'Không có vấn đề nào được ghi.'));
+}
+function buildTeach(spec) {
+  var box = el('article', {cls: 'card interaction teach'});
+  append(box, el('h4', {text: spec.title}));
+  if (spec.basis === 'hypothetical') append(box, para(null, chip('Ví dụ giả định', 'kind-hypothetical')));
+  if (spec.prompt) append(box, para(null, spec.prompt));
+  if (spec.question && spec.question !== spec.prompt) append(box, para(null, el('strong', {text: spec.question})));
+  append(box, goalsLine(spec.goals));
+  append(box, refsBlock(spec.refs));
+  append(box, gapList(spec.gaps));
+  var done, hintBtn;
+  var ans = noteArea(spec.id, 'Câu trả lời của bạn (không được chấm; chỉ giữ trong trình duyệt)', {rows: 5, onInput: function (v) { if (done) done.disabled = !v.trim(); }});
+  append(box, ans.wrap);
+  var hints = arr(spec.hints).map(str).filter(Boolean), hi = 0;
+  var hintList = el('ol', {cls: 'answer hint', hidden: true});
+  var live = el('div', {'aria-live': 'polite'});
+  var status = el('p', {cls: 'tried', hidden: true, text: 'Đã ghi nhận: bạn đã thử trả lời (trang không chấm điểm câu tự luận).'});
+  var cl = el('div', {cls: 'answer checklist', hidden: true});
+  append(cl, el('p', {}, el('strong', {text: 'Checklist tự đối chiếu — tự tick những ý bạn đã nêu'})));
+  var ul = el('ul', {cls: 'plain'});
+  arr(spec.checklist).filter(isObj).forEach(function (c) {
+    var id = uid('cl');
+    var cb = el('input', {type: 'checkbox', id: id});
+    append(ul, el('li', {}, [el('label', {cls: 'inline', 'for': id}, [cb, str(c.point)]), refsSim(c.source_ref_ids) ? simChip() : null, refsBlock(c.source_ref_ids, {noneText: false})]));
+  });
+  if (!ul.firstChild) append(ul, el('li', {cls: 'muted', text: 'Không có checklist cho câu này.'}));
+  append(cl, ul);
+  if (spec.feedback) append(cl, labelled('Gợi ý chung', spec.feedback));
+  function openChecklist() {
+    cl.hidden = false;
+    if (hintBtn) { hintBtn.disabled = true; hintBtn.textContent = 'Đã mở checklist'; }
+  }
+  done = btn('Tôi đã trả lời xong', {cls: 'primary', disabled: !(NOTES[spec.id] || '').trim()}, function () {
+    if (!(NOTES[spec.id] || '').trim()) return;
+    status.hidden = false; openChecklist();
+  });
+  function hintLabel() { return hi < hints.length ? (hi === 0 ? 'Cần gợi ý' : 'Gợi ý tiếp (' + (hi + 1) + '/' + hints.length + ')') : 'Mở checklist'; }
+  hintBtn = btn(hints.length ? 'Cần gợi ý' : 'Cần gợi ý (mở checklist)', {}, function () {
+    if (hi < hints.length) {
+      append(hintList, el('li', {text: 'Gợi ý ' + (hi + 1) + '/' + hints.length + ': ' + hints[hi]}));
+      hintList.hidden = false; hi += 1;
+      hintBtn.textContent = hintLabel();
+    } else openChecklist();
+  });
+  append(box, el('div', {cls: 'controls'}, [done, hintBtn]));
+  append(live, status); append(live, hintList); append(live, cl);
+  append(box, live);
+  return box;
+}
+function bTeachback(body, sec) {
+  var tbs = INTER.filter(function (i) { return i.type === 'teach_back'; });
+  if (!tbs.length && !QUESTIONS.length) { append(body, sectionEmpty(sec)); return; }
+  append(body, para('muted', 'Tự trả lời trước. Checklist chỉ mở sau khi bạn bấm “Tôi đã trả lời xong” hoặc “Cần gợi ý”. Trang không chấm điểm, chỉ ghi nhận bạn đã thử.'));
+  if (tbs.length) append(body, el('h3', {text: 'Tự giảng lại'}));
+  tbs.forEach(function (it) {
+    var p = obj(it.payload);
+    append(body, buildTeach({id: it.id, title: str(it.title), prompt: str(it.prompt), question: str(p.question), goals: it.learning_goal_ids,
+      refs: it.source_ref_ids, gaps: it.gap_ids, basis: it.basis, checklist: p.checklist, hints: p.hint_levels, feedback: str(it.feedback)}));
+  });
+  if (QUESTIONS.length) append(body, el('h3', {text: 'Câu hỏi ôn tập khi thuyết trình'}));
+  QUESTIONS.forEach(function (q) {
+    append(body, buildTeach({id: q.id, title: 'Câu hỏi ôn tập', prompt: '', question: str(q.prompt), goals: q.learning_goal_ids,
+      refs: q.source_ref_ids, gaps: [], basis: 'source_backed', checklist: q.checklist, hints: [], feedback: ''}));
+  });
+}
+function buildCard(card, i, total, slide, notesOn) {
+  var linkedSim = arr(card.claim_ids).some(function (x) { return claimSim(IX.claim[x]); }) || arr(card.evidence_ids).some(function (x) { return evSim(IX.ev[x]); }) || refsSim(card.source_ref_ids);
+  var box = el('article', {cls: 'card pres-card'});
+  var h = el(slide ? 'h2' : 'h3', {tabindex: slide ? '-1' : null}, ['Thẻ ' + (i + 1) + '/' + total + ': ' + str(card.title) + ' ', linkedSim ? simChip() : null]);
+  append(box, h);
+  var cl = arr(card.claim_ids).filter(function (x) { return IX.claim[x]; });
+  if (cl.length) { append(box, el('h4', {text: 'Nhận định'})); cl.forEach(function (x) { append(box, claimView(IX.claim[x], true)); }); }
+  var nd = arr(card.node_ids).filter(function (x) { return IX.node[x]; });
+  if (nd.length) {
+    append(box, el('h4', {text: 'Bước trong workflow'}));
+    append(box, el('ul', {cls: 'plain'}, nd.map(function (x) { var n = IX.node[x]; return el('li', {cls: 'item'}, [str(n.label) + ' ', nodeKindChip(n.kind), nodeHasGap(n) ? gapChip() : null, el('span', {cls: 'muted', text: ' (' + str(IX.nodeGraph[x] && IX.nodeGraph[x].label) + ')'})]); })));
+  }
+  var dc = arr(card.decision_ids).filter(function (x) { return IX.dec[x]; });
+  if (dc.length) {
+    append(box, el('h4', {text: 'Quyết định'}));
+    dc.forEach(function (x) {
+      var d = IX.dec[x], rec = arr(d.options).filter(function (o) { return isObj(o) && o.id === d.recorded_choice_id; })[0];
+      append(box, el('div', {cls: 'item'}, [para(null, str(d.question)), rec ? para(null, [chip('Bài làm tự báo cáo', 'kind-reported'), 'Bài làm ghi nhận lựa chọn: ' + str(rec.label)]) : para('muted', 'Bài làm chưa ghi nhận lựa chọn.'), rec ? refsBlock(d.recorded_choice_ref_ids) : null]));
+    });
+  }
+  var ev = arr(card.evidence_ids).filter(function (x) { return IX.ev[x]; });
+  if (ev.length) { append(box, el('h4', {text: 'Bằng chứng'})); ev.forEach(function (x) { append(box, evView(IX.ev[x], true)); }); }
+  var sp = arr(card.speaker_prompts).map(str).filter(Boolean);
+  if (sp.length) { append(box, el('h4', {text: 'Câu hỏi để bạn tự nói'})); append(box, el('ul', {}, sp.map(function (s) { return el('li', {text: s}); }))); }
+  var gl = gapList(card.gap_ids);
+  if (gl) { append(box, el('h4', {text: 'Giới hạn / còn thiếu cần nói rõ'})); append(box, gl); }
+  append(box, refsBlock(card.source_ref_ids, {noneText: false}));
+  var note = noteArea(card.id, 'Ghi chú riêng cho thẻ này (không in, không chia sẻ trừ khi bạn xuất)', {rows: 3, cls: slide && !notesOn ? 'slide-notes-off' : ''});
+  append(box, note.wrap);
+  return {box: box, heading: h, noteWrap: note.wrap};
+}
+var slideState = null;
+function bPresentation(body, sec) {
+  if (!CARDS.length) { append(body, sectionEmpty(sec)); return; }
+  var opener = btn('Chế độ trình bày', {cls: 'primary'}, function () { openSlides(0, opener); });
+  append(body, el('div', {cls: 'controls no-print'}, [opener, el('span', {cls: 'muted', text: 'Toàn màn hình, mỗi thẻ một trang; phím ← → / PageUp PageDown để chuyển, Esc để thoát.'})]));
+  CARDS.forEach(function (c, i) { append(body, buildCard(c, i, CARDS.length, false, true).box); });
+}
+function openSlides(start, opener) {
+  if (slideState) return;
+  var titleId = uid('slt');
+  var ov = el('div', {cls: 'slides', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId});
+  var counter = el('span', {'aria-live': 'polite'});
+  var stage = el('div', {cls: 'slides-stage'});
+  var toc = el('ol', {cls: 'slides-toc', 'aria-label': 'Mục lục thẻ'});
+  var notesOn = false;
+  var notesBtn = btn('Hiện ghi chú', {'aria-pressed': 'false'}, function () {
+    notesOn = !notesOn;
+    notesBtn.setAttribute('aria-pressed', notesOn ? 'true' : 'false');
+    notesBtn.textContent = notesOn ? 'Ẩn ghi chú' : 'Hiện ghi chú';
+    if (slideState.noteWrap) slideState.noteWrap.classList.toggle('slide-notes-off', !notesOn);
+  });
+  var prev = btn('← Thẻ trước', {}, function () { go(slideState.i - 1); });
+  var next = btn('Thẻ sau →', {cls: 'primary'}, function () { go(slideState.i + 1); });
+  var exit = btn('Thoát (Esc)', {}, closeSlides);
+  var tocBtns = CARDS.map(function (c, i) { var b = btn((i + 1) + '. ' + trunc(c.title, 28), {}, function () { go(i); }); append(toc, el('li', {}, b)); return b; });
+  append(ov, el('div', {cls: 'slides-top'}, [el('h2', {id: titleId, text: 'Chế độ trình bày'}), counter, toc, notesBtn, exit]));
+  append(ov, stage);
+  append(ov, el('div', {cls: 'slides-bottom'}, [prev, el('span', {cls: 'muted', text: '← → hoặc PageUp/PageDown để chuyển thẻ'}), next]));
+  var hiddenSibs = [];
+  Array.prototype.forEach.call(document.body.children, function (n) { if (!n.hasAttribute('inert') && n.tagName !== 'SCRIPT') { n.setAttribute('inert', ''); hiddenSibs.push(n); } });
+  document.body.appendChild(ov);
+  slideState = {i: 0, ov: ov, opener: opener, sibs: hiddenSibs, noteWrap: null};
+  function go(i) {
+    if (i < 0 || i >= CARDS.length) return;
+    slideState.i = i;
+    clear(stage);
+    var b = buildCard(CARDS[i], i, CARDS.length, true, notesOn);
+    slideState.noteWrap = b.noteWrap;
+    append(stage, b.box);
+    counter.textContent = 'Thẻ ' + (i + 1) + '/' + CARDS.length;
+    prev.disabled = i === 0; next.disabled = i === CARDS.length - 1;
+    tocBtns.forEach(function (t, k) { if (k === i) t.setAttribute('aria-current', 'step'); else t.removeAttribute('aria-current'); });
+    stage.scrollTop = 0;
+    b.heading.focus();
+  }
+  slideState.go = go;
+  go(start || 0);
+}
+function closeSlides() {
+  if (!slideState) return;
+  var s = slideState;
+  slideState = null;
+  s.sibs.forEach(function (n) { n.removeAttribute('inert'); });
+  if (s.ov.parentNode) s.ov.parentNode.removeChild(s.ov);
+  if (s.opener && s.opener.focus) s.opener.focus();
+}
+function isEditable(t) {
+  if (!t || !t.tagName) return false;
+  var tg = t.tagName.toLowerCase();
+  return tg === 'input' || tg === 'textarea' || tg === 'select' || !!t.isContentEditable;
+}
+document.addEventListener('keydown', function (e) {
+  if (!slideState || isEditable(e.target) || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); slideState.go(slideState.i + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); slideState.go(slideState.i - 1); }
+  else if (e.key === 'Escape') { e.preventDefault(); closeSlides(); }
+});
+
+// ---------------------------------------------------------------- nav, progress, current section
+var visited = dict(), current = null, SECS = [], printing = false;
+window.addEventListener('beforeprint', function () { printing = true; });
+window.addEventListener('afterprint', function () { printing = false; });
+function setCurrent(id) {
+  if (!id) return;
+  current = id;
+  SECS.forEach(function (s) { s.classList.toggle('is-current', s.id === id); });
+  Array.prototype.forEach.call(document.querySelectorAll('nav.toc a[data-target]'), function (a) {
+    if (a.getAttribute('data-target') === id) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+  });
+  var h = document.getElementById('h-' + id);
+  if (printCurrentBtn && h) printCurrentBtn.textContent = 'In mục đang xem (' + trunc(h.textContent, 30) + ')';
+  markVisited(id);
+}
+function markVisited(id) {
+  if (visited[id]) return;
+  visited[id] = true;
+  var a = document.querySelector('nav.toc a[data-target="' + cssKey(id) + '"]');
+  if (a) { var m = a.querySelector('.toc-mark'); if (m) { clear(m); append(m, ['✓', el('span', {cls: 'sr-only', text: ' (đã xem)'})]); } }
+  var n = Object.keys(visited).length, bar = document.getElementById('toc-bar'), cnt = document.getElementById('toc-count');
+  if (bar) { bar.max = SECS.length; bar.value = n; }
+  if (cnt) cnt.textContent = 'Đã xem ' + n + '/' + SECS.length + ' mục (chỉ trong phiên này)';
+}
+function setupNav() {
+  Array.prototype.forEach.call(document.querySelectorAll('nav.toc a[data-target]'), function (a) {
+    a.addEventListener('click', function () { setCurrent(a.getAttribute('data-target')); });
+  });
+  SECS.forEach(function (s) { s.addEventListener('focusin', function () { setCurrent(s.id); }); s.addEventListener('pointerdown', function () { setCurrent(s.id); }); });
+  if ('IntersectionObserver' in window) {
+    var inView = dict();
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { inView[en.target.id] = en.isIntersecting; });
+      if (printing || (window.matchMedia && window.matchMedia('print').matches)) return;  // bố cục in không đổi mục đang xem
+      for (var i = 0; i < SECS.length; i++) { if (inView[SECS[i].id]) { setCurrent(SECS[i].id); break; } }
+    }, {rootMargin: '0px 0px -55% 0px', threshold: 0});
+    SECS.forEach(function (s) { io.observe(s); });
+  }
+  var hash = (location.hash || '').slice(1);
+  setCurrent(SECS.some(function (s) { return s.id === hash; }) ? hash : (SECS[0] && SECS[0].id));
+}
+
+// ---------------------------------------------------------------- init
+var BUILDERS = {overview: bOverview, workflow: bWorkflow, walkthrough: bWalkthrough, decisions: bDecisions,
+  evidence: bEvidence, teachback: bTeachback, presentation: bPresentation};
+function init() {
+  document.body.classList.add('js');
+  try { buildToolbar(); } catch (e) { /* trang vẫn dùng được không có thanh công cụ */ }
+  SECS = Array.prototype.slice.call(document.querySelectorAll('main section.lesson'));
+  SECS.forEach(function (sec) {
+    var body = sec.querySelector('.sec-body');
+    if (!body) return;
+    var b = BUILDERS[sec.getAttribute('data-section')];
+    clear(body);
+    try { if (b) b(body, sec); }
+    catch (e) {
+      clear(body);
+      append(body, el('p', {cls: 'sec-error', role: 'alert', text: 'Không dựng được mục này (' + str(e && e.message) + '). Các mục khác vẫn dùng được.'}));
+    }
+  });
+  try { loadStored(); } catch (e) { /* bỏ qua */ }
+  setupNav();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"f2897613b96f43d5aa70ff8578197f17","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
