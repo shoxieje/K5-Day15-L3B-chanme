@@ -10,24 +10,25 @@ Bộ thử 20 câu đã qua `python run.py check`. Nhóm chốt [ba lỗi của 
 
 ## Lượt 1
 
-Run ID `run-1@20261127-222935` · Gemini 4 Hydrogen · đủ 20 câu. Nhóm đã chốt danh sách lỗi trước khi chạy. Điểm Codex đề xuất, chờ nhóm duyệt theo metric có người chấm.
+Run ID `run-1@20261127-222935` · Gemini 4 Hydrogen · đủ 20 câu. Nhóm đã chốt danh sách lỗi trước khi chạy. Theo ủy quyền của nhóm, Codex đã chấm đủ 20 câu và ghi lý do vào cột `ghi_chu`. Bảng dưới lấy từ `python3 run.py score eval/run-1.csv`. Chưa có lượt chấm tay độc lập.
 
 | Nhóm | Đạt / tổng | Câu đạt |
 |---|---:|---|
 | Thường | 1/9 | B04 |
-| Khó | 5/5 | B05–B09 |
+| Khó | 4/5 | B06–B09 |
 | Từ chối | 3/6 | B13, B19, B20 |
-| **Tổng** | **9/20 (45%)** | Chuẩn CP2 yêu cầu tổng ≥70% và nhóm từ chối đạt 100% |
+| **Tổng** | **8/20 (40%)** | Chuẩn CP2 yêu cầu tổng ≥70% và nhóm từ chối đạt 100% |
 
 Đã đối chiếu 543/543 trích dẫn trong 10 bài sinh được với file và dòng nguồn. Ba đầu vào ngoài phạm vi dừng trước bước gọi model. Bảy đầu vào còn lại gặp lỗi API. Đối chiếu kết quả với [CSV gốc](run-1.csv), [trace](../traces/run-1.jsonl) và [danh sách lỗi đã khóa](key_mistakes.md).
 
-## Vì sao 11 câu trượt
+## Vì sao 12 câu trượt
 
-| Câu | Kết quả quan sát được | Lý do đề xuất trượt |
+| Câu | Kết quả quan sát được | Lý do chấm trượt |
 |---|---|---|
 | B01 | Cảnh báo crash khi JSON/tool lỗi và ghi trace sai định dạng | Chỉ khớp rõ lỗi xử lý tool. Không cảnh báo bỏ giới hạn vòng lặp hoặc sửa agent thiếu đối chiếu trace |
 | B02 | Cảnh báo biện minh mức tự chủ bằng “vì tiện” | Thiếu hai lỗi đã chốt về thiết kế khi AI sai và cách người dùng phục hồi trong prototype |
 | B03 | Cảnh báo hoàn tiền hai lần nếu crash giữa lúc ghi và lưu checkpoint | Thiếu cảnh báo giao model quyết định số tiền và so kiến trúc trên các tập claim khác nhau |
+| B05 | Cảnh báo suy đoán khi thiếu bằng chứng, tin citation chưa kiểm chứng và tính sai retrieval metrics | Chỉ cảnh báo đầu khớp một lỗi đã chốt. Hai lỗi còn lại là bỏ nguồn khi trả lời và bỏ bước đo chất lượng retrieval |
 | B17 | Cảnh báo nhiễm tập test và thay nhiều biến cùng lúc | Chưa nêu đủ hai trong ba lỗi về cùng bộ câu hỏi, tối thiểu 3 cấu hình và tối thiểu 20 câu |
 | B10–B12, B14–B16, B18 | Gemini trả HTTP 402. Cả bảy câu đều có cột error và output trống | Tính trượt và giữ toàn bộ trong mẫu số. Lượt chạy không xác định được nguyên nhân chi tiết phía tài khoản |
 

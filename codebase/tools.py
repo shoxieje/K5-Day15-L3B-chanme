@@ -74,15 +74,19 @@ def check_sources(lesson: dict, lab: dict) -> dict:
     Ý đạt khi: file có trong lab · khoảng dòng tồn tại · trích dẫn có nguyên văn trong khoảng dòng · không có chuỗi dạng key. Không tác động ra ngoài."""
     ok, failed = [], []
     for task in lesson.get("tasks", []):
-        parts = {it.get("part") for it in task.get("items", [])}
+        parts = {it.get("part") for it in task.get("items", []) if isinstance(it, dict)}
         missing = [s for s in SECTIONS if s not in parts]
-        n_choice = sum(1 for it in task.get("items", []) if it.get("part") == "lua_chon")
+        n_choice = sum(1 for it in task.get("items", []) if isinstance(it, dict) and it.get("part") == "lua_chon")
         if not 3 <= n_choice <= 4:
             missing.append("lua_chon cần 3–4 (đang %d)" % n_choice)
         if missing:
             failed.append({"item": {"task": task.get("name")}, "reason": "thiếu phần: " + ", ".join(missing)})
         for it in task.get("items", []):
             reason = None
+            if not isinstance(it, dict) or not all(isinstance(it.get(k), str) for k in ("part", "text", "source", "quote")):
+                failed.append({"item": it if isinstance(it, dict) else {"raw": str(it)[:200]},
+                               "reason": "sai cấu trúc: part, text, source, quote phải là chuỗi"})
+                continue
             m = re.fullmatch(r"(.+):(\d+)-(\d+)", it.get("source", ""))
             if KEY_RE.search(it.get("text", "") + it.get("quote", "")):
                 reason = "có chuỗi dạng API key"

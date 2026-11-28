@@ -55,7 +55,7 @@ def call_model(system: str, user: str) -> dict:
 
     if MODEL_PROVIDER != "gemini":
         raise ValueError("MODEL_PROVIDER chưa được hỗ trợ: " + MODEL_PROVIDER)
-    key = os.getenv("GEMINI_API_KEY") or API_KEY
+    key = (os.getenv("GEMINI_API_KEY") or "").strip() or API_KEY.strip()
     if not key:
         raise ValueError("Thiếu GEMINI_API_KEY trong môi trường hoặc .env")
     if not re.fullmatch(r"[A-Za-z0-9._-]+", MODEL_NAME):
@@ -69,17 +69,32 @@ def call_model(system: str, user: str) -> dict:
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
     try:
-        with urllib.request.urlopen(req, timeout=120) as response:
+        with urllib.request.urlopen(req, timeout=300) as response:  # model có suy nghĩ: một lượt có thể quá 2 phút
             data = json.load(response)
     except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"Gemini trả HTTP {exc.code}") from exc
+        try:
+            raw = exc.read()
+            detail = raw.decode("utf-8", errors="replace") if isinstance(raw, (bytes, bytearray)) else str(raw or "")
+        except Exception:
+            detail = ""
+        detail = detail.replace(key, "***").strip()[:300]
+        msg = f"Gemini trả HTTP {exc.code}: {detail}" if detail else f"Gemini trả HTTP {exc.code}"
+        raise RuntimeError(msg) from exc
     candidates = data.get("candidates") or []
-    if not candidates or candidates[0].get("finishReason") != "STOP":
-        raise RuntimeError("Gemini chưa trả bài hoàn chỉnh")
-    parts = candidates[0]["content"]["parts"]
+    finish_reason = candidates[0].get("finishReason") if candidates and isinstance(candidates[0], dict) else None
+    if not candidates or finish_reason != "STOP":
+        block_reason = (data.get("promptFeedback") or {}).get("blockReason")
+        raise RuntimeError(
+            f"Gemini chưa trả bài hoàn chỉnh (finishReason={finish_reason}, blockReason={block_reason})"
+        )
+    parts = (candidates[0].get("content") or {}).get("parts") or []
     text = "".join(part.get("text", "") for part in parts if not part.get("thought"))
     if not text.strip():
         raise ValueError("Gemini trả nội dung rỗng")
-    usage = data["usageMetadata"]
-    return {"text": text, "model": MODEL_NAME, "tokens_in": usage["promptTokenCount"],
-            "tokens_out": usage["candidatesTokenCount"] + usage.get("thoughtsTokenCount", 0)}
+    usage = data.get("usageMetadata") or {}
+    return {
+        "text": text,
+        "model": MODEL_NAME,
+        "tokens_in": usage.get("promptTokenCount") or 0,
+        "tokens_out": (usage.get("candidatesTokenCount") or 0) + (usage.get("thoughtsTokenCount") or 0),
+    }
