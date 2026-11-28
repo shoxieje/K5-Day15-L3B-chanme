@@ -1772,16 +1772,42 @@ def _render_home(
 </html>'''
 
 
+# Giá USD / 1 triệu token (vào, ra) — further-reading/model-prices.md của BTC, xem 25/11/2026 (giống cost/personas.yaml).
+PRICES_USD_PER_M = {
+    "gemini-4-hydrogen": (1.50, 7.50),
+    "gemini-3.8-flash": (1.50, 7.50),
+    "gemini-3.1-flash-lite": (0.25, 1.50),
+    "fake": (0.0, 0.0),
+}
+
+
 def _build_result_card(
     markdown: str, page_url: str, summary: dict, mode: str = DEFAULT_MODE, download_url: str = ""
 ) -> str:
     models = ", ".join(summary.get("models") or []) or MODEL_PROVIDER
+    t_in, t_out = summary.get("tokens_in", 0) or 0, summary.get("tokens_out", 0) or 0
+    price = next((v for k, v in PRICES_USD_PER_M.items() if k in models), None)
+    cost = "%.4f USD" % ((t_in * price[0] + t_out * price[1]) / 1e6) if price else "—"
     stats = (
         f"Chế độ: {MODE_LABELS.get(mode, mode)} · "
         f"Model: {models} · Gọi model: {summary.get('model_calls', 0)} lần · "
         f"Công cụ: {summary.get('tool_calls', 0)} lần · "
-        f"Token vào/ra: {summary.get('tokens_in', 0):,} / {summary.get('tokens_out', 0):,} · "
+        f"Token vào/ra: {t_in:,} / {t_out:,} · "
+        f"Chi phí: {cost} · "
         f"Thời gian: {summary.get('elapsed_s', 0)}s"
+    )
+    metrics = "".join(
+        f'<div style="padding:10px 14px;border:1px solid #e7e5e4;border-radius:8px;background:#fff">'
+        f'<div style="font-size:12px;color:#78716c;text-transform:uppercase;letter-spacing:.05em">{html.escape(k)}</div>'
+        f'<div style="font-size:18px;font-weight:600;color:#1c1917">{html.escape(str(v))}</div></div>'
+        for k, v in (("Model", models), ("Chi phí", cost), ("Thời gian", f"{summary.get('elapsed_s', 0)} giây"),
+                     ("Gọi model", f"{summary.get('model_calls', 0)} lần"),
+                     ("Gọi công cụ", f"{summary.get('tool_calls', 0)} lần"),
+                     ("Token vào / ra", f"{t_in:,} / {t_out:,}"))
+    )
+    stats_html = (
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0">'
+        + metrics + '</div>'
     )
     if mode == MODE_AFTER:
         heading = "Kết quả tạo trang học lại"
@@ -1820,7 +1846,7 @@ def _build_result_card(
     return (
         '<article class="card" aria-labelledby="result-heading">'
         f'<h2 id="result-heading">{html.escape(heading)}</h2>'
-        f'<p class="stats">{html.escape(stats)}</p>'
+        f'{stats_html}<p class="stats" style="display:none">{html.escape(stats)}</p>'
         f'<div class="result-actions">{action_btn}</div>'
         f'{note}'
         f'{body_md}'

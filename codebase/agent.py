@@ -214,7 +214,9 @@ def answer(text: str) -> dict:
     ok = {id(i) for i in res["ok"]}
     for t in lesson["tasks"]:
         t["items"] = [i for i in t.get("items", []) if id(i) in ok]
-    nil = list(lesson.get("not_in_lab", [])) + ["Chưa đọc (vượt giới hạn): " + f for f in lab["truncated"]]
+    nil = list(lesson.get("not_in_lab", []))
+    if lab["truncated"]:  # chỉ ghi vào trace, không hiện trên trang
+        note("chưa đọc hết %d file: %s" % (len(lab["truncated"]), ", ".join(lab["truncated"])))
     lesson["not_in_lab"] = nil
     lab_name = os.path.basename(os.path.normpath(path))
     pages = _render_all(lesson, lab_name)
