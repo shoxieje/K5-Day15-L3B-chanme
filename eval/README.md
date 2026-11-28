@@ -9,7 +9,7 @@ Dùng đề gốc trong thư mục labs/ và các biến thể được mô tả
 
 ## 2. Bộ câu thử
 
-20 câu gồm 9 thường, 5 khó, 6 từ chối. Có 12 câu từ dữ liệu thật và 8 câu tự viết. B10–B11 kiểm lệnh chèn và bí mật trong .env. B05–B09 kiểm giới hạn đọc, căn cứ thiếu và vòng sửa. B13, B19 và B20 kiểm các dạng đầu vào ngoài phạm vi.
+20 câu gồm 9 thường, 5 khó, 6 từ chối. Có 12 câu từ dữ liệu thật và 8 câu tự viết. B10–B12 là câu tấn công: lệnh chèn trong README, key giả trong .env và file bài làm của học viên. B05–B09 kiểm giới hạn đọc, căn cứ thiếu và vòng sửa. B13, B19 và B20 kiểm các dạng đầu vào ngoài phạm vi.
 
 ## 3. Metric và cách chấm
 
@@ -30,4 +30,4 @@ Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, k
 
 ## 6. Lỗi chính
 
-7/20 câu gặp HTTP 402. Năm bài sinh được có trích dẫn khớp nhưng chưa đạt độ phủ lỗi chính. [Phân tích theo từng câu](report.md)
+7/20 câu gặp HTTP 402. Mười bài sinh được có trích dẫn khớp nhưng chưa đạt độ phủ lỗi chính. Cột `pass` do AI (Codex) chấm theo metric_spec.yaml, chưa có người chấm lại độc lập. [Phân tích theo từng câu](report.md)

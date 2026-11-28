@@ -6,7 +6,7 @@
 
 ## Trạng thái CP3
 
-Bộ thử 20 câu đã qua `python run.py check`. Nhóm chốt [ba lỗi của mỗi lab](key_mistakes.md) trước khi xem output. Cả 3 câu đầu đã sinh trang bằng Gemini 4 Hydrogen với token đo được.
+Bộ thử 20 câu đã qua `python run.py check`. Nhóm chốt [ba lỗi của mỗi lab](key_mistakes.md) trước khi xem output. Lượt 1 chạy bằng Gemini 4 Hydrogen: 13/20 câu có output với token đo được, 7/20 câu gặp HTTP 402.
 
 ## Lượt 1
 
