@@ -1,0 +1,26 @@
+[Unit]
+Description=Be The Agent (chanme) web service behind Cloudflare Tunnel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=chanme
+Group=chanme
+WorkingDirectory=/opt/chanme
+EnvironmentFile=/etc/chanme/chanme.env
+ExecStart=/usr/bin/python3 /opt/chanme/codebase/web_server.py --host 127.0.0.1 --port 8795
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/chanme
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
