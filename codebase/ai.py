@@ -48,7 +48,8 @@ API_KEY = (os.environ.get("API_KEY") or "").strip()
 
 
 @model_call
-def call_model(system: str, user: str) -> dict:
+def call_model(system: str, user: str, *, timeout: float | None = None) -> dict:
+    """timeout (tùy chọn, giây): luồng after_lab truyền thời gian còn lại của job; gọi 2 tham số cũ giữ 300 giây."""
     if MODEL_PROVIDER == "fake":
         last = (user.strip().splitlines() or [""])[-1]
         return {"text": "[câu trả lời giả — chưa nối model] " + last[:60], "model": "fake", "tokens_in": 0, "tokens_out": 0}
@@ -69,7 +70,8 @@ def call_model(system: str, user: str) -> dict:
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
     try:
-        with urllib.request.urlopen(req, timeout=300) as response:  # model có suy nghĩ: một lượt có thể quá 2 phút
+        wait = 300 if timeout is None else max(1.0, min(300.0, float(timeout)))
+        with urllib.request.urlopen(req, timeout=wait) as response:  # model có suy nghĩ: một lượt có thể quá 2 phút
             data = json.load(response)
     except urllib.error.HTTPError as exc:
         try:

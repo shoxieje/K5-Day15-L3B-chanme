@@ -4,6 +4,10 @@
     →  3. check_sources (code) ⟲ gửi lại AI chỉ các ý trượt, tối đa MAX_FIX vòng  →  bỏ ý còn trượt
     →  4. render (code) trang web đóng vai  →  5. trợ giảng duyệt (ngoài code).
 
+Luồng after_lab (learning-v1, docs/design/learning-html-contract.md): input MỘT dòng
+    @learning-v1 {"repo_path":"C:/path/to/completed-repo"}
+→ learning_model.build_learning → HTML "Trang học lại: output/learning-<snap>-<gen>.html". Đường dẫn thường vẫn chạy luồng CP2.
+
 CP2: model chế độ giả (MODEL_PROVIDER=fake). Khi model giả, fake_lesson() dựng tình huống cố định từ dòng thật của lab,
 cài 1 ý nguồn sai ở lượt đầu để thấy vòng kiểm bắt được. Trước CP3 thay bằng model thật (codebase/ai.py).
 """
@@ -121,7 +125,47 @@ def _parse(reply, lab, rnd):
     return lesson
 
 
+LEARNING_PREFIX = "@learning-v1"
+
+
+def parse_learning_input(text):
+    """→ repo_path (chuỗi) hoặc ném ValueError có lý do. Chỉ gọi khi text bắt đầu bằng LEARNING_PREFIX."""
+    body = text.strip()
+    if "\n" in body or "\r" in body:
+        raise ValueError("input @learning-v1 phải là đúng một dòng")
+    rest = body[len(LEARNING_PREFIX):]
+    if not rest[:1].isspace():
+        raise ValueError("sau @learning-v1 cần một dấu cách rồi tới JSON")
+    try:
+        obj = json.loads(rest.strip())
+    except ValueError as exc:
+        raise ValueError("JSON không hợp lệ (%s)" % exc.msg) from None
+    if not isinstance(obj, dict) or set(obj) != {"repo_path"}:
+        raise ValueError('JSON phải là đúng một object {"repo_path": "..."} và không có khóa khác')
+    if not isinstance(obj["repo_path"], str) or not obj["repo_path"].strip():
+        raise ValueError("repo_path phải là chuỗi không rỗng")
+    return obj["repo_path"].strip()
+
+
+def _answer_learning(text):
+    import learning_model
+    import root_markdown
+    from tools import LABS_DIR
+    try:
+        repo_path = parse_learning_input(text)
+    except ValueError as exc:
+        note("after_lab: input sai (%s)" % exc)
+        return "Lỗi đầu vào @learning-v1: %s. Ví dụ: @learning-v1 {\"repo_path\":\"C:/path/to/repo\"}. Không tạo trang." % exc
+    base = repo_path if os.path.isabs(repo_path) else os.path.join(LABS_DIR, repo_path)
+    ref = root_markdown.RepoRef(base)
+    model, meta, snap, budget = learning_model.build_learning(ref)
+    page = learning_model.write_learning_html(model, meta)
+    return learning_model.summarize(model, meta, page, budget)
+
+
 def answer(text: str) -> dict:
+    if text.strip().startswith(LEARNING_PREFIX):          # phân tích prefix trước logic lấy dòng đầu (luồng CP2)
+        return {"output": _answer_learning(text)}
     path = text.strip().splitlines()[0].strip() if text.strip() else ""
     lab = read_lab(path)
     if not lab["is_lab"]:
