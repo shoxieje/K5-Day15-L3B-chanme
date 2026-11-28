@@ -92,7 +92,7 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 - **Trước CP3:** nối model thật theo [docs/connect-model.md](docs/connect-model.md), `eval --try` thấy token > 0 rồi mới `eval`.
 - Bộ chạy gửi **nguyên ô `input`** của câu thử vào `answer(text)`. Dữ liệu nền (bài học, thông báo, lịch…) để trong `data/`, đọc qua công cụ.
 
-Video CP3 (30 giây) mở bằng [file MP4 trong repo](demo-cp3.mp4). Video dùng trang HTML của câu B02 và số token thật của lượt thử. Nhóm tự đăng bản chia sẻ.
+Video demo: đang quay lại (bản CP3 cũ đã gỡ). Link YouTube Unlisted sẽ được thêm ở đây.
 
 ## Phần nào thật, phần nào giả
 
@@ -138,5 +138,11 @@ Nhóm dùng Claude (trợ lý lập trình) để soạn bản nháp spec §4, m
 | 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" |
 | 5 | Định nghĩa "tốt" + bộ câu thử | `data/DATA_CARD.md` · `eval/` |
 | 6 | Mô phỏng chi phí khi dùng thật | `cost/` |
-| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · link video: ____ |
+| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · video dự phòng: đang quay lại |
 | + | *Bonus:* người dùng thử | `validation/log.md` |
+
+## Phần chưa xong (khai thật cho CP4)
+
+- **Lượt 2 chưa chạy:** cải tiến prompt đã code (`codebase/agent.py`, xem `eval/report.md` §3) nhưng chưa chạy vì không kịp giờ trước CP4.
+- **Mô phỏng chi phí mới 10 phiên** (chưa đủ 50): `cost/cost-estimate.md` tính từ token đo được của lượt thử.
+- Phỏng vấn 1/3 người, chưa có khảo sát, chưa có `validation/log.md`.

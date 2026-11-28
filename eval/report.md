@@ -36,12 +36,12 @@ Trong ba câu từ chối gặp lỗi API (B10–B12), không có trang cuối �
 
 ## 3. Một lần cải tiến
 
-- Nhắm vào nhóm lỗi: __ — vì sao là nhóm **đau nhất với người dùng**: __
-- Đã sửa gì (có thể vài thay đổi cùng nhắm nhóm lỗi đó): __
-- Kết quả: nhóm lỗi đó __/__ → __/__ · tổng __% → __%
-- Câu nào **tệ đi** sau khi sửa: __
+- Nhắm vào nhóm lỗi: **thiếu độ phủ lỗi chính** (5/12 câu trượt có output đều trượt vì chỉ nêu 1/3 lỗi đã chốt; nhóm `thuong` chỉ 1/9) — đau nhất vì học viên tin trang đã đủ và bỏ sót đúng lỗi hay mắc.
+- Đã sửa gì: thêm vào prompt (`codebase/agent.py`) yêu cầu `loi_de_mac` có ≥3 lỗi **khác loại**, quét cảnh báo, "không được", tiêu chí chấm và checklist của đề. Quy tắc chung, không chứa nội dung câu thử.
+- Kết quả: **chưa chạy lượt 2** — lượt chạy đủ 20 câu mất nhiều thời gian, không kịp trước CP4. Khai thật: CP4 nộp lượt 1 (8/20) + cải tiến đã code, chưa đo.
+- Câu nào **tệ đi** sau khi sửa: chưa biết (chưa chạy).
 
 ## 4. Còn lại
 
-- Lỗi chưa sửa + nguy hiểm thế nào: __
-- Nếu có thêm 1 tuần: __
+- Lỗi chưa sửa + nguy hiểm thế nào: 7/20 câu lỗi API (HTTP 402) nên chưa kiểm được 3 câu tấn công B10–B12; chưa có người thứ hai chấm lại.
+- Nếu có thêm 1 tuần: chạy lượt 2 và 50 phiên mô phỏng, phỏng vấn thêm P2–P3, thử Flash-Lite để giảm chi phí.

@@ -1800,18 +1800,30 @@ def _build_result_card(
             note += '<p class="hint">Không nhận được đường dẫn trang học lại hợp lệ từ kết quả bên dưới.</p>'
     else:
         heading = "Kết quả tạo bản nháp"
-        action_btn = (
-            f'<a href="{html.escape(page_url, quote=True)}" class="btn-primary">Mở trang đóng vai tương tác →</a>'
-            if page_url else ""
-        )
+        action_btn = ""
         note = ""
+        if page_url:
+            base = page_url[:-len(".html")]
+            action_btn = (
+                f'<a href="{html.escape(page_url, quote=True)}" class="btn-primary" target="_blank" rel="noopener">Đóng vai →</a>'
+                f'<a href="{html.escape(base + "-slides.html", quote=True)}" class="btn-secondary" target="_blank" rel="noopener">Slide</a>'
+                f'<a href="{html.escape(base + "-summary.html", quote=True)}" class="btn-secondary" target="_blank" rel="noopener">Tóm tắt</a>'
+            )
+            # Trang đóng vai tương tác hiện ngay trong kết quả, không bắt người dùng đọc markdown.
+            note = (
+                f'<iframe src="{html.escape(page_url, quote=True)}" title="Trang đóng vai" '
+                'style="width:100%;height:78vh;border:1px solid #e7e5e4;border-radius:8px;background:#fff;margin:12px 0"></iframe>'
+            )
+    body_md = f'<pre>{html.escape(markdown)}</pre>'
+    if mode != MODE_AFTER and page_url:
+        body_md = f'<details><summary>Xem bản chữ (markdown)</summary>{body_md}</details>'
     return (
         '<article class="card" aria-labelledby="result-heading">'
         f'<h2 id="result-heading">{html.escape(heading)}</h2>'
         f'<p class="stats">{html.escape(stats)}</p>'
-        f'{note}'
         f'<div class="result-actions">{action_btn}</div>'
-        f'<pre>{html.escape(markdown)}</pre>'
+        f'{note}'
+        f'{body_md}'
         '</article>'
     )
 
@@ -1936,7 +1948,8 @@ class Handler(BaseHTTPRequestHandler):
                 )
                 return
             raw = target.read_text(encoding="utf-8", errors="replace")
-            self._send_html(_enhance_roleplay_html(raw))
+            # Trang 3-tab mới (codebase/ui.py) đã có giao diện riêng: gửi nguyên bản, không chèn CSS cũ.
+            self._send_html(raw if '<header class="top">' in raw else _enhance_roleplay_html(raw))
             return
         if path.startswith("/download/"):
             name = path[len("/download/"):]

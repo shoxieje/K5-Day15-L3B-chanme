@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Be The Agent — chanme</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root { --ink:#1b1f24; --muted:#5b6470; --line:#dde1e6; --accent:#1f5fbf; --warn:#a15c00; --bad:#b42318; --good:#1a7f37; --bg:#ffffff; --soft:#f4f6f9; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family: -apple-system, "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif; }
+  .slide { width:1280px; height:720px; padding:56px 72px 48px; position:relative; overflow:hidden;
+    page-break-after:always; break-after:page; display:flex; flex-direction:column; }
+  .slide:last-child { page-break-after:auto; break-after:auto; }
+  .kicker { font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:10px; }
+  h1 { font-size:40px; line-height:1.15; margin:0 0 24px; font-weight:700; }
+  h2 { font-size:20px; margin:0 0 10px; }
+  p, li { font-size:20px; line-height:1.45; }
+  ul { margin:0; padding-left:22px; } li { margin-bottom:8px; }
+  .muted { color:var(--muted); }
+  .src { position:absolute; left:72px; right:72px; bottom:22px; font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:8px; display:flex; justify-content:space-between; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; }
+  .stat { background:var(--soft); border-radius:10px; padding:22px 24px; }
+  .stat .n { font-size:52px; font-weight:700; line-height:1; color:var(--accent); }
+  .stat .n.bad { color:var(--bad); } .stat .n.warn { color:var(--warn); }
+  .stat .l { font-size:17px; margin-top:10px; color:var(--ink); line-height:1.35; }
+  .stat .s { font-size:14px; margin-top:6px; color:var(--muted); }
+  table { border-collapse:collapse; width:100%; font-size:17px; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:600; }
+  td.r, th.r { text-align:right; }
+  tr.pick td { background:#eef4fd; font-weight:600; }
+  .tag { display:inline-block; font-size:13px; font-weight:600; padding:3px 9px; border-radius:999px; }
+  .tag.pend { background:#fff4e0; color:var(--warn); border:1px dashed var(--warn); }
+  .tag.gap { background:#fdecea; color:var(--bad); }
+  .tag.ok { background:#e8f5ec; color:var(--good); }
+  .pending { border:2px dashed var(--warn); background:#fffaf0; border-radius:10px; padding:16px 20px; color:var(--warn); }
+  .flow { display:flex; align-items:stretch; gap:10px; margin:6px 0 20px; }
+  .flow .step { flex:1; border:1.5px solid var(--line); border-radius:10px; padding:12px 12px; font-size:15px; line-height:1.35; background:#fff; }
+  .flow .step b { display:block; font-size:16px; margin-bottom:4px; }
+  .flow .step.ai { border-color:var(--accent); background:#eef4fd; }
+  .flow .step.code { background:var(--soft); }
+  .flow .step.hum { border-color:var(--good); background:#eef8f1; }
+  .flow .arrow { align-self:center; color:var(--muted); font-size:20px; }
+  .quote { border-left:4px solid var(--accent); padding:6px 16px; font-size:19px; color:var(--ink); background:var(--soft); border-radius:0 8px 8px 0; }
+  .title-slide { justify-content:center; }
+  .title-slide h1 { font-size:54px; margin-bottom:18px; }
+  .verdict { font-size:64px; font-weight:800; color:var(--warn); letter-spacing:.02em; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size:.88em; background:var(--soft); padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- 0. Bìa -->
+<section class="slide title-slide">
+  <div class="kicker">Hackathon AI20K · Track A · Nhóm chanme · CP4</div>
+  <h1>Be The Agent<br><span style="font-weight:500">Trang đóng vai từ một bài lab</span></h1>
+  <p class="muted" style="max-width:900px">Học viên L3B hiểu bài lab trước giờ Lab bằng cách tự chọn bước tiếp theo như chính agent, thay vì để công cụ viết hộ.</p>
+  <p class="muted" style="font-size:17px;margin-top:28px">Pain → Impact → Giải pháp AI → Đánh giá → Chi phí → Go / iterate / stop</p>
+  <div class="src"><span>Nguồn: spec.md · evidence/ · eval/ · cost/</span><span>28/11</span></div>
+</section>
+
+<!-- 1. Pain -->
+<section class="slide">
+  <div class="kicker">1 · Người dùng &amp; pain</div>
+  <h1>Học viên bỏ qua phần tự làm và ít tự giải thích</h1>
+  <p style="margin:0 0 20px"><b>Ai:</b> học viên L3B chuẩn bị bài lab mới trước buổi học. <b>Việc:</b> hiểu bước tiếp theo và lỗi dễ mắc để tự làm bài.</p>
+  <div class="grid3">
+    <div class="stat"><div class="n">22%</div><div class="l">99/442 lần hoàn tất mini lab được ghi là <b>bỏ qua</b></div><div class="s">Ngưỡng đặt trước ≥20% · đạt</div></div>
+    <div class="stat"><div class="n">16%</div><div class="l">18/113 học viên làm bước thực hành từng <b>tự giải thích</b></div><div class="s">Ngưỡng đặt trước &lt;1/3 · đạt</div></div>
+    <div class="stat"><div class="n">41%</div><div class="l">61/147 học viên mở mini lab bỏ qua ít nhất một bài</div><div class="s">Nhật ký pre-class 05–25/11</div></div>
+  </div>
+  <div class="grid2" style="margin-top:24px">
+    <div class="quote">P1 (học viên L3B ngoài nhóm) kể đã để công cụ viết hộ code vì dễ hơn. <span class="muted">(diễn đạt lại)</span></div>
+    <div><span class="tag gap">Còn thiếu</span> <span style="font-size:17px">Phỏng vấn <b>1/3</b> người · khảo sát <b>chưa có (n = 0)</b> · chưa biết <i>vì sao</i> học viên bỏ qua.</span></div>
+  </div>
+  <div class="src"><span>Nguồn: evidence/summary.md · evidence/data-mining.md · evidence/count.py · evidence/interviews/P1.md</span><span>1</span></div>
+</section>
+
+<!-- 2. Impact -->
+<section class="slide">
+  <div class="kicker">2 · Vì sao chọn bài này</div>
+  <h1>Ba hướng, cùng kịch bản 10 học viên × 4 buổi/tháng</h1>
+  <table>
+    <tr><th>Hướng</th><th class="r">Phút tiết kiệm/buổi</th><th class="r">Phút/tháng</th><th>Quyết định</th></tr>
+    <tr class="pick"><td>Trang đóng vai</td><td class="r">10</td><td class="r">400</td><td>Chọn — học viên phải tự chọn bước rồi mới xem giải thích + nguồn</td></tr>
+    <tr><td>Slide PDF</td><td class="r">6</td><td class="r">240</td><td>Để sau — xem nhanh trình tự, chưa cho thử từng lựa chọn</td></tr>
+    <tr><td>Tóm tắt bài</td><td class="r">5</td><td class="r">200</td><td>Để sau — tra cứu được, chưa cho thấy học viên tự chọn bước</td></tr>
+  </table>
+  <p class="muted" style="font-size:17px;margin-top:18px">Tác động/tháng = số học viên × buổi/người × phút tiết kiệm/buổi. Quy mô, tần suất và số phút đều <b>(tự ước tính)</b> — cần đo thời gian chuẩn bị trên cùng một bài lab để kiểm.</p>
+  <div class="src"><span>Nguồn: spec.md §2</span><span>2</span></div>
+</section>
+
+<!-- 3. Giải pháp -->
+<section class="slide">
+  <div class="kicker">3 · Giải pháp AI</div>
+  <h1>Workflow cố định: AI viết, code kiểm nguồn, người duyệt</h1>
+  <p style="margin:0 0 14px;font-size:18px">Tối trước buổi Lab, AI đọc thư mục bài và viết tình huống đóng vai cho từng nhiệm vụ — mỗi ý có nguồn <code>file:dòng</code> — để học viên tự chọn bước tiếp theo như agent.</p>
+  <div class="flow">
+    <div class="step code"><b>1. read_lab</b>code · đọc README/GUIDE/code/tests, bỏ .env, solution, bài làm</div><div class="arrow">→</div>
+    <div class="step ai"><b>2. AI viết lesson.md</b>mục tiêu · thứ agent thấy · 3–4 lựa chọn · bước đúng · lỗi dễ mắc</div><div class="arrow">→</div>
+    <div class="step code"><b>3. check_sources</b>file có? dòng có? trích dẫn khớp? sửa tối đa 2 vòng</div><div class="arrow">→</div>
+    <div class="step code"><b>4. render</b>trang web đóng vai</div><div class="arrow">→</div>
+    <div class="step hum"><b>5. Trợ giảng duyệt</b>rồi mới gửi lớp</div>
+  </div>
+  <div class="grid2">
+    <div><h2>AI tự làm đến đâu</h2><p style="font-size:17px;margin:0">AI <b>gợi ý</b>, người quyết. Sai thì học viên học sai ngay trước giờ Lab — TA sửa trước khi gửi thì rẻ, gửi rồi mới sửa thì đắt.</p></div>
+    <div><h2>Chặn rủi ro bằng code</h2><p style="font-size:17px;margin:0">Không đọc .env / lời giải / bài làm. Bỏ mọi ý không có nguồn thật và mọi chuỗi dạng key. Lệnh chèn trong file lab = dữ liệu.</p></div>
+  </div>
+  <div class="src"><span>Nguồn: spec.md §4 · codebase/tools.py</span><span>3</span></div>
+</section>
+
+<!-- 4. Demo -->
+<section class="slide">
+  <div class="kicker">4 · Demo live</div>
+  <h1>Một trường hợp thường, một trường hợp khó</h1>
+  <div class="grid2">
+    <div class="stat"><h2>Thường · B04</h2><p style="font-size:18px;margin:0"><code>labs/Day11-Guardrails-HITL</code> — mỗi nhiệm vụ chính có ≥1 tình huống đủ phần, mọi ý có nguồn.</p><p class="muted" style="font-size:15px;margin:8px 0 0">Câu duy nhất nhóm thường đạt ở lượt 1.</p></div>
+    <div class="stat"><h2>Khó · B08</h2><p style="font-size:18px;margin:0">AI trả một ý có nguồn sai dòng → vòng kiểm bắt được, AI sửa hoặc ý bị bỏ.</p><p class="muted" style="font-size:15px;margin:8px 0 0">Lượt 1: trace có 2 vòng sửa, cả 61 ý cuối có trích dẫn khớp.</p></div>
+  </div>
+  <p style="margin-top:24px;font-size:18px">Chạy: <code>python run.py</code> · mạng hỏng → mở video dự phòng (30 giây).</p>
+  <div class="src"><span>Nguồn: eval/benchmark.csv · eval/report.md · spec.md §5, §10</span><span>4</span></div>
+</section>
+
+<!-- 5. Đánh giá -->
+<section class="slide">
+  <div class="kicker">5 · Đánh giá thế nào</div>
+  <h1>Đánh giá thế nào: 20 câu thử, chuẩn chốt trước khi chạy</h1>
+  <div class="grid2" style="grid-template-columns:1fr 1.15fr">
+    <div>
+      <ul style="font-size:17px">
+        <li><b>Dataset:</b> đề gốc trong <code>labs/</code> + biến thể (data card)</li>
+        <li><b>Bộ câu thử:</b> 20 câu — 9 thường · 5 khó · 6 từ chối (gồm 3 câu tấn công)</li>
+        <li><b>Metric:</b> <code>nguon_that</code> · <code>phu_loi_chinh</code> · <code>khong_ro_ri</code></li>
+        <li><b>Chuẩn "đạt" (chốt CP2):</b> ≥70% câu qua <b>và</b> 100% câu <code>tu_choi</code> qua</li>
+        <li><b>Chấm:</b> đội trưởng chốt cột <code>pass</code>; chưa có người thứ hai chấm lại</li>
+      </ul>
+      <p style="font-size:15px;margin:10px 0 0"><b>Cải tiến cho lượt 2:</b> nhắm lỗi thiếu độ phủ (nhóm thường 1/9) — prompt yêu cầu ≥3 lỗi dễ mắc khác loại, quét cảnh báo và checklist của đề. Kết quả: chưa đo.</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Lượt</th><th>Tổng</th><th>Từ chối</th><th>Đạt chuẩn?</th></tr>
+        <tr><td>Lượt 1<br><span class="muted" style="font-size:13px">run-1@20261127-222935 · Gemini 4 Hydrogen</span></td><td><b>8/20 (40%)</b></td><td>3/6</td><td style="color:var(--bad);font-weight:600">Chưa đạt</td></tr>
+        <tr><td>Lượt 2<br><span class="muted" style="font-size:13px">cải tiến đã code trong agent.py</span></td><td colspan="3"><span class="tag gap">Chưa chạy</span> <span style="font-size:15px">không kịp chạy trước CP4</span></td></tr>
+        <tr><td class="muted">Chuẩn</td><td class="muted">≥70%</td><td class="muted">6/6</td><td></td></tr>
+      </table>
+      <p style="font-size:16px;margin:14px 0 0"><b>Lỗi chính lượt 1:</b> 7/20 câu gặp <b>HTTP 402</b> (output trống, vẫn tính trượt). 10 bài sinh được có 543/543 trích dẫn khớp nguồn nhưng chưa đủ độ phủ lỗi chính.</p>
+    </div>
+  </div>
+  <div class="src"><span>Nguồn: eval/README.md · eval/report.md · eval/metric_spec.yaml · spec.md §7</span><span>5</span></div>
+</section>
+
+<!-- 6. Chi phí -->
+<section class="slide">
+  <div class="kicker">6 · Chi phí khi dùng thật</div>
+  <h1>Chi phí khi dùng thật</h1>
+  <div class="grid3">
+    <div class="stat"><div class="n">0,2238</div><div class="l">USD / phiên · Gemini 4 Hydrogen</div><div class="s">Token đo trên 10 phiên (seed 42): TB 42.994 vào · 21.241 ra</div></div>
+    <div class="stat"><div class="n warn">0,56</div><div class="l">USD / task thành công · Hydrogen</div><div class="s">0,2238 ÷ 40% (tỉ lệ đạt lượt 1) — không coi như đạt 100%</div></div>
+    <div class="stat"><div class="n">0,11</div><div class="l">USD / task thành công · Flash-Lite</div><div class="s">Cùng token đo trên Hydrogen × giá Flash-Lite (tự ước tính)</div></div>
+  </div>
+  <table style="margin-top:20px">
+    <tr><th>Kịch bản (tự ước tính)</th><th class="r">Người dùng</th><th class="r">Hydrogen / tháng</th><th class="r">Flash-Lite / tháng</th></tr>
+    <tr><td>Thấp</td><td class="r">300</td><td class="r">604 USD</td><td class="r">115 USD</td></tr>
+    <tr class="pick"><td>Cơ sở</td><td class="r">700</td><td class="r">1.410 USD</td><td class="r">268 USD</td></tr>
+    <tr><td>Cao</td><td class="r">1.000</td><td class="r">2.014 USD</td><td class="r">383 USD</td></tr>
+  </table>
+  <p style="font-size:16px;margin:12px 0 0"><b>So với impact:</b> ~40 phút tiết kiệm/người/tháng (tự ước tính) với 2,01 USD/người/tháng (Hydrogen) hoặc ~0,38 USD (Flash-Lite). 9 phiên/người/tháng theo personas.</p>
+  <p class="muted" style="font-size:14px;margin:6px 0 0"><span class="tag gap">Giới hạn</span> Chỉ chạy lượt thử 10 phiên (simulate-try@20261127-222805), <b>chưa chạy đủ 50 phiên</b> vì không kịp trước CP4. Giá theo bảng BTC, chưa đối chiếu hóa đơn.</p>
+  <div class="src"><span>Nguồn: cost/cost-estimate.md · cost/personas.yaml · spec.md §2, §8</span><span>6</span></div>
+</section>
+
+<!-- 7. Kết luận -->
+<section class="slide">
+  <div class="kicker">7 · Kết luận</div>
+  <h1>Go / iterate / stop</h1>
+  <div class="grid2" style="grid-template-columns:.8fr 1.2fr;align-items:center">
+    <div><div class="verdict">ITERATE</div><p class="muted" style="font-size:16px">Chạy lượt 2, đo lại trên Flash-Lite trước khi mở rộng.</p></div>
+    <div>
+      <ul style="font-size:18px">
+        <li><b>Pain có thật (trang 1):</b> 22% lần làm mini lab bị bỏ qua, 16% có tự giải thích — vượt cả hai ngưỡng đặt trước. Nhưng mới 1/3 phỏng vấn, chưa có khảo sát.</li>
+        <li><b>Chất lượng chưa đạt (trang 5):</b> 8/20 (40%) so với chuẩn ≥70%; từ chối 3/6 so với 100%. Phần lớn trượt do HTTP 402, không phải do nguồn sai.</li>
+        <li><b>Chi phí (trang 6):</b> 0,56 USD/task thành công (Hydrogen), 2,01 USD/người/tháng — thấp so với ~40 phút tiết kiệm, nhưng chất lượng 40% chưa đáng chi ở quy mô thật.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="src"><span>Nguồn: evidence/summary.md · eval/report.md · cost/cost-estimate.md</span><span>7</span></div>
+</section>
+
+<!-- 8. 1 tuần -->
+<section class="slide">
+  <div class="kicker">8 · Nếu có thêm 1 tuần</div>
+  <h1>Ba việc, trỏ về chỗ còn hổng</h1>
+  <div class="grid3">
+    <div class="stat"><h2>1. Tăng độ phủ lỗi chính</h2><p style="font-size:17px;margin:0">5 câu sinh được nhưng trượt (B01–B03, B05, B17) vì thiếu 1–2 lỗi đã chốt trong <code>key_mistakes.md</code>.</p></div>
+    <div class="stat"><h2>2. Kiểm lại câu từ chối</h2><p style="font-size:17px;margin:0">B10–B12 (lệnh chèn, key giả, bài làm) gặp HTTP 402 nên chưa kiểm được hành vi chống tấn công. Cần 6/6.</p></div>
+    <div class="stat"><h2>3. Hỏi thêm người dùng</h2><p style="font-size:17px;margin:0">Phỏng vấn P2–P3 (số lần/tháng, thời gian mỗi lần) và khảo sát ≥20 người để kiểm <i>lý do</i> bỏ qua và số phút tiết kiệm.</p></div>
+  </div>
+  <p class="muted" style="font-size:16px;margin-top:22px">Trước hết: chạy lượt 2 và mô phỏng 50 phiên; thử Flash-Lite để giảm chi phí; người thứ hai chấm lại cột <code>pass</code>.</p>
+  <div class="src"><span>Nguồn: eval/report.md · evidence/summary.md §5</span><span>8</span></div>
+</section>
+
+</body>
+</html>
