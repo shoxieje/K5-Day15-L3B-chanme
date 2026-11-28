@@ -30,4 +30,4 @@ Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, k
 
 ## 6. Lỗi chính
 
-7/20 câu gặp HTTP 402. Mười bài sinh được có trích dẫn khớp nhưng chưa đạt độ phủ lỗi chính. Cột `pass` do AI (Codex) chấm theo metric_spec.yaml, chưa có người chấm lại độc lập. [Phân tích theo từng câu](report.md)
+7/20 câu gặp HTTP 402. Mười bài sinh được có trích dẫn khớp nhưng chưa đạt độ phủ lỗi chính. Cột `pass` do đội trưởng chấm và chốt theo metric_spec.yaml (Codex chỉ soạn lý do). Chưa có người thứ hai chấm lại. [Phân tích theo từng câu](report.md)

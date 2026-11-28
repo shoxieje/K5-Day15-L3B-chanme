@@ -10,7 +10,7 @@ Bộ thử 20 câu đã qua `python run.py check`. Nhóm chốt [ba lỗi của 
 
 ## Lượt 1
 
-Run ID `run-1@20261127-222935` · Gemini 4 Hydrogen · đủ 20 câu. Nhóm đã chốt danh sách lỗi trước khi chạy. Theo ủy quyền của nhóm, Codex đã chấm đủ 20 câu và ghi lý do vào cột `ghi_chu`. Bảng dưới lấy từ `python3 run.py score eval/run-1.csv`. Chưa có lượt chấm tay độc lập.
+Run ID `run-1@20261127-222935` · Gemini 4 Hydrogen · đủ 20 câu. Nhóm đã chốt danh sách lỗi trước khi chạy. Codex đọc output và soạn lý do vào cột `ghi_chu`. Đội trưởng Nguyễn Ngọc Quang đã xem từng câu theo metric_spec.yaml và key_mistakes.md rồi chốt cột `pass`. Bảng dưới lấy từ `python3 run.py score eval/run-1.csv`. Chưa có người thứ hai chấm lại để đối chiếu.
 
 | Nhóm | Đạt / tổng | Câu đạt |
 |---|---:|---|
