@@ -12,9 +12,9 @@ README của nhóm có mục "Dùng AI vào việc gì" (2–3 dòng, bắt bu�
 | Rà câu hỏi phỏng vấn / khảo sát | | Chỉ rà câu dẫn dắt | | |
 | Viết câu thử (benchmark) | Claude | Soạn nháp 13 câu thử + metric spec | Mỗi câu thử có `source`; câu thử AI viết được ghi rõ | |
 | Sinh data `synthetic` (nếu có) | | | Seed __ · kiểm tay __ dòng | |
-| Đề xuất điểm lượt 1 | Codex | Kiểm trích dẫn bằng code, đối chiếu phần lỗi dễ mắc và điều kiện từng câu với danh sách nhóm đã chốt | Điểm đề xuất chờ nhóm duyệt. Chưa có số liệu chấm tay độc lập | |
+| Chấm điểm lượt 1 | Codex | Kiểm trích dẫn bằng code, đối chiếu phần lỗi dễ mắc và điều kiện từng câu với danh sách nhóm đã chốt | Nhóm ủy quyền cho Codex chốt điểm. Chưa có số liệu chấm tay độc lập | |
 | Slide, văn bản | Claude · Gemini (Antigravity CLI) | Soạn nháp spec §4, data card, canvas; rà lại bản CP1 | Nhóm duyệt từng phần | |
 
-CP3: Codex nối Gemini, chuẩn bị đầu vào B14–B20, chạy kiểm cấu trúc, đếm lại CSV BTC và soạn phần bằng chứng, spec, bảng chi phí. Các nhận định và lỗi chính dùng để chấm cần nhóm duyệt.
+CP3: Codex nối Gemini, chuẩn bị đầu vào B14–B20, chạy kiểm cấu trúc, đếm lại CSV BTC và soạn phần bằng chứng, spec, bảng chi phí. Danh sách lỗi chính do nhóm chốt trước lượt chạy.
 
 **Không dùng AI để:** tạo người được phỏng vấn, trích dẫn, câu trả lời khảo sát; sửa kết quả các lượt đã chạy (`eval/run-*.csv`, `cost/simulate-*.csv`, `traces/`).

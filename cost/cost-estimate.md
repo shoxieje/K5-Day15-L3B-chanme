@@ -6,7 +6,22 @@
 
 ## Lượt thử CP3
 
-Mười phiên hoàn tất, seed 42, mỗi phiên chuẩn bị một bài lab. Cả 10 phiên đều gọi Gemini 4 Hydrogen thành công. Tính theo giá Hydrogen trong bảng của BTC, trung bình **0,2238 USD/phiên**. Đây là chi phí mô phỏng theo bảng giá, chưa đối chiếu hóa đơn. [CSV lượt thử](simulate-try.csv) · [Bảng tính của bộ chạy](simulate-try-summary.md). Lượt chính thức từ 50 phiên thuộc CP4.
+Mười phiên hoàn tất, seed 42, mỗi phiên chuẩn bị một bài lab. Cả 10 phiên đều gọi Gemini 4 Hydrogen thành công. Tính theo giá Hydrogen trong bảng của BTC, trung bình **0,2238 USD/phiên**. Đây là chi phí mô phỏng theo bảng giá, chưa đối chiếu hóa đơn. Lượt chính thức từ 50 phiên thuộc CP4.
+
+Kết quả từ lượt `simulate-try@20261127-222805`, đo trên Gemini 4 Hydrogen.
+
+| Phiên | Persona | Token vào | Token ra |
+|---|---|---:|---:|
+| S001 | dung_vua | 38631 | 20014 |
+| S002 | dung_vua | 47778 | 16660 |
+| S003 | dung_it | 15727 | 12670 |
+| S004 | dung_it | 15727 | 15071 |
+| S005 | dung_nhieu | 58646 | 35990 |
+| S006 | dung_vua | 38631 | 15779 |
+| S007 | dung_it | 47778 | 16397 |
+| S008 | dung_it | 53532 | 38606 |
+| S009 | dung_it | 97762 | 28779 |
+| S010 | dung_vua | 15727 | 12444 |
 
 ## 1. Đầu vào
 
